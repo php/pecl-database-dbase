@@ -27,7 +27,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: php_dbase.h,v 1.1 1999/05/21 08:20:11 sas Exp $ */
+/* $Id: php_dbase.h,v 1.2 1999/05/21 10:05:47 sas Exp $ */
 
 #ifndef _DBASE_H
 #define _DBASE_H
@@ -35,7 +35,7 @@
 extern php3_module_entry dbase_module_entry;
 #define dbase_module_ptr &dbase_module_entry
 
-extern int php3_minit_dbase(INIT_FUNC_ARGS);
+extern PHP_MINIT_FUNCTION(dbase);
 PHP_FUNCTION(dbase_open);
 PHP_FUNCTION(dbase_create);
 PHP_FUNCTION(dbase_close);
