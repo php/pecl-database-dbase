@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.67 2003/07/31 18:28:47 sniper Exp $ */
+/* $Id: dbase.c,v 1.68 2003/08/28 21:00:13 andrey Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -664,7 +664,7 @@ PHP_FUNCTION(dbase_create)
 
 		/* field type */
 		if (zend_hash_index_find(Z_ARRVAL_PP (field), 1, (void **)&value) == FAILURE) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field type as sececond element of list in field %d", i);
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field type as second element of list in field %d", i);
 			RETURN_FALSE;
 		}
 		convert_to_string_ex(value);
