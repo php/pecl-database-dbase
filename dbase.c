@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.46 2001/08/11 16:38:24 zeev Exp $ */
+/* $Id: dbase.c,v 1.47 2001/08/14 11:07:18 sniper Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -321,7 +321,7 @@ PHP_FUNCTION(dbase_add_record)
    Replaces a record to the database */
 PHP_FUNCTION(dbase_replace_record)
 {
-	pval *dbh_id, *fields, *field, *recnum;
+	pval *dbh_id, *fields, **field, *recnum;
 	dbhead_t *dbh;
 	int dbh_type;
 
@@ -368,8 +368,8 @@ PHP_FUNCTION(dbase_replace_record)
 			efree(cp);
 			RETURN_FALSE;
 		}
-		convert_to_string(field);
-		sprintf(t_cp, cur_f->db_format, field->value.str.val); 
+		convert_to_string_ex(field);
+		sprintf(t_cp, cur_f->db_format, Z_STRVAL_PP(field)); 
 		t_cp += cur_f->db_flen;
 	}
 
