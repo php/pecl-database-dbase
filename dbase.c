@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.54 2001/12/14 04:22:01 vlad Exp $ */
+/* $Id: dbase.c,v 1.55 2001/12/31 09:13:08 vlad Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -745,7 +745,7 @@ PHP_FUNCTION(dbase_create)
 			cur_f->db_flen = 1;
 			break;
 		case 'M':
-			cur_f->db_flen = 9;
+			cur_f->db_flen = 10;
 			dbh->db_dbt = DBH_TYPE_MEMO;
 			/* should create the memo file here, probably */
 			break;
