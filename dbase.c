@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.69 2003/09/21 13:17:20 steinm Exp $ */
+/* $Id: dbase.c,v 1.70 2003/10/14 07:49:34 steinm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -791,7 +791,14 @@ PHP_FUNCTION(dbase_get_header_info)
 		add_assoc_long(row, "length", cur_f->db_flen);
 		
 		/* number of decimals in field */
-		add_assoc_long(row, "precision", cur_f->db_fdc);
+		switch (cur_f->db_type) {
+			case 'N':
+			case 'I':
+				add_assoc_long(row, "precision", cur_f->db_fdc);
+				break;
+			default:
+				add_assoc_long(row, "precision", 0);
+		}
 
 		/* format for printing %s etc */
 		add_assoc_string(row, "format", cur_f->db_format, 1);
