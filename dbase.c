@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.43 2001/07/31 07:09:38 zeev Exp $ */
+/* $Id: dbase.c,v 1.44 2001/08/05 01:42:34 zeev Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -137,7 +137,7 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	dbh = dbf_open(dbf_name->value.str.val, options->value.lval);
+	dbh = dbf_open(dbf_name->value.str.val, options->value.lval TSRMLS_CC);
 	if (dbh == NULL) {
 		php_error(E_WARNING, "unable to open database %s", dbf_name->value.str.val);
 		RETURN_FALSE;
