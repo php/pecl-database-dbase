@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.56 2001/12/31 10:23:30 vlad Exp $ */
+/* $Id: dbase.c,v 1.57 2002/02/28 08:26:01 sebastian Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -463,7 +463,7 @@ PHP_FUNCTION(dbase_get_record)
 		/* get the value */
 		str_value = (char *)emalloc(cur_f->db_flen + 1);
 
-		if(cursize <= cur_f->db_flen) {
+		if(cursize <= (unsigned)cur_f->db_flen) {
 			cursize = cur_f->db_flen + 1;
 			fnp = erealloc(fnp, cursize);
 		}
