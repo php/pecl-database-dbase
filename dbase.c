@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.39 2001/06/05 13:12:00 rasmus Exp $ */
+/* $Id: dbase.c,v 1.40 2001/06/06 13:05:43 rasmus Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -119,7 +119,6 @@ PHP_FUNCTION(dbase_open) {
 	pval *dbf_name, *options;
 	dbhead_t *dbh;
 	int handle;
-	PLS_FETCH();
 	DBase_TLS_VARS;
 
 	if (ZEND_NUM_ARGS() != 2 || getParameters(ht,2,&dbf_name,&options)==FAILURE) {
@@ -583,7 +582,6 @@ PHP_FUNCTION(dbase_create) {
 	int num_fields;
 	dbfield_t *dbf, *cur_f;
 	int i, rlen, handle;
-	PLS_FETCH();
 	DBase_TLS_VARS;
 
 	if (ZEND_NUM_ARGS() != 2 || getParameters(ht,2,&filename,&fields)==FAILURE) {
