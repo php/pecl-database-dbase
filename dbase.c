@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.53 2001/12/11 15:29:03 sebastian Exp $ */
+/* $Id: dbase.c,v 1.54 2001/12/14 04:22:01 vlad Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -684,7 +684,7 @@ PHP_FUNCTION(dbase_create)
 	strcpy(dbh->db_date, "19930818");
 	dbh->db_records = 0;
 	dbh->db_nfields = num_fields;
-	dbh->db_hlen = sizeof(struct dbf_dhead) + 2 + num_fields * sizeof(struct dbf_dfield);
+	dbh->db_hlen = sizeof(struct dbf_dhead) + 1 + num_fields * sizeof(struct dbf_dfield);
 
 	rlen = 1;
 	/**
