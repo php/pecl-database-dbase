@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.65 2003/07/15 18:19:51 zak Exp $ */
+/* $Id: dbase.c,v 1.66 2003/07/16 11:08:03 zak Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -764,9 +764,7 @@ PHP_FUNCTION(dbase_get_header_info)
 		RETURN_FALSE;
 	}
 
-	if (array_init(return_value)==FAILURE) {
-		RETURN_FALSE;
-	}
+	array_init(return_value);
 
 	dbf = dbh->db_fields;
 	for (cur_f = dbf; cur_f < &dbh->db_fields[dbh->db_nfields]; ++cur_f) {
