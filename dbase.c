@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.49 2001/09/09 13:28:46 derick Exp $ */
+/* $Id: dbase.c,v 1.50 2001/09/25 21:57:51 jeroen Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -473,6 +473,7 @@ PHP_FUNCTION(dbase_get_record)
 		case 'D':
 			add_next_index_string(return_value, str_value, 1);
 			break;
+		case 'I':	/* FALLS THROUGH */
 		case 'N':
 			if (cur_f->db_fdc == 0) {
 				add_next_index_long(return_value, strtol(str_value, NULL, 10));
@@ -564,6 +565,7 @@ PHP_FUNCTION(dbase_get_record_with_names)
 			case 'D':
 				add_assoc_string(return_value, cur_f->db_fname, str_value, 1);
 				break;
+			case 'I':	/* FALLS THROUGH */
 			case 'N':
 				if (cur_f->db_fdc == 0) {
 					add_assoc_long(return_value, cur_f->db_fname, strtol(str_value, NULL, 10));
