@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.50 2001/09/25 21:57:51 jeroen Exp $ */
+/* $Id: dbase.c,v 1.51 2001/10/08 21:51:12 jimw Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -787,7 +787,8 @@ function_entry dbase_functions[] = {
 /* }}} */
 
 zend_module_entry dbase_module_entry = {
-	"dbase", dbase_functions, PHP_MINIT(dbase), PHP_MSHUTDOWN(dbase), NULL, NULL, NULL, STANDARD_MODULE_PROPERTIES
+	STANDARD_MODULE_HEADER,
+	"dbase", dbase_functions, PHP_MINIT(dbase), PHP_MSHUTDOWN(dbase), NULL, NULL, NULL, NO_VERSION_YET, STANDARD_MODULE_PROPERTIES
 };
 
 
