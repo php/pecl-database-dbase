@@ -12,11 +12,11 @@
    | obtain it through the world-wide-web, please send a note to          |
    | license@php.net so we can mail you a copy immediately.               |
    +----------------------------------------------------------------------+
-   | Authors: Jim Winstead (jimw@php.net)                                 |
+   | Author: Jim Winstead <jimw@php.net>                                  |
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.55 2001/12/31 09:13:08 vlad Exp $ */
+/* $Id: dbase.c,v 1.56 2001/12/31 10:23:30 vlad Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
