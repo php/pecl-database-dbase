@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.68 2003/08/28 21:00:13 andrey Exp $ */
+/* $Id: dbase.c,v 1.69 2003/09/21 13:17:20 steinm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -294,7 +294,7 @@ PHP_FUNCTION(dbase_add_record)
 		tmp = **field;
 		zval_copy_ctor(&tmp);
 		convert_to_string(&tmp);
-		sprintf(t_cp, cur_f->db_format, Z_STRVAL(tmp));
+		snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL(tmp));
 		zval_dtor(&tmp); 
 		t_cp += cur_f->db_flen;
 	}
@@ -306,7 +306,7 @@ PHP_FUNCTION(dbase_add_record)
 		RETURN_FALSE;
 	}
 
-        put_dbf_info(dbh);
+	put_dbf_info(dbh);
 	efree(cp);
 
 	RETURN_TRUE;
@@ -361,7 +361,7 @@ PHP_FUNCTION(dbase_replace_record)
 			RETURN_FALSE;
 		}
 		convert_to_string_ex(field);
-		sprintf(t_cp, cur_f->db_format, Z_STRVAL_PP(field)); 
+		snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_PP(field)); 
 		t_cp += cur_f->db_flen;
 	}
 
