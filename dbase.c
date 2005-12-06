@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.73 2005/02/04 14:28:50 derick Exp $ */
+/* $Id: dbase.c,v 1.74 2005/08/03 14:06:57 sniper Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -730,7 +730,7 @@ PHP_FUNCTION(dbase_create)
 
 /* {{{ dbase_functions[]
  */
-function_entry dbase_functions[] = {
+zend_function_entry dbase_functions[] = {
 	PHP_FE(dbase_open,								NULL)
 	PHP_FE(dbase_create,							NULL)
 	PHP_FE(dbase_close,								NULL)
