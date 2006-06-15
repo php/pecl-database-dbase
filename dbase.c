@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.78 2006/02/19 18:20:51 iliaa Exp $ */
+/* $Id: dbase.c,v 1.79 2006/06/10 22:59:40 bjori Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -749,13 +749,13 @@ ZEND_END_ARG_INFO()
 static
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_add_record, 0)
 	ZEND_ARG_INFO(0, identifier)
-	ZEND_ARG_ARRAY_INFO(0, data, 0)
+	ZEND_ARG_INFO(0, data) /* ARRAY_INFO(0, data, 0) */
 ZEND_END_ARG_INFO()
 
 static
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_replace_record, 0)
 	ZEND_ARG_INFO(0, identifier)
-	ZEND_ARG_ARRAY_INFO(0, data, 0)
+	ZEND_ARG_INFO(0, data) /* ARRAY_INFO(0, data, 0) */
 	ZEND_ARG_INFO(0, recnum)
 ZEND_END_ARG_INFO()
 
@@ -780,7 +780,7 @@ ZEND_END_ARG_INFO()
 static
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_create, 0)
 	ZEND_ARG_INFO(0, filename)
-	ZEND_ARG_ARRAY_INFO(0, fields, 0)
+	ZEND_ARG_INFO(0, fields) /* ARRAY_INFO(0, fields, 0) */
 ZEND_END_ARG_INFO()
 
 static
