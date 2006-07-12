@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.74.2.2.2.1 2006/06/11 01:42:17 bjori Exp $ */
+/* $Id: dbase.c,v 1.74.2.2.2.2 2006/06/15 15:31:54 bjori Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -713,6 +713,8 @@ PHP_FUNCTION(dbase_create)
 			break;
 		default:
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unknown field type '%c'", cur_f->db_type);
+			free_dbf_head(dbh);
+			RETURN_FALSE;
 		}
 		cur_f->db_foffset = rlen;
 		rlen += cur_f->db_flen;
