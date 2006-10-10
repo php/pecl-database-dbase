@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.82 2006/07/12 13:17:25 tony2001 Exp $ */
+/* $Id: dbase.c,v 1.83 2006/08/08 15:53:54 mike Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -130,6 +130,9 @@ PHP_FUNCTION(dbase_open)
 
 	if (Z_LVAL_PP(options) == 1) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Cannot open %s in write-only mode", Z_STRVAL_PP(dbf_name));
+		RETURN_FALSE;
+	} else if (Z_LVAL_PP(options) < 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid access mode %ld", Z_LVAL_PP(options));
 		RETURN_FALSE;
 	}
 
