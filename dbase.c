@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.74.2.2.2.4 2006/08/08 15:55:27 mike Exp $ */
+/* $Id: dbase.c,v 1.74.2.2.2.5 2006/10/10 23:01:23 tony2001 Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -128,6 +128,11 @@ PHP_FUNCTION(dbase_open)
 	}
 	convert_to_string_ex(dbf_name);
 	convert_to_long_ex(options);
+
+	if (!Z_STRLEN_PP(dbf_name)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "The filename cannot be empty.");
+		RETURN_FALSE;
+	}
 
 	if (Z_LVAL_PP(options) == 1) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Cannot open %s in write-only mode", Z_STRVAL_PP(dbf_name));
