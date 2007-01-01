@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2006 The PHP Group                                |
+   | Copyright (c) 1997-2007 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
 */
 
-/* $Id: php_dbase.h,v 1.15 2005/08/03 14:06:58 sniper Exp $ */
+/* $Id: php_dbase.h,v 1.16 2007/01/01 13:09:49 sniper Exp $ */
 
 #ifndef PHP_DBASE_H
 #define PHP_DBASE_H
