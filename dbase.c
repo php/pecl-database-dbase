@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.86 2007/12/01 19:10:59 iliaa Exp $ */
+/* $Id: dbase.c,v 1.87 2007/01/01 09:29:23 sebastian Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -603,6 +603,11 @@ PHP_FUNCTION(dbase_create)
 	}
 
 	num_fields = zend_hash_num_elements(Z_ARRVAL_PP(fields));
+
+	if (num_fields <= 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to create database without fields");
+		RETURN_FALSE;
+	}
 
 	/* have to use regular malloc() because this gets free()d by
 	   code in the dbase library */
