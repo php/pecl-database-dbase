@@ -2,12 +2,12 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2004 The PHP Group                                |
+   | Copyright (c) 1997-2007 The PHP Group                                |
    +----------------------------------------------------------------------+
-   | This source file is subject to version 3.0 of the PHP license,       |
+   | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
    | available through the world-wide-web at the following url:           |
-   | http://www.php.net/license/3_0.txt.                                  |
+   | http://www.php.net/license/3_01.txt                                  |
    | If you did not receive a copy of the PHP license and are unable to   |
    | obtain it through the world-wide-web, please send a note to          |
    | license@php.net so we can mail you a copy immediately.               |
@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.72 2004/01/08 08:15:07 andi Exp $ */
+/* $Id: dbase.c,v 1.74.2.2.2.8 2007/01/01 09:36:00 sebastian Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -129,8 +129,16 @@ PHP_FUNCTION(dbase_open)
 	convert_to_string_ex(dbf_name);
 	convert_to_long_ex(options);
 
+	if (!Z_STRLEN_PP(dbf_name)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "The filename cannot be empty.");
+		RETURN_FALSE;
+	}
+
 	if (Z_LVAL_PP(options) == 1) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Cannot open %s in write-only mode", Z_STRVAL_PP(dbf_name));
+		RETURN_FALSE;
+	} else if (Z_LVAL_PP(options) < 0 || Z_LVAL_PP(options) > 3) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid access mode %ld", Z_LVAL_PP(options));
 		RETURN_FALSE;
 	}
 
@@ -503,6 +511,13 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 					}
 				}
 				break;
+			case 'F':
+				if (!assoc) {
+					add_next_index_double(return_value, atof(str_value));
+				} else {
+					add_assoc_double(return_value, cur_f->db_fname, atof(str_value));
+				}
+				break;
 			case 'L':	/* we used to FALL THROUGH, but now we check for T/Y and F/N
 						   and insert 1 or 0, respectively.  db_fdc is the number of
 						   decimals, which we don't care about.      3/14/2001 LEW */
@@ -606,6 +621,11 @@ PHP_FUNCTION(dbase_create)
 
 	num_fields = zend_hash_num_elements(Z_ARRVAL_PP(fields));
 
+	if (num_fields <= 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to create database without fields");
+		RETURN_FALSE;
+	}
+
 	/* have to use regular malloc() because this gets free()d by
 	   code in the dbase library */
 	dbh = (dbhead_t *)malloc(sizeof(dbhead_t));
@@ -690,6 +710,9 @@ PHP_FUNCTION(dbase_create)
 		case 'D':
 			cur_f->db_flen = 8;
 			break;
+		case 'F':
+			cur_f->db_flen = 20;
+			break;
 		case 'N':
 		case 'C':
 			/* field length */
@@ -713,6 +736,8 @@ PHP_FUNCTION(dbase_create)
 			break;
 		default:
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unknown field type '%c'", cur_f->db_type);
+			free_dbf_head(dbh);
+			RETURN_FALSE;
 		}
 		cur_f->db_foffset = rlen;
 		rlen += cur_f->db_flen;
@@ -728,21 +753,92 @@ PHP_FUNCTION(dbase_create)
 }
 /* }}} */
 
+/* {{{ arginfo */
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_open, 0)
+	ZEND_ARG_INFO(0, name)
+	ZEND_ARG_INFO(0, mode)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_close, 0)
+	ZEND_ARG_INFO(0, identifier)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_numrecords, 0)
+	ZEND_ARG_INFO(0, identifier)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_numfields, 0)
+	ZEND_ARG_INFO(0, identifier)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_pack, 0)
+	ZEND_ARG_INFO(0, identifier)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_add_record, 0)
+	ZEND_ARG_INFO(0, identifier)
+	ZEND_ARG_INFO(0, data) /* ARRAY_INFO(0, data, 0) */
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_replace_record, 0)
+	ZEND_ARG_INFO(0, identifier)
+	ZEND_ARG_INFO(0, data) /* ARRAY_INFO(0, data, 0) */
+	ZEND_ARG_INFO(0, recnum)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_delete_record, 0)
+	ZEND_ARG_INFO(0, identifier)
+	ZEND_ARG_INFO(0, record)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_record, 0)
+	ZEND_ARG_INFO(0, identifier)
+	ZEND_ARG_INFO(0, record)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_record_with_names, 0)
+	ZEND_ARG_INFO(0, identifier)
+	ZEND_ARG_INFO(0, record)
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_create, 0)
+	ZEND_ARG_INFO(0, filename)
+	ZEND_ARG_INFO(0, fields) /* ARRAY_INFO(0, fields, 0) */
+ZEND_END_ARG_INFO()
+
+static
+ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_header_info, 0)
+	ZEND_ARG_INFO(0, database_handle)
+ZEND_END_ARG_INFO()
+
+/* }}} */
+
 /* {{{ dbase_functions[]
  */
-function_entry dbase_functions[] = {
-	PHP_FE(dbase_open,								NULL)
-	PHP_FE(dbase_create,							NULL)
-	PHP_FE(dbase_close,								NULL)
-	PHP_FE(dbase_numrecords,						NULL)
-	PHP_FE(dbase_numfields,							NULL)
-	PHP_FE(dbase_add_record,						NULL)
-	PHP_FE(dbase_replace_record,					NULL)
-	PHP_FE(dbase_get_record,						NULL)
-	PHP_FE(dbase_get_record_with_names,				NULL)
-	PHP_FE(dbase_delete_record,						NULL)
-	PHP_FE(dbase_pack,								NULL)
-	PHP_FE(dbase_get_header_info,					NULL)
+zend_function_entry dbase_functions[] = {
+	PHP_FE(dbase_open,								arginfo_dbase_open)
+	PHP_FE(dbase_create,							arginfo_dbase_create)
+	PHP_FE(dbase_close,								arginfo_dbase_close)
+	PHP_FE(dbase_numrecords,						arginfo_dbase_numrecords)
+	PHP_FE(dbase_numfields,							arginfo_dbase_numfields)
+	PHP_FE(dbase_add_record,						arginfo_dbase_add_record)
+	PHP_FE(dbase_replace_record,					arginfo_dbase_replace_record)
+	PHP_FE(dbase_get_record,						arginfo_dbase_get_record)
+	PHP_FE(dbase_get_record_with_names,				arginfo_dbase_get_record_with_names)
+	PHP_FE(dbase_delete_record,						arginfo_dbase_delete_record)
+	PHP_FE(dbase_pack,								arginfo_dbase_pack)
+	PHP_FE(dbase_get_header_info,					arginfo_dbase_get_header_info)
 	{NULL, NULL, NULL}
 };
 /* }}} */
@@ -789,6 +885,7 @@ PHP_FUNCTION(dbase_get_header_info)
 			case 'N': add_assoc_string(row, "type", "number", 1); 		break;
 			case 'L': add_assoc_string(row, "type", "boolean", 1);		break;
 			case 'M': add_assoc_string(row, "type", "memo", 1);			break;
+			case 'F': add_assoc_string(row, "type", "float", 1);     break;
 			default:  add_assoc_string(row, "type", "unknown", 1);		break;
 		}
 		
