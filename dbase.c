@@ -16,7 +16,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: dbase.c,v 1.87 2007/01/01 09:29:23 sebastian Exp $ */
+/* $Id: dbase.c,v 1.88 2007/02/25 23:16:32 tony2001 Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -803,7 +803,7 @@ ZEND_END_ARG_INFO()
 
 /* {{{ dbase_functions[]
  */
-zend_function_entry dbase_functions[] = {
+const zend_function_entry dbase_functions[] = {
 	PHP_FE(dbase_open,								arginfo_dbase_open)
 	PHP_FE(dbase_create,							arginfo_dbase_create)
 	PHP_FE(dbase_close,								arginfo_dbase_close)
