@@ -740,71 +740,78 @@ PHP_FUNCTION(dbase_create)
 }
 /* }}} */
 
+/* {{{ arginfo compatibility */
+#if (PHP_MAJOR_VERSION >= 6 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3))
+# define PHP_DBASE_ARGINFO
+#else
+# define PHP_DBASE_ARGINFO static
+#endif
+
 /* {{{ arginfo */
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_open, 0)
 	ZEND_ARG_INFO(0, name)
 	ZEND_ARG_INFO(0, mode)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_close, 0)
 	ZEND_ARG_INFO(0, identifier)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_numrecords, 0)
 	ZEND_ARG_INFO(0, identifier)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_numfields, 0)
 	ZEND_ARG_INFO(0, identifier)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_pack, 0)
 	ZEND_ARG_INFO(0, identifier)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_add_record, 0)
 	ZEND_ARG_INFO(0, identifier)
 	ZEND_ARG_ARRAY_INFO(0, data, 0)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_replace_record, 0)
 	ZEND_ARG_INFO(0, identifier)
 	ZEND_ARG_ARRAY_INFO(0, data, 0)
 	ZEND_ARG_INFO(0, recnum)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_delete_record, 0)
 	ZEND_ARG_INFO(0, identifier)
 	ZEND_ARG_INFO(0, record)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_record, 0)
 	ZEND_ARG_INFO(0, identifier)
 	ZEND_ARG_INFO(0, record)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_record_with_names, 0)
 	ZEND_ARG_INFO(0, identifier)
 	ZEND_ARG_INFO(0, record)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_create, 0)
 	ZEND_ARG_INFO(0, filename)
 	ZEND_ARG_ARRAY_INFO(0, fields, 0)
 ZEND_END_ARG_INFO()
 
-static
+PHP_DBASE_ARGINFO
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_header_info, 0)
 	ZEND_ARG_INFO(0, database_handle)
 ZEND_END_ARG_INFO()
