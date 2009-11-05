@@ -1,18 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE package SYSTEM "../pear/package.dtd">
-<package>
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
  <name>dbase</name>
+ <channel>pecl.php.net</channel>
  <summary>dBase database file access functions</summary>
- <maintainers>
-  <maintainer>
-   <user>jimw</user>
-   <name>Jim Winstead</name>
-   <email>jimw@php.net</email>
-   <role>lead</role>
-  </maintainer>
- </maintainers>
- <description>
-These functions allow you to access records stored 
+ <description>These functions allow you to access records stored 
 in dBase-format (dbf) databases.
 
 There is no support for indexes or memo fields. 
@@ -23,35 +17,55 @@ same dBase file will very likely ruin your database.
 dBase files are simple sequential files of fixed length records. 
 Records are appended to the end of the file and delete records 
 are kept until you call dbase_pack().  
-</description>
- <license>PHP</license>
- <release>
-  <state>beta</state>
-  <version>5.0rc1</version>
-  <date>2004-03-19</date>
-  <notes>
+
+ </description>
+ <lead>
+  <name>Jim Winstead</name>
+  <user>jimw</user>
+  <email>jimw@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2009-11-05</date>
+ <time>17:50:53</time>
+ <version>
+  <release>5.0rc1</release>
+  <api>5.0rc1</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP</license>
+ <notes>
 package.xml added to support installation using pear installer
-  </notes>
-  <filelist>
-   <file role="doc" name="CREDITS"/>
-   <file role="src" name="config.m4"/>
-   <file role="src" name="dbase.c"/>
-   <file role="src" name="dbf.h"/>
-   <file role="src" name="dbf_head.c"/>
-   <file role="src" name="dbf_head.h"/>
-   <file role="src" name="dbf_misc.c"/>
-   <file role="src" name="dbf_misc.h"/>
-   <file role="src" name="dbf_ndx.c"/>
-   <file role="src" name="dbf_ndx.h"/>
-   <file role="src" name="dbf_rec.c"/>
-   <file role="src" name="dbf_rec.h"/>
-   <file role="src" name="php_dbase.h"/>
-  </filelist>
-  <deps>
-   <dep type="php" rel="ge" version="5" />
-  </deps>
- </release>
+ </notes>
+ <contents>
+  <dir name="/">
+   <file name="config.m4" role="src" />
+   <file name="CREDITS" role="doc" />
+   <file name="dbase.c" role="src" />
+   <file name="dbf.h" role="src" />
+   <file name="dbf_head.c" role="src" />
+   <file name="dbf_head.h" role="src" />
+   <file name="dbf_misc.c" role="src" />
+   <file name="dbf_misc.h" role="src" />
+   <file name="dbf_ndx.c" role="src" />
+   <file name="dbf_ndx.h" role="src" />
+   <file name="dbf_rec.c" role="src" />
+   <file name="dbf_rec.h" role="src" />
+   <file name="php_dbase.h" role="src" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>dbase</providesextension>
+ <extsrcrelease />
 </package>
-<!--
-vim:et:ts=1:sw=1
--->
