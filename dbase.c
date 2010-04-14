@@ -661,7 +661,7 @@ PHP_FUNCTION(dbase_create)
 		}
 
 		/* field name */
-		if (zend_hash_index_find(Z_ARRVAL_PP(field), 0, (void **)&value) == FAILURE) {
+		if (Z_TYPE_PP(field) != IS_ARRAY || zend_hash_index_find(Z_ARRVAL_PP(field), 0, (void **)&value) == FAILURE) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field name as first element of list in field %d", i);
 			free_dbf_head(dbh);
 			RETURN_FALSE;
