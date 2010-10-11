@@ -200,9 +200,11 @@ int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 		break;
 	    case 'D':
 		dbf->db_flen = 8;
+		put_short(dbfield.dbf_flen, dbf->db_flen);
 		break;
 	    case 'L':
 		dbf->db_flen = 1;
+		put_short(dbfield.dbf_flen, dbf->db_flen);
 		break;
 	    default:
 	    	put_short(dbfield.dbf_flen, dbf->db_flen);
