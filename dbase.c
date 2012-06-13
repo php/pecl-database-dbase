@@ -907,7 +907,13 @@ PHP_FUNCTION(dbase_get_header_info)
 
 zend_module_entry dbase_module_entry = {
 	STANDARD_MODULE_HEADER,
-	"dbase", dbase_functions, PHP_MINIT(dbase), PHP_MSHUTDOWN(dbase), NULL, NULL, NULL, NO_VERSION_YET, STANDARD_MODULE_PROPERTIES
+	"dbase", 
+	dbase_functions, 
+	PHP_MINIT(dbase), 
+	PHP_MSHUTDOWN(dbase), 
+	NULL, NULL, NULL, 
+	PHP_DBASE_VERSION, 
+	STANDARD_MODULE_PROPERTIES
 };
 
 
