@@ -151,7 +151,7 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	handle = zend_list_insert(dbh, DBase_GLOBAL(le_dbhead));
+	handle = zend_list_insert(dbh, DBase_GLOBAL(le_dbhead) ZEND_LIST_CC);
 	RETURN_LONG(handle);
 }
 /* }}} */
@@ -735,7 +735,7 @@ PHP_FUNCTION(dbase_create)
 	dbh->db_rlen = rlen;
 	put_dbf_info(dbh);
 
-	handle = zend_list_insert(dbh, DBase_GLOBAL(le_dbhead));
+	handle = zend_list_insert(dbh, DBase_GLOBAL(le_dbhead) ZEND_LIST_CC);
 	RETURN_LONG(handle);
 }
 /* }}} */
