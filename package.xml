@@ -51,6 +51,7 @@ are kept until you call dbase_pack().
  <contents>
   <dir name="/">
    <file name="config.m4" role="src" />
+   <file name="config.w32" role="src" />
    <file name="CREDITS" role="doc" />
    <file name="dbase.c" role="src" />
    <file name="dbf.h" role="src" />
