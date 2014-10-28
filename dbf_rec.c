@@ -152,7 +152,8 @@ char *get_field_val(char *rp, dbfield_t *fldp, char *cp)
 	if ( !cp )
 		cp = (char *)malloc(flen + 1);
 	if ( cp ) {
-		strlcpy(cp, &rp[fldp->db_foffset], flen + 1);
+		strncpy(cp, &rp[fldp->db_foffset], flen);
+		cp[flen] = 0;
 	}
 	return cp;
 }
