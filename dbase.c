@@ -161,7 +161,6 @@ PHP_FUNCTION(dbase_close)
 {
 	zend_long dbh_id;
 	zval *dbh;
-	int dbh_type;
 	DBase_TLS_VARS;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbh_id) == FAILURE) {
@@ -185,7 +184,6 @@ PHP_FUNCTION(dbase_numrecords)
 {
 	zend_long dbh_id;
 	zval *dbh;
-	int dbh_type;
 	DBase_TLS_VARS;
 	dbhead_t *dbht;
 
@@ -211,7 +209,6 @@ PHP_FUNCTION(dbase_numfields)
 {
 	zend_long dbh_id;
 	zval *dbh;
-	int dbh_type;
 	DBase_TLS_VARS;
 	dbhead_t *dbht;
 
@@ -236,7 +233,6 @@ PHP_FUNCTION(dbase_pack)
 {
 	zend_long dbh_id;
 	zval *dbh;
-	int dbh_type;
 	DBase_TLS_VARS;
 	dbhead_t *dbht;
 
@@ -263,7 +259,6 @@ PHP_FUNCTION(dbase_add_record)
 {
 	zval *fields, *field, *dbh;
 	zend_long dbh_id;
-	int dbh_type;
 	dbhead_t *dbht;
 
 	int num_fields;
@@ -334,7 +329,6 @@ PHP_FUNCTION(dbase_add_record)
 PHP_FUNCTION(dbase_replace_record)
 {
 	zval *fields, *field, *recnum, *dbh;
-	int dbh_type;
 	zend_long dbh_id;
 
 	int num_fields;
@@ -403,7 +397,6 @@ PHP_FUNCTION(dbase_delete_record)
 	zval *record, *dbh;
 	zend_long dbh_id;
 	dbhead_t *dbht;
-	int dbh_type;
 	DBase_TLS_VARS;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &dbh_id, &record) == FAILURE) {
@@ -440,7 +433,6 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	zval *record, *dbh;
 	dbhead_t *dbht;
 	zend_long dbh_id;
-	int dbh_type;
 	dbfield_t *dbf, *cur_f;
 	char *data, *fnp, *str_value;
 	size_t cursize = 0;
@@ -858,7 +850,6 @@ PHP_FUNCTION(dbase_get_header_info)
 	dbhead_t 	*dbht;
 	zend_long 	dbh_id;
 	dbfield_t	*dbf, *cur_f;
-	int 		dbh_type;
 	DBase_TLS_VARS;	
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbh_id) == FAILURE) {
