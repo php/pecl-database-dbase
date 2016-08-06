@@ -8,6 +8,7 @@ if (!extension_loaded('dbase')) {
 ?>
 --FILE--
 <?php
+$filename = __DIR__ . DIRECTORY_SEPARATOR . 'bug31754.dbf';
 
 // database "definition"
 $def = array(
@@ -15,12 +16,15 @@ $def = array(
 );
 
 // creation
-$dbh = dbase_create('/tmp/bug31754.dbf', array(array('foo', 'L')));
+$dbh = dbase_create($filename, array(array('foo', 'L')));
 dbase_close($dbh);
 
-$dbh = dbase_open('/tmp/bug31754.dbf', 1);
-unlink('/tmp/bug31754.dbf');
-
+$dbh = dbase_open($filename, 1);
 ?>
 --EXPECTF--
-Warning: dbase_open(): Cannot open /tmp/bug31754.dbf in write-only mode in %sbug31754.php on line %d
+Warning: dbase_open(): Cannot open %s%ebug31754.dbf in write-only mode in %s%ebug31754.php on line %d
+--CLEAN--
+<?php
+$filename = __DIR__ . DIRECTORY_SEPARATOR . 'bug31754.dbf';
+unlink($filename);
+?>
