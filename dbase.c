@@ -616,6 +616,7 @@ PHP_FUNCTION(dbase_create)
 
 	if (num_fields <= 0) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to create database without fields");
+		close(fd);
 		RETURN_FALSE;
 	}
 
@@ -625,6 +626,7 @@ PHP_FUNCTION(dbase_create)
 	dbf = (dbfield_t *)malloc(sizeof(dbfield_t) * num_fields);
 	if (!dbh || !dbf) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to allocate memory for header info");
+		close(fd);
 		RETURN_FALSE;
 	}
 	
@@ -657,6 +659,7 @@ PHP_FUNCTION(dbase_create)
 		if (zend_hash_index_find(Z_ARRVAL_PP(fields), i, (void **)&field) == FAILURE) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable to find field %d", i);
 			free_dbf_head(dbh);
+			close(fd);
 			RETURN_FALSE;
 		}
 
@@ -664,12 +667,14 @@ PHP_FUNCTION(dbase_create)
 		if (Z_TYPE_PP(field) != IS_ARRAY || zend_hash_index_find(Z_ARRVAL_PP(field), 0, (void **)&value) == FAILURE) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field name as first element of list in field %d", i);
 			free_dbf_head(dbh);
+			close(fd);
 			RETURN_FALSE;
 		}
 		convert_to_string_ex(value);
 		if (Z_STRLEN_PP(value) > 10 || Z_STRLEN_PP(value) == 0) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "invalid field name '%s' (must be non-empty and less than or equal to 10 characters)", Z_STRVAL_PP(value));
 			free_dbf_head(dbh);
+			close(fd);
 			RETURN_FALSE;
 		}
 		copy_crimp(cur_f->db_fname, Z_STRVAL_PP(value), Z_STRLEN_PP(value));
@@ -677,6 +682,7 @@ PHP_FUNCTION(dbase_create)
 		/* field type */
 		if (zend_hash_index_find(Z_ARRVAL_PP (field), 1, (void **)&value) == FAILURE) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field type as second element of list in field %d", i);
+			close(fd);
 			RETURN_FALSE;
 		}
 		convert_to_string_ex(value);
@@ -706,6 +712,7 @@ PHP_FUNCTION(dbase_create)
 			if (zend_hash_index_find(Z_ARRVAL_PP (field), 2, (void **)&value) == FAILURE) {
 				php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field length as third element of list in field %d", i);
 				free_dbf_head(dbh);
+				close(fd);
 				RETURN_FALSE;
 			}
 			convert_to_long_ex(value);
@@ -715,6 +722,7 @@ PHP_FUNCTION(dbase_create)
 				if (zend_hash_index_find(Z_ARRVAL_PP (field), 3, (void **)&value) == FAILURE) {
 					php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field precision as fourth element of list in field %d", i);
 					free_dbf_head(dbh);
+					close(fd);
 					RETURN_FALSE;
 				}
 				convert_to_long_ex(value);
@@ -724,6 +732,7 @@ PHP_FUNCTION(dbase_create)
 		default:
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unknown field type '%c'", cur_f->db_type);
 			free_dbf_head(dbh);
+			close(fd);
 			RETURN_FALSE;
 		}
 		cur_f->db_foffset = rlen;
