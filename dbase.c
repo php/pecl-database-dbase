@@ -123,7 +123,7 @@ PHP_FUNCTION(dbase_open)
 	zval *handle;
 	DBase_TLS_VARS;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &dbf_name, &options) == FAILURE) {	
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	convert_to_string_ex(dbf_name);
 	convert_to_long_ex(options);
@@ -165,7 +165,7 @@ PHP_FUNCTION(dbase_close)
 	DBase_TLS_VARS;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbh_id) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
@@ -189,7 +189,7 @@ PHP_FUNCTION(dbase_numrecords)
 	dbhead_t *dbht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbh_id) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
@@ -214,7 +214,7 @@ PHP_FUNCTION(dbase_numfields)
 	dbhead_t *dbht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbh_id) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
@@ -238,7 +238,7 @@ PHP_FUNCTION(dbase_pack)
 	dbhead_t *dbht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbh_id) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
@@ -268,7 +268,7 @@ PHP_FUNCTION(dbase_add_record)
 	int i;
 	DBase_TLS_VARS;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &dbh_id, &fields) == FAILURE) {	
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	
 
@@ -348,7 +348,7 @@ PHP_FUNCTION(dbase_replace_record)
 	DBase_TLS_VARS;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lzz", &dbh_id, &fields, &recnum) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	convert_to_long_ex(recnum);
 
@@ -417,7 +417,7 @@ PHP_FUNCTION(dbase_delete_record)
 	DBase_TLS_VARS;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &dbh_id, &record) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 
 	convert_to_long_ex(record);
@@ -458,7 +458,7 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	DBase_TLS_VARS;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &dbh_id, &record) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	convert_to_long_ex(record);
 
@@ -614,7 +614,7 @@ PHP_FUNCTION(dbase_create)
 	DBase_TLS_VARS;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &filename, &fields) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 	convert_to_string_ex(filename);
 
@@ -879,7 +879,7 @@ PHP_FUNCTION(dbase_get_header_info)
 	DBase_TLS_VARS;	
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &dbh_id) == FAILURE) {
-		WRONG_PARAM_COUNT;
+		return;
 	}
 
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
