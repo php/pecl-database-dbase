@@ -381,10 +381,10 @@ PHP_FUNCTION(dbase_replace_record)
 			efree(cp);
 			RETURN_FALSE;
 		}
-		if (Z_TYPE(*field) == IS_DOUBLE) {
+		if (Z_TYPE_P(field) == IS_DOUBLE) {
 			zend_string *formatted;
 
-			formatted = _php_math_number_format_ex(Z_DVAL(*field), cur_f->db_fdc, ".", 1, "", 0);
+			formatted = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
 			memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
 			zend_string_free(formatted);
 		} else {
