@@ -50,10 +50,10 @@ if (file_exists(FILENAME)) unlink(FILENAME);
 ?>
 ===DONE===
 --EXPECTF--
-Warning: Wrong parameter count for dbase_create() in %s%edbase_create_error.php on line %d
+Warning: dbase_create() expects exactly 2 parameters, 1 given in %s%edbase_create_error.php on line %d
 NULL
 
-Warning: Wrong parameter count for dbase_create() in %s%edbase_create_error.php on line %d
+Warning: dbase_create() expects exactly 2 parameters, 3 given in %s%edbase_create_error.php on line %d
 NULL
 
 Warning: dbase_create(): Unable to create database without fields in %s%edbase_create_error.php on line %d
