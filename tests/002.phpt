@@ -52,3 +52,9 @@ bool(false)
 int(%d)
 int(%d)
 Done
+--CLEAN--
+<?php
+$file = dirname(__FILE__)."/002.dbf";
+
+unlink($file);
+?>
