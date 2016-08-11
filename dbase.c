@@ -505,17 +505,17 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 					errno = errno_save;
 				} else {
 					if (!assoc) {
-						add_next_index_double(return_value, atof(str_value));
+						add_next_index_double(return_value, zend_strtod(str_value, NULL));
 					} else {
-						add_assoc_double(return_value, cur_f->db_fname, atof(str_value));
+						add_assoc_double(return_value, cur_f->db_fname, zend_strtod(str_value, NULL));
 					}
 				}
 				break;
 			case 'F':
 				if (!assoc) {
-					add_next_index_double(return_value, atof(str_value));
+					add_next_index_double(return_value, zend_strtod(str_value, NULL));
 				} else {
-					add_assoc_double(return_value, cur_f->db_fname, atof(str_value));
+					add_assoc_double(return_value, cur_f->db_fname, zend_strtod(str_value, NULL));
 				}
 				break;
 			case 'L':	/* we used to FALL THROUGH, but now we check for T/Y and F/N
