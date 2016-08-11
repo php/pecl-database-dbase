@@ -25,6 +25,7 @@
 #include "php.h"
 #include "fopen_wrappers.h"
 #include "php_globals.h"
+#include "ext/standard/php_math.h"
 
 #include <stdlib.h>
 
@@ -304,8 +305,16 @@ PHP_FUNCTION(dbase_add_record)
 
 		tmp = *field;
 		zval_copy_ctor(&tmp);
-		convert_to_string(&tmp);
-		snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL(tmp));
+		if (Z_TYPE(tmp) == IS_DOUBLE) {
+			zend_string *formatted;
+
+			formatted = _php_math_number_format_ex(Z_DVAL_P(&tmp), cur_f->db_fdc, ".", 1, "", 0);
+			memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
+			zend_string_free(formatted);
+		} else {
+			convert_to_string(&tmp);
+			snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL(tmp));
+		}
 		zval_dtor(&tmp); 
 		t_cp += cur_f->db_flen;
 	}
@@ -372,8 +381,16 @@ PHP_FUNCTION(dbase_replace_record)
 			efree(cp);
 			RETURN_FALSE;
 		}
-		convert_to_string_ex(field);
-		snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field)); 
+		if (Z_TYPE(*field) == IS_DOUBLE) {
+			zend_string *formatted;
+
+			formatted = _php_math_number_format_ex(Z_DVAL(*field), cur_f->db_fdc, ".", 1, "", 0);
+			memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
+			zend_string_free(formatted);
+		} else {
+			convert_to_string_ex(field);
+			snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
+		}
 		t_cp += cur_f->db_flen;
 	}
 
