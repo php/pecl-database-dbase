@@ -41,10 +41,6 @@ foreach ($fields_arr as $fields) {
 	}
 }
 
-var_dump(dbase_create($file, -1));
-
-var_dump(dbase_create("", ""));
-
 echo "Done\n";
 ?>
 --EXPECTF--
@@ -57,12 +53,6 @@ int(%d)
 string(71) "dbase_create(): expected field name as first element of list in field 0"
 bool(false)
 string(56) "dbase_create(): Unable to create database without fields"
-bool(false)
-string(76) "Argument 2 passed to dbase_create() must be of the type array, integer given"
-string(50) "dbase_create(): Expected array as second parameter"
-bool(false)
-string(75) "Argument 2 passed to dbase_create() must be of the type array, string given"
-string(50) "dbase_create(): Expected array as second parameter"
 bool(false)
 Done
 --CLEAN--
