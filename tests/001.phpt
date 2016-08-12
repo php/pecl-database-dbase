@@ -59,11 +59,11 @@ bool(false)
 string(56) "dbase_create(): Unable to create database without fields"
 bool(false)
 string(76) "Argument 2 passed to dbase_create() must be of the type array, integer given"
-string(50) "dbase_create(): Expected array as second parameter"
-bool(false)
+string(61) "dbase_create() expects parameter 2 to be array, integer given"
+NULL
 string(75) "Argument 2 passed to dbase_create() must be of the type array, string given"
-string(50) "dbase_create(): Expected array as second parameter"
-bool(false)
+string(60) "dbase_create() expects parameter 2 to be array, string given"
+NULL
 Done
 --CLEAN--
 <?php
