@@ -16,6 +16,14 @@ if (file_exists(FILENAME)) unlink(FILENAME);
 var_dump(dbase_create(FILENAME, array(), 'additional argument'));
 if (file_exists(FILENAME)) unlink(FILENAME);
 
+/* second argument is no array */
+try {
+    dbase_create(FILENAME, 'no array');
+} catch (TypeError $ex) {
+    echo $ex->getMessage(), PHP_EOL;
+}
+if (file_exists(FILENAME)) unlink(FILENAME);
+
 /* no fields */
 var_dump(dbase_create(FILENAME, array()));
 if (file_exists(FILENAME)) unlink(FILENAME);
@@ -55,6 +63,7 @@ NULL
 
 Warning: dbase_create() expects exactly 2 parameters, 3 given in %s%edbase_create_error.php on line %d
 NULL
+Argument 2 passed to dbase_create() must be of the type array, string given
 
 Warning: dbase_create(): Unable to create database without fields in %s%edbase_create_error.php on line %d
 bool(false)

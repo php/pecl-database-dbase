@@ -118,36 +118,35 @@ static PHP_MSHUTDOWN_FUNCTION(dbase)
    Opens a dBase-format database file */
 PHP_FUNCTION(dbase_open)
 {
-	zval *dbf_name, *options;
+	zend_string *dbf_name;
+	zend_long options;
 	dbhead_t *dbh;
 	zval *handle;
 	DBase_TLS_VARS;
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &dbf_name, &options) == FAILURE) {	
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Pl", &dbf_name, &options) == FAILURE) {	
 		return;
 	}
-	convert_to_string_ex(dbf_name);
-	convert_to_long_ex(options);
 
-	if (!Z_STRLEN_P(dbf_name)) {
+	if (!ZSTR_LEN(dbf_name)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "The filename cannot be empty.");
 		RETURN_FALSE;
 	}
 
-	if (Z_LVAL_P(options) == 1) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Cannot open %s in write-only mode", Z_STRVAL_P(dbf_name));
+	if (options == 1) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Cannot open %s in write-only mode", ZSTR_VAL(dbf_name));
 		RETURN_FALSE;
-	} else if (Z_LVAL_P(options) < 0 || Z_LVAL_P(options) > 3) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid access mode %ld", Z_LVAL_P(options));
-		RETURN_FALSE;
-	}
-
-	if (php_check_open_basedir(Z_STRVAL_P(dbf_name) TSRMLS_CC)) {
+	} else if (options < 0 || options > 3) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid access mode %ld", options);
 		RETURN_FALSE;
 	}
 
-	dbh = dbf_open(Z_STRVAL_P(dbf_name), Z_LVAL_P(options) TSRMLS_CC);
+	if (php_check_open_basedir(ZSTR_VAL(dbf_name) TSRMLS_CC)) {
+		RETURN_FALSE;
+	}
+
+	dbh = dbf_open(ZSTR_VAL(dbf_name), options TSRMLS_CC);
 	if (dbh == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable to open database %s", Z_STRVAL_P(dbf_name));
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable to open database %s", ZSTR_VAL(dbf_name));
 		RETURN_FALSE;
 	}
 
@@ -258,7 +257,8 @@ PHP_FUNCTION(dbase_pack)
    Adds a record to the database */
 PHP_FUNCTION(dbase_add_record)
 {
-	zval *fields, *field, *dbh;
+	HashTable *fields;
+	zval *field, *dbh;
 	zend_long dbh_id;
 	dbhead_t *dbht;
 
@@ -267,16 +267,10 @@ PHP_FUNCTION(dbase_add_record)
 	char *cp, *t_cp;
 	int i;
 	DBase_TLS_VARS;
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &dbh_id, &fields) == FAILURE) {	
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lh", &dbh_id, &fields) == FAILURE) {	
 		return;
 	}
 	
-
-	if (Z_TYPE_P(fields) != IS_ARRAY) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Argument two must be of type 'Array'");
-		RETURN_FALSE;
-	}
-
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
 	if (dbh == NULL || Z_RES_P(dbh)->type != DBase_GLOBAL(le_dbhead)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
@@ -284,7 +278,7 @@ PHP_FUNCTION(dbase_add_record)
 	}
 	dbht = Z_RES_P(dbh)->ptr;
 
-	num_fields = zend_hash_num_elements(Z_ARRVAL_P(fields));
+	num_fields = zend_hash_num_elements(fields);
 
 	if (num_fields != dbht->db_nfields) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong number of fields specified");
@@ -297,7 +291,7 @@ PHP_FUNCTION(dbase_add_record)
 	dbf = dbht->db_fields;
 	for (i = 0, cur_f = dbf; cur_f < &dbf[num_fields]; i++, cur_f++) {
 		zval tmp;
-		if ((field = zend_hash_index_find(Z_ARRVAL_P(fields), i)) == NULL) {
+		if ((field = zend_hash_index_find(fields, i)) == NULL) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unexpected error");
 			efree(cp);
 			RETURN_FALSE;
@@ -345,7 +339,10 @@ PHP_FUNCTION(dbase_add_record)
    Replaces a record to the database */
 PHP_FUNCTION(dbase_replace_record)
 {
-	zval *fields, *field, *recnum, *dbh;
+	HashTable *fields;
+	zval *field;
+	zend_long recnum;
+	zval *dbh;
 	zend_long dbh_id;
 
 	int num_fields;
@@ -355,14 +352,8 @@ PHP_FUNCTION(dbase_replace_record)
 	int i;
 	DBase_TLS_VARS;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lzz", &dbh_id, &fields, &recnum) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lhl", &dbh_id, &fields, &recnum) == FAILURE) {
 		return;
-	}
-	convert_to_long_ex(recnum);
-
-	if (Z_TYPE_P(fields) != IS_ARRAY) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Argument two must be of type 'Array'");
-		RETURN_FALSE;
 	}
 
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
@@ -372,7 +363,7 @@ PHP_FUNCTION(dbase_replace_record)
 	}
 	dbht = Z_RES_P(dbh)->ptr;
 
-	num_fields = zend_hash_num_elements(Z_ARRVAL_P(fields));
+	num_fields = zend_hash_num_elements(fields);
 
 	if (num_fields != dbht->db_nfields) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong number of fields specified");
@@ -384,7 +375,7 @@ PHP_FUNCTION(dbase_replace_record)
 
 	dbf = dbht->db_fields;
 	for (i = 0, cur_f = dbf; cur_f < &dbf[num_fields]; i++, cur_f++) {
-		if ((field = zend_hash_index_find(Z_ARRVAL_P(fields), i)) == NULL) {
+		if ((field = zend_hash_index_find(fields, i)) == NULL) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unexpected error");
 			efree(cp);
 			RETURN_FALSE;
@@ -410,7 +401,7 @@ PHP_FUNCTION(dbase_replace_record)
 		t_cp += cur_f->db_flen;
 	}
 
-	if (put_dbf_record(dbht, Z_LVAL_P(recnum), cp) < 0) {
+	if (put_dbf_record(dbht, recnum, cp) < 0) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable to put record at %ld", dbht->db_records);
 		efree(cp);
 		RETURN_FALSE;
@@ -427,16 +418,15 @@ PHP_FUNCTION(dbase_replace_record)
    Marks a record to be deleted */
 PHP_FUNCTION(dbase_delete_record)
 {
-	zval *record, *dbh;
+	zend_long record;
+	zval *dbh;
 	zend_long dbh_id;
 	dbhead_t *dbht;
 	DBase_TLS_VARS;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &dbh_id, &record) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &dbh_id, &record) == FAILURE) {
 		return;
 	}
-
-	convert_to_long_ex(record);
 
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
 	if (dbh == NULL || Z_RES_P(dbh)->type != DBase_GLOBAL(le_dbhead)) {
@@ -445,11 +435,11 @@ PHP_FUNCTION(dbase_delete_record)
 	}
 	dbht = Z_RES_P(dbh)->ptr;
 
-	if (del_dbf_record(dbht, Z_LVAL_P(record)) < 0) {
-		if (Z_LVAL_P(record) > dbht->db_records) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "record %ld out of bounds", Z_LVAL_P(record));
+	if (del_dbf_record(dbht, record) < 0) {
+		if (record > dbht->db_records) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "record %ld out of bounds", record);
 		} else {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable to delete record %ld", Z_LVAL_P(record));
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable to delete record %ld", record);
 		}
 		RETURN_FALSE;
 	}
@@ -463,7 +453,8 @@ PHP_FUNCTION(dbase_delete_record)
  */  
 static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 {
-	zval *record, *dbh;
+	zend_long record;
+	zval *dbh;
 	dbhead_t *dbht;
 	zend_long dbh_id;
 	dbfield_t *dbf, *cur_f;
@@ -473,10 +464,9 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	int errno_save;
 	DBase_TLS_VARS;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lz", &dbh_id, &record) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &dbh_id, &record) == FAILURE) {
 		return;
 	}
-	convert_to_long_ex(record);
 
 	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
 	if (dbh == NULL || Z_RES_P(dbh)->type != DBase_GLOBAL(le_dbhead)) {
@@ -485,8 +475,8 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	}
 	dbht = Z_RES_P(dbh)->ptr;
 
-	if ((data = get_dbf_record(dbht, Z_LVAL_P(record))) == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Tried to read bad record %ld", Z_LVAL_P(record));
+	if ((data = get_dbf_record(dbht, record)) == NULL) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Tried to read bad record %ld", record);
 		RETURN_FALSE;
 	}
 
@@ -612,7 +602,9 @@ PHP_FUNCTION(dbase_get_record_with_names)
    Creates a new dBase-format database file */
 PHP_FUNCTION(dbase_create)
 {
-	zval *filename, *fields, *field, *value, *handle;
+	zend_string *filename;
+	HashTable *fields;
+	zval *field, *value, *handle;
 	int fd;
 	dbhead_t *dbh;
 
@@ -621,26 +613,20 @@ PHP_FUNCTION(dbase_create)
 	int i, rlen;
 	DBase_TLS_VARS;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &filename, &fields) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Ph", &filename, &fields) == FAILURE) {
 		return;
 	}
-	convert_to_string_ex(filename);
 
-	if (Z_TYPE_P(fields) != IS_ARRAY) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Expected array as second parameter");
+	if (php_check_open_basedir(ZSTR_VAL(filename) TSRMLS_CC)) {
 		RETURN_FALSE;
 	}
 
-	if (php_check_open_basedir(Z_STRVAL_P(filename) TSRMLS_CC)) {
-		RETURN_FALSE;
-	}
-
-	if ((fd = VCWD_OPEN_MODE(Z_STRVAL_P(filename), O_BINARY|O_RDWR|O_CREAT, 0644)) < 0) {
+	if ((fd = VCWD_OPEN_MODE(ZSTR_VAL(filename), O_BINARY|O_RDWR|O_CREAT, 0644)) < 0) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to create database (%d): %s", errno, strerror(errno));
 		RETURN_FALSE;
 	}
 
-	num_fields = zend_hash_num_elements(Z_ARRVAL_P(fields));
+	num_fields = zend_hash_num_elements(fields);
 
 	if (num_fields <= 0) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to create database without fields");
@@ -677,7 +663,7 @@ PHP_FUNCTION(dbase_create)
 
 	for (i = 0, cur_f = dbf; i < num_fields; i++, cur_f++) {
 		/* look up the first field */
-		if ((field = zend_hash_index_find(Z_ARRVAL_P(fields), i)) == NULL) {
+		if ((field = zend_hash_index_find(fields, i)) == NULL) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "unable to find field %d", i);
 			free_dbf_head(dbh);
 			close(fd);
