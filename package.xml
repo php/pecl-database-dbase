@@ -55,6 +55,7 @@ are kept until you call dbase_pack().
    - Fixed #52112: dbase_get_record() returns integer instead of decimal values
    - Fixed #68289: wrong strlcpy call
    - Fixed #72812: dbase_create does not close the FD on failure
+   - Fixed #73391: Writing of floats can cause OOB reads
  </notes>
  
  
