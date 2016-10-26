@@ -24,14 +24,13 @@ dbhead_t *get_dbf_head(int fd)
 	dbfield_t *dbf, *cur_f, *tdbf;
 	int ret, nfields, offset, gf_retval;
 
-	if ((dbh = (dbhead_t *)calloc(1, sizeof(dbhead_t))) == NULL)
-		return NULL;
+	dbh = (dbhead_t *)ecalloc(1, sizeof(dbhead_t));
 	if (lseek(fd, 0, 0) < 0) {
-		free(dbh);
+		efree(dbh);
 		return NULL;
 	}
 	if ((ret = read(fd, &dbhead, sizeof(dbhead))) <= 0) {
-		free(dbh);
+		efree(dbh);
 		return NULL;
 	}
 
@@ -48,7 +47,7 @@ dbhead_t *get_dbf_head(int fd)
 
 	/* malloc enough memory for the maximum number of fields:
 	   32 * 1024 = 32K dBase5 (for Win) seems to allow that many */
-	tdbf = (dbfield_t *)calloc(1, sizeof(dbfield_t)*1024);
+	tdbf = (dbfield_t *)ecalloc(1024, sizeof(dbfield_t));
 	
 	offset = 1;
 	nfields = 0;
@@ -58,7 +57,7 @@ dbhead_t *get_dbf_head(int fd)
 
 		if (gf_retval < 0) {
 			free_dbf_head(dbh);
-			free(tdbf);
+			efree(tdbf);
 			return NULL;
 		}
 		if (gf_retval != 2 ) {
@@ -70,9 +69,9 @@ dbhead_t *get_dbf_head(int fd)
 	dbh->db_nfields = nfields;
 	
 	/* malloc the right amount of space for records, copy and destroy old */
-	dbf = (dbfield_t *)malloc(sizeof(dbfield_t)*nfields);
+	dbf = (dbfield_t *)emalloc(sizeof(dbfield_t)*nfields);
 	memcpy(dbf, tdbf, sizeof(dbfield_t)*nfields);
-	free(tdbf);
+	efree(tdbf);
 
 	dbh->db_fields = dbf;
 
@@ -91,12 +90,12 @@ void free_dbf_head(dbhead_t *dbh)
 	nfields = dbh->db_nfields;
 	for (cur_f = dbf; cur_f < &dbf[nfields]; cur_f++) {
 		if (cur_f->db_format) {
-			free(cur_f->db_format);
+			efree(cur_f->db_format);
 		}
 	}
 	
-	free(dbf);
-	free(dbh);
+	efree(dbf);
+	efree(dbh);
 }
 
 /*
@@ -226,7 +225,7 @@ int put_dbf_info(dbhead_t *dbh)
 
 	if ((cp = db_cur_date(NULL))) {
 		strlcpy(dbh->db_date, cp, 9);
-		free(cp);
+		efree(cp);
 	}
 	put_dbf_head(dbh);
 	dbf = dbh->db_fields;
@@ -256,7 +255,7 @@ char *get_dbf_f_fmt(dbfield_t *dbf)
 	   default:
 		return NULL;
 	}
-	return (char *)strdup(format);
+	return (char *)estrdup(format);
 }
 
 dbhead_t *dbf_open(char *dp, int o_flags TSRMLS_DC)

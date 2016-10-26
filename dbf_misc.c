@@ -154,9 +154,9 @@ char *db_cur_date(char *cp)
 	c_time = time((time_t *)NULL);
 	ctm = php_localtime_r(&c_time, &tmbuf);
 	if (cp == NULL)
-		cp = (char *)malloc(9);
+		cp = (char *)emalloc(9);
 
-	if (ctm == NULL || cp == NULL)
+	if (ctm == NULL)
 		return NULL;
 
 	db_set_date(cp, ctm->tm_year + 1900, ctm->tm_mon + 1, ctm->tm_mday);

@@ -595,7 +595,7 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 		add_assoc_long(return_value, "deleted", 0);
 	}
 
-	free(data);
+	efree(data);
 }
 /* }}} */
  
@@ -656,15 +656,8 @@ PHP_FUNCTION(dbase_create)
 		RETURN_FALSE;
 	}
 
-	/* have to use regular malloc() because this gets free()d by
-	   code in the dbase library */
-	dbh = (dbhead_t *)malloc(sizeof(dbhead_t));
-	dbf = (dbfield_t *)malloc(sizeof(dbfield_t) * num_fields);
-	if (!dbh || !dbf) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to allocate memory for header info");
-		close(fd);
-		RETURN_FALSE;
-	}
+	dbh = (dbhead_t *)emalloc(sizeof(dbhead_t));
+	dbf = (dbfield_t *)emalloc(sizeof(dbfield_t) * num_fields);
 	
 	/* initialize the header structure */
 	dbh->db_fields = dbf;

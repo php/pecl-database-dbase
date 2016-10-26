@@ -18,14 +18,10 @@ ndx_header_t *ndx_get_header(int fd)
 	dndx_header_t	*dp;
 	ndx_header_t	*np;
 
-	if ((dp = (dndx_header_t *)malloc(NDX_PAGE_SZ)) == NULL)
-		return NULL;
-	if ((np = (ndx_header_t *)malloc(sizeof(ndx_header_t))) == NULL) {
-		free(dp);
-		return NULL;
-	}
+	dp = (dndx_header_t *)emalloc(NDX_PAGE_SZ);
+	np = (ndx_header_t *)emalloc(sizeof(ndx_header_t));
 	if ((lseek(fd, 0, 0) < 0) || (read(fd, dp, NDX_PAGE_SZ) < 0)) {
-		free(dp); free(np);
+		efree(dp); efree(np);
 		return NULL;
 	}
 	np->ndx_hpage = dp;
@@ -53,20 +49,13 @@ static ndx_page_t *ndx_get_page(ndx_header_t *hp, int pageno)
 #if PHP_DEBUG
 	printf("getting page %d", pageno);
 #endif
-	if ((fp = (ndx_page_t *)malloc(sizeof(ndx_page_t))) == NULL)
-		return NULL;
-	if ((dp = (dndx_page_t *)malloc(NDX_PAGE_SZ)) == NULL) {
-		free(fp);
-		return NULL;
-	}
-	if ((rp = (ndx_record_t *)malloc(sizeof(ndx_record_t) * hp->ndx_keys_ppg)) == NULL) {
-		free(dp); free(fp);
-		return NULL;
-	}
+	fp = (ndx_page_t *)emalloc(sizeof(ndx_page_t));
+	dp = (dndx_page_t *)emalloc(NDX_PAGE_SZ);
+	rp = (ndx_record_t *)emalloc(sizeof(ndx_record_t) * hp->ndx_keys_ppg);
 	fp->ndxp_page_data = dp;
 	if ((lseek(hp->ndx_fd, pageno * NDX_PAGE_SZ, 0) < 0) ||
 		(read(hp->ndx_fd, dp, NDX_PAGE_SZ) < 0)) {
-		free(fp); free(dp);
+		efree(fp); efree(dp);
 		return NULL;
 	}
 	fp->ndxp_parent = NULL;

@@ -31,14 +31,12 @@ char *get_dbf_record(dbhead_t *dbh, long rec_num)
 	if (rec_num > dbh->db_records) {
 		return NULL;
 	}
-	if ((cp = (char *)malloc(dbh->db_rlen)) == NULL) {
-		return NULL;
-	}
+	cp = (char *)emalloc(dbh->db_rlen);
 
 	/* go to the correct spot on the file */
 	offset = dbh->db_hlen + (rec_num - 1) * dbh->db_rlen;
 	if (get_piece(dbh, offset, cp, dbh->db_rlen) != dbh->db_rlen) {
-		free(cp);
+		efree(cp);
 		cp = NULL;
 	}
 	if (cp)
@@ -100,7 +98,7 @@ int del_dbf_record(dbhead_t *dbh, long rec_num)
 	if ((cp = get_dbf_record(dbh, rec_num))) {
 		*cp = DELETED_RECORD;
 		ret = put_dbf_record(dbh, rec_num, cp);
-		free(cp);
+		efree(cp);
 	}
 	return ret;
 }
@@ -111,9 +109,7 @@ void pack_dbf(dbhead_t *dbh)
 	int	rec_cnt, new_cnt;
 	char	*cp;
 
-	if ((cp = (char *)malloc(dbh->db_rlen)) == NULL) {
-		return;
-	}
+	cp = (char *)emalloc(dbh->db_rlen);
 	in_off = out_off = dbh->db_hlen;
 
 	new_cnt = 0;
@@ -132,7 +128,7 @@ void pack_dbf(dbhead_t *dbh)
 		in_off += dbh->db_rlen;
 		rec_cnt--;
 	}
-	free(cp);
+	efree(cp);
 
 	/* Try to truncate the file to the right size. */
 	if (ftruncate(dbh->db_fd, out_off) != 0) {
@@ -150,11 +146,9 @@ char *get_field_val(char *rp, dbfield_t *fldp, char *cp)
 	int flen = fldp->db_flen;
 
 	if ( !cp )
-		cp = (char *)malloc(flen + 1);
-	if ( cp ) {
-		strncpy(cp, &rp[fldp->db_foffset], flen);
-		cp[flen] = '\0';
-	}
+		cp = (char *)emalloc(flen + 1);
+	strncpy(cp, &rp[fldp->db_foffset], flen);
+	cp[flen] = '\0';
 	return cp;
 }
 
@@ -170,7 +164,7 @@ void out_rec(dbhead_t *dbh, dbfield_t *dbf, char *cp)
 {
 	dbfield_t       *cur_f;
 	int     nfields = dbh->db_nfields;
-	char    *fnp = (char *)malloc(dbh->db_rlen);
+	char    *fnp = (char *)emalloc(dbh->db_rlen);
 
 	printf("%c", *cp);
 	for (cur_f = dbf; cur_f < &dbf[nfields] ; cur_f++) {
@@ -178,7 +172,7 @@ void out_rec(dbhead_t *dbh, dbfield_t *dbf, char *cp)
 		printf(cur_f->db_format, get_field_val(cp, cur_f, fnp));
 	}
 	printf("\n");
-	free(fnp);
+	efree(fnp);
 }
 
 /* check for record validity */
