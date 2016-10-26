@@ -258,7 +258,7 @@ char *get_dbf_f_fmt(dbfield_t *dbf)
 	return (char *)estrdup(format);
 }
 
-dbhead_t *dbf_open(char *dp, int o_flags TSRMLS_DC)
+dbhead_t *dbf_open(char *dp, int o_flags)
 {
 	int fd;
 	char *cp;

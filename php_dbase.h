@@ -44,13 +44,4 @@ PHP_FUNCTION(dbase_get_header_info);
 
 #define PHP_DBASE_VERSION "7.0.0beta1"
 
-/*
- * zend_list_insert() has changed its prototype as of PHP 5.4
- */
-#if PHP_VERSION_ID >= 50400
-#define ZEND_LIST_CC TSRMLS_CC
-#else
-#define ZEND_LIST_CC
-#endif
-
 #endif /* PHP_DBASE_H */
