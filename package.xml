@@ -75,6 +75,7 @@ are kept until you call dbase_pack().
    <file name="dbf_ndx.h" role="src" />
    <file name="dbf_rec.c" role="src" />
    <file name="dbf_rec.h" role="src" />
+   <file name="LICENSE" role="doc" />
    <file name="php_dbase.h" role="src" />
   </dir> <!-- / -->
  </contents>
