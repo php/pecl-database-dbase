@@ -77,6 +77,30 @@ are kept until you call dbase_pack().
    <file name="dbf_rec.h" role="src" />
    <file name="LICENSE" role="doc" />
    <file name="php_dbase.h" role="src" />
+   <dir name="tests">
+    <file name="001.phpt" role="test" />
+    <file name="002.phpt" role="test" />
+    <file name="bug31754.phpt" role="test" />
+    <file name="bug39305.phpt" role="test" />
+    <file name="bug52112.phpt" role="test" />
+    <file name="dbase_add_record_basic.phpt" role="test" />
+    <file name="dbase_add_record_variation1.phpt" role="test" />
+    <file name="dbase_add_record_variation2.phpt" role="test" />
+    <file name="dbase_create_basic.phpt" role="test" />
+    <file name="dbase_create_error.phpt" role="test" />
+    <file name="dbase_delete_record_basic.phpt" role="test" />
+    <file name="dbase_get_header_info_basic.phpt" role="test" />
+    <file name="dbase_get_record_basic.phpt" role="test" />
+    <file name="dbase_get_record_with_names_basic.phpt" role="test" />
+    <file name="dbase_numfields_basic.phpt" role="test" />
+    <file name="dbase_numrecords_basic.phpt" role="test" />
+    <file name="dbase_pack_basic.phpt" role="test" />
+    <file name="dbase_replace_record_basic.phpt" role="test" />
+    <file name="dbase_replace_record_variation1.phpt" role="test" />
+    <file name="dbase_replace_record_variation2.phpt" role="test" />
+    <file name="example.dbf" role="test" />
+    <file name="example.php" role="test" />
+   </dir> <!-- tests -->
   </dir> <!-- / -->
  </contents>
  <dependencies>
