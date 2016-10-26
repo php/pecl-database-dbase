@@ -556,23 +556,15 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 						   decimals, which we don't care about.      3/14/2001 LEW */
 				if ((*str_value == 'T') || (*str_value == 'Y')) {
 					if (!assoc) {
-						add_next_index_long(return_value, strtol("1", NULL, 10));
+						add_next_index_long(return_value, 1L);
 					} else {
-						add_assoc_long(return_value, cur_f->db_fname,strtol("1", NULL, 10));
+						add_assoc_long(return_value, cur_f->db_fname, 1L);
 					}
 				} else {
-					if ((*str_value == 'F') || (*str_value == 'N')) {
-						if (!assoc) {
-							add_next_index_long(return_value, strtol("0", NULL, 10));
-						} else {
-							add_assoc_long(return_value, cur_f->db_fname,strtol("0", NULL, 10));
-						}
+					if (!assoc) {
+						add_next_index_long(return_value, 0L);
 					} else {
-						if (!assoc) {
-							add_next_index_long(return_value, strtol(" ", NULL, 10));
-						} else {
-							add_assoc_long(return_value, cur_f->db_fname,strtol(" ", NULL, 10));
-						}
+						add_assoc_long(return_value, cur_f->db_fname, 0L);
 					}
 				}
 				break;
