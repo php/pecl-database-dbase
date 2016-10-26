@@ -305,9 +305,17 @@ PHP_FUNCTION(dbase_add_record)
 		zval_copy_ctor(&tmp);
 		if (Z_TYPE(tmp) == IS_DOUBLE) {
 			char *formatted;
+			size_t formatted_len;
 
 			formatted = _php_math_number_format_ex(Z_DVAL_P(&tmp), cur_f->db_fdc, ".", 1, "", 0);
-			memcpy(t_cp, formatted, cur_f->db_flen);
+			formatted_len = strlen(formatted);
+			if (formatted_len <= cur_f->db_flen) {
+				size_t delta = cur_f->db_flen - formatted_len;
+				memset(t_cp, ' ', delta);
+				memcpy(t_cp + delta, formatted, formatted_len);
+			} else {
+				memcpy(t_cp, formatted, cur_f->db_flen);
+			}
 			efree(formatted);
 		} else {
 			convert_to_string(&tmp);
@@ -381,9 +389,17 @@ PHP_FUNCTION(dbase_replace_record)
 		}
 		if (Z_TYPE_PP(field) == IS_DOUBLE) {
 			char *formatted;
+			size_t formatted_len;
 
 			formatted = _php_math_number_format_ex(Z_DVAL_PP(field), cur_f->db_fdc, ".", 1, "", 0);
-			memcpy(t_cp, formatted, cur_f->db_flen);
+			formatted_len = strlen(formatted);
+			if (formatted_len <= cur_f->db_flen) {
+				size_t delta = cur_f->db_flen - formatted_len;
+				memset(t_cp, ' ', delta);
+				memcpy(t_cp + delta, formatted, formatted_len);
+			} else {
+				memcpy(t_cp, formatted, cur_f->db_flen);
+			}
 			efree(formatted);
 		} else {
 			convert_to_string_ex(field);
