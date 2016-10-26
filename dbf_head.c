@@ -218,7 +218,7 @@ int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
  */
 static char end_stuff[2] = {0x0d, 0};
 
-void put_dbf_info(dbhead_t *dbh)
+int put_dbf_info(dbhead_t *dbh)
 {
 	dbfield_t	*dbf;
 	char		*cp;
@@ -232,7 +232,7 @@ void put_dbf_info(dbhead_t *dbh)
 	dbf = dbh->db_fields;
 	for (fcnt = dbh->db_nfields; fcnt > 0; fcnt--, dbf++)
 		put_dbf_field(dbh, dbf);
-	write(dbh->db_fd, end_stuff, 1);
+	return write(dbh->db_fd, end_stuff, 1);
 }
 
 char *get_dbf_f_fmt(dbfield_t *dbf)
