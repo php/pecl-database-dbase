@@ -719,6 +719,7 @@ PHP_FUNCTION(dbase_create)
 		/* field type */
 		if ((value = zend_hash_index_find(Z_ARRVAL_P(field), 1)) == NULL) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field type as second element of list in field %d", i);
+			free_dbf_head(dbh);
 			close(fd);
 			RETURN_FALSE;
 		}
