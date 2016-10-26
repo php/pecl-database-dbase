@@ -182,13 +182,9 @@ int get_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 {
 	struct dbf_dfield	dbfield;
-	char			*scp, *dcp;
 	int			ret;
 
 	memset (&dbfield, 0, sizeof(dbfield));
-
-	/* build the on disk field info */
-	scp = dbf->db_fname; dcp = dbfield.dbf_name;
 
 	strlcpy(dbfield.dbf_name, dbf->db_fname, DBF_NAMELEN + 1);
 
