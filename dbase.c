@@ -307,9 +307,17 @@ PHP_FUNCTION(dbase_add_record)
 		zval_copy_ctor(&tmp);
 		if (Z_TYPE(tmp) == IS_DOUBLE) {
 			zend_string *formatted;
+			size_t formatted_len;
 
 			formatted = _php_math_number_format_ex(Z_DVAL_P(&tmp), cur_f->db_fdc, ".", 1, "", 0);
-			memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
+			formatted_len = ZSTR_LEN(formatted);
+			if (formatted_len <= cur_f->db_flen) {
+				size_t delta = cur_f->db_flen - formatted_len;
+				memset(t_cp, ' ', delta);
+				memcpy(t_cp + delta, ZSTR_VAL(formatted), formatted_len);
+			} else {
+				memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
+			}
 			zend_string_free(formatted);
 		} else {
 			convert_to_string(&tmp);
@@ -383,9 +391,17 @@ PHP_FUNCTION(dbase_replace_record)
 		}
 		if (Z_TYPE_P(field) == IS_DOUBLE) {
 			zend_string *formatted;
+			size_t formatted_len;
 
 			formatted = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
-			memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
+			formatted_len = ZSTR_LEN(formatted);
+			if (formatted_len <= cur_f->db_flen) {
+				size_t delta = cur_f->db_flen - formatted_len;
+				memset(t_cp, ' ', delta);
+				memcpy(t_cp + delta, ZSTR_VAL(formatted), formatted_len);
+			} else {
+				memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
+			}
 			zend_string_free(formatted);
 		} else {
 			convert_to_string_ex(field);
