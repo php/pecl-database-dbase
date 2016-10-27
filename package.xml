@@ -83,6 +83,7 @@ are kept until you call dbase_pack().
     <file name="bug39305.phpt" role="test" />
     <file name="bug52112.phpt" role="test" />
     <file name="bug73391.phpt" role="test" />
+    <file name="bug73395.phpt" role="test" />
     <file name="dbase_add_record_basic.phpt" role="test" />
     <file name="dbase_add_record_variation1.phpt" role="test" />
     <file name="dbase_add_record_variation2.phpt" role="test" />
