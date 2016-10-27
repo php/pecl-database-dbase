@@ -107,7 +107,7 @@ are kept until you call dbase_pack().
  <dependencies>
   <required>
    <php>
-    <min>5</min>
+    <min>5.4</min>
     <max>5.7</max>
    </php>
    <pearinstaller>
