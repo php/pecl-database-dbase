@@ -59,11 +59,6 @@ PHP_MINIT_FUNCTION(dbase)
 	return SUCCESS;
 }
 
-static PHP_MSHUTDOWN_FUNCTION(dbase)
-{
-	return SUCCESS;
-}
-
 /* {{{ proto resource dbase_open(string name, int mode)
    Opens a dBase-format database file */
 PHP_FUNCTION(dbase_open)
@@ -813,7 +808,7 @@ zend_module_entry dbase_module_entry = {
 	"dbase", 
 	dbase_functions, 
 	PHP_MINIT(dbase), 
-	PHP_MSHUTDOWN(dbase), 
+	NULL, 
 	NULL, NULL, NULL, 
 	PHP_DBASE_VERSION, 
 	STANDARD_MODULE_PROPERTIES
