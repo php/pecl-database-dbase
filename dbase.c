@@ -64,10 +64,10 @@ PHP_MINIT_FUNCTION(dbase)
 PHP_FUNCTION(dbase_open)
 {
 	zend_string *dbf_name;
-	zend_long options;
+	zend_long mode;
 	dbhead_t *dbh;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "Pl", &dbf_name, &options) == FAILURE) {	
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "Pl", &dbf_name, &mode) == FAILURE) {	
 		return;
 	}
 
@@ -76,11 +76,11 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	if (options == 1) {
+	if (mode == 1) {
 		php_error_docref(NULL, E_WARNING, "Cannot open %s in write-only mode", ZSTR_VAL(dbf_name));
 		RETURN_FALSE;
-	} else if (options < 0 || options > 3) {
-		php_error_docref(NULL, E_WARNING, "Invalid access mode %ld", options);
+	} else if (mode < 0 || mode > 2) {
+		php_error_docref(NULL, E_WARNING, "Invalid access mode %ld", mode);
 		RETURN_FALSE;
 	}
 
@@ -88,7 +88,7 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	dbh = dbf_open(ZSTR_VAL(dbf_name), options);
+	dbh = dbf_open(ZSTR_VAL(dbf_name), mode);
 	if (dbh == NULL) {
 		php_error_docref(NULL, E_WARNING, "unable to open database %s", ZSTR_VAL(dbf_name));
 		RETURN_FALSE;
