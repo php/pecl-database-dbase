@@ -64,14 +64,13 @@ static PHP_MSHUTDOWN_FUNCTION(dbase)
 	return SUCCESS;
 }
 
-/* {{{ proto int dbase_open(string name, int mode)
+/* {{{ proto resource dbase_open(string name, int mode)
    Opens a dBase-format database file */
 PHP_FUNCTION(dbase_open)
 {
 	zend_string *dbf_name;
 	zend_long options;
 	dbhead_t *dbh;
-	zval *handle;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "Pl", &dbf_name, &options) == FAILURE) {	
 		return;
@@ -100,112 +99,96 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	handle = zend_list_insert(dbh, le_dbhead);
-	RETURN_LONG(Z_RES_HANDLE_P(handle));
+	RETURN_RES(zend_register_resource(dbh, le_dbhead));
 }
 /* }}} */
 
-/* {{{ proto bool dbase_close(int identifier)
+/* {{{ proto bool dbase_close(resource identifier)
    Closes an open dBase-format database file */
 PHP_FUNCTION(dbase_close)
 {
-	zend_long dbh_id;
-	zval *dbh;
+	zval *dbh_id;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
 		return;
 	}
 
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if (zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead) == NULL) {
 		RETURN_FALSE;
 	}
 	
-	zend_list_delete(Z_RES_P(dbh));
+	zend_list_close(Z_RES_P(dbh_id));
 	RETURN_TRUE;
 }
 /* }}} */
 
-/* {{{ proto int dbase_numrecords(int identifier)
+/* {{{ proto int dbase_numrecords(resource identifier)
    Returns the number of records in the database */
 PHP_FUNCTION(dbase_numrecords)
 {
-	zend_long dbh_id;
-	zval *dbh;
+	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
 		return;
 	}
 	
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
 
-	dbht = Z_RES_P(dbh)->ptr;
 	RETURN_LONG(dbht->db_records);
 
 }
 /* }}} */
 
-/* {{{ proto int dbase_numfields(int identifier)
+/* {{{ proto int dbase_numfields(resource identifier)
    Returns the number of fields (columns) in the database */
 PHP_FUNCTION(dbase_numfields)
 {
-	zend_long dbh_id;
-	zval *dbh;
+	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
 		return;
 	}
 	
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
 
-	dbht = Z_RES_P(dbh)->ptr;
 	RETURN_LONG(dbht->db_nfields);
 }
 /* }}} */
 
-/* {{{ proto bool dbase_pack(int identifier)
+/* {{{ proto bool dbase_pack(resource identifier)
    Packs the database (deletes records marked for deletion) */
 PHP_FUNCTION(dbase_pack)
 {
-	zend_long dbh_id;
-	zval *dbh;
+	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
 		return;
 	}
 	
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
 
-	dbht = Z_RES_P(dbh)->ptr;
 	pack_dbf(dbht);
 	put_dbf_info(dbht);
 	RETURN_TRUE;
 }
 /* }}} */
 
-/* {{{ proto bool dbase_add_record(int identifier, array data)
+/* {{{ proto bool dbase_add_record(resource identifier, array data)
    Adds a record to the database */
 PHP_FUNCTION(dbase_add_record)
 {
 	HashTable *fields;
-	zval *field, *dbh;
-	zend_long dbh_id;
+	zval *field;
+	zval *dbh_id;
 	dbhead_t *dbht;
 
 	int num_fields;
@@ -213,16 +196,13 @@ PHP_FUNCTION(dbase_add_record)
 	char *cp, *t_cp;
 	int i;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "lh", &dbh_id, &fields) == FAILURE) {	
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rh", &dbh_id, &fields) == FAILURE) {	
 		return;
 	}
 	
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
-	dbht = Z_RES_P(dbh)->ptr;
 
 	num_fields = zend_hash_num_elements(fields);
 
@@ -281,32 +261,27 @@ PHP_FUNCTION(dbase_add_record)
 }
 /* }}} */
 
-/* {{{ proto bool dbase_replace_record(int identifier, array data, int recnum)
+/* {{{ proto bool dbase_replace_record(resource identifier, array data, int recnum)
    Replaces a record to the database */
 PHP_FUNCTION(dbase_replace_record)
 {
 	HashTable *fields;
 	zval *field;
 	zend_long recnum;
-	zval *dbh;
-	zend_long dbh_id;
-
+	zval *dbh_id;
 	int num_fields;
 	dbfield_t *dbf, *cur_f;
 	dbhead_t *dbht;
 	char *cp, *t_cp;
 	int i;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "lhl", &dbh_id, &fields, &recnum) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rhl", &dbh_id, &fields, &recnum) == FAILURE) {
 		return;
 	}
 
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
-	dbht = Z_RES_P(dbh)->ptr;
 
 	num_fields = zend_hash_num_elements(fields);
 
@@ -359,25 +334,21 @@ PHP_FUNCTION(dbase_replace_record)
 }
 /* }}} */
 
-/* {{{ proto bool dbase_delete_record(int identifier, int record)
+/* {{{ proto bool dbase_delete_record(resource identifier, int record)
    Marks a record to be deleted */
 PHP_FUNCTION(dbase_delete_record)
 {
 	zend_long record;
-	zval *dbh;
-	zend_long dbh_id;
+	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "ll", &dbh_id, &record) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
 		return;
 	}
 
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
-	dbht = Z_RES_P(dbh)->ptr;
 
 	if (del_dbf_record(dbht, record) < 0) {
 		if (record > dbht->db_records) {
@@ -398,25 +369,21 @@ PHP_FUNCTION(dbase_delete_record)
 static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 {
 	zend_long record;
-	zval *dbh;
 	dbhead_t *dbht;
-	zend_long dbh_id;
+	zval *dbh_id;
 	dbfield_t *dbf, *cur_f;
 	char *data, *fnp, *str_value;
 	size_t cursize = 0;
 	long overflow_test;
 	int errno_save;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "ll", &dbh_id, &record) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
 		return;
 	}
 
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
-	dbht = Z_RES_P(dbh)->ptr;
 
 	if ((data = get_dbf_record(dbht, record)) == NULL) {
 		php_error_docref(NULL, E_WARNING, "Tried to read bad record %ld", record);
@@ -524,7 +491,7 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 }
 /* }}} */
  
-/* {{{ proto array dbase_get_record(int identifier, int record)
+/* {{{ proto array dbase_get_record(resource identifier, int record)
    Returns an array representing a record from the database */
 PHP_FUNCTION(dbase_get_record)
 {
@@ -533,7 +500,7 @@ PHP_FUNCTION(dbase_get_record)
 /* }}} */
 
 /* From Martin Kuba <makub@aida.inet.cz> */
-/* {{{ proto array dbase_get_record_with_names(int identifier, int record)
+/* {{{ proto array dbase_get_record_with_names(resource identifier, int record)
    Returns an associative array representing a record from the database */
 PHP_FUNCTION(dbase_get_record_with_names)
 {
@@ -541,13 +508,13 @@ PHP_FUNCTION(dbase_get_record_with_names)
 }
 /* }}} */
 
-/* {{{ proto bool dbase_create(string filename, array fields)
+/* {{{ proto resource dbase_create(string filename, array fields)
    Creates a new dBase-format database file */
 PHP_FUNCTION(dbase_create)
 {
 	zend_string *filename;
 	HashTable *fields;
-	zval *field, *value, *handle;
+	zval *field, *value;
 	int fd;
 	dbhead_t *dbh;
 
@@ -695,8 +662,7 @@ PHP_FUNCTION(dbase_create)
 	dbh->db_rlen = rlen;
 	put_dbf_info(dbh);
 
-	handle = zend_list_insert(dbh, le_dbhead);
-	RETURN_LONG(Z_RES_HANDLE_P(handle));
+	RETURN_RES(zend_register_resource(dbh, le_dbhead));
 }
 /* }}} */
 
@@ -779,25 +745,22 @@ const zend_function_entry dbase_functions[] = {
 /* }}} */
 
 /* Added by Zak Greant <zak@php.net> */
-/* {{{ proto array dbase_get_header_info(int database_handle)
+/* {{{ proto array dbase_get_header_info(resource database_handle)
  */
 PHP_FUNCTION(dbase_get_header_info)
 {
-	zval		row, *dbh;
+	zval		row;
 	dbhead_t 	*dbht;
-	zend_long 	dbh_id;
+	zval		*dbh_id;
 	dbfield_t	*dbf, *cur_f;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
 		return;
 	}
 
-	dbh = zend_hash_index_find(&EG(regular_list), dbh_id);
-	if (dbh == NULL || Z_RES_P(dbh)->type != le_dbhead) {
-		php_error_docref(NULL, E_WARNING, "Unable to find database for identifier %ld", dbh_id);
+	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
-	dbht = Z_RES_P(dbh)->ptr;
 
 	array_init(return_value);
 

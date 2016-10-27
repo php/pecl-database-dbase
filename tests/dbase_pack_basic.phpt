@@ -22,7 +22,7 @@ var_dump(dbase_close($db));
 ?>
 ===DONE===
 --EXPECTF--
-int(%d)
+resource(%d) of type (dbase)
 bool(true)
 bool(true)
 int(2)

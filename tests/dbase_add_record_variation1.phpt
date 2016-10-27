@@ -25,7 +25,7 @@ var_dump(dbase_close($db));
 ?>
 ===DONE===
 --EXPECTF--
-int(%d)
+resource(%d) of type (dbase)
 array(6) {
   [0]=>
   int(1)

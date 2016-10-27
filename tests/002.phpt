@@ -49,8 +49,8 @@ bool(false)
 
 Warning: dbase_open(): The filename cannot be empty. in %s on line %d
 bool(false)
-int(%d)
-int(%d)
+resource(%d) of type (dbase)
+resource(%d) of type (dbase)
 Done
 --CLEAN--
 <?php
