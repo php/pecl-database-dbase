@@ -185,24 +185,30 @@ PHP_FUNCTION(dbase_pack)
 }
 /* }}} */
 
-/* {{{ proto bool dbase_add_record(resource identifier, array data)
-   Adds a record to the database */
-PHP_FUNCTION(dbase_add_record)
+/* {{{ php_dbase_put_record
+ */  
+static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 {
 	HashTable *fields;
 	zval *field;
+	zend_long recnum;
 	zval *dbh_id;
 	dbhead_t *dbht;
-
 	int num_fields;
 	dbfield_t *dbf, *cur_f;
 	char *cp, *t_cp;
 	int i;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "rh", &dbh_id, &fields) == FAILURE) {	
-		return;
+	if (replace) {
+		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rhl", &dbh_id, &fields, &recnum) == FAILURE) {
+			return;
+		}
+	} else {
+		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rh", &dbh_id, &fields) == FAILURE) {	
+			return;
+		}
 	}
-	
+
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
 		RETURN_FALSE;
 	}
@@ -246,8 +252,11 @@ PHP_FUNCTION(dbase_add_record)
 		t_cp += cur_f->db_flen;
 	}
 
-	dbht->db_records++;
-	if (put_dbf_record(dbht, dbht->db_records, cp) < 0) {
+	if (!replace) {
+			dbht->db_records++;
+	}
+
+	if (put_dbf_record(dbht, (replace ? recnum : dbht->db_records), cp) < 0) {
 		php_error_docref(NULL, E_WARNING, "unable to put record at %ld", dbht->db_records);
 		efree(cp);
 		RETURN_FALSE;
@@ -260,76 +269,19 @@ PHP_FUNCTION(dbase_add_record)
 }
 /* }}} */
 
+/* {{{ proto bool dbase_add_record(resource identifier, array data)
+   Adds a record to the database */
+PHP_FUNCTION(dbase_add_record)
+{
+	php_dbase_put_record(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
+}
+/* }}} */
+
 /* {{{ proto bool dbase_replace_record(resource identifier, array data, int recnum)
    Replaces a record to the database */
 PHP_FUNCTION(dbase_replace_record)
 {
-	HashTable *fields;
-	zval *field;
-	zend_long recnum;
-	zval *dbh_id;
-	int num_fields;
-	dbfield_t *dbf, *cur_f;
-	dbhead_t *dbht;
-	char *cp, *t_cp;
-	int i;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rhl", &dbh_id, &fields, &recnum) == FAILURE) {
-		return;
-	}
-
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
-	}
-
-	num_fields = zend_hash_num_elements(fields);
-
-	if (num_fields != dbht->db_nfields) {
-		php_error_docref(NULL, E_WARNING, "Wrong number of fields specified");
-		RETURN_FALSE;
-	}
-
-	cp = t_cp = (char *)emalloc(dbht->db_rlen + 1);
-	*t_cp++ = VALID_RECORD;
-
-	dbf = dbht->db_fields;
-	for (i = 0, cur_f = dbf; cur_f < &dbf[num_fields]; i++, cur_f++) {
-		if ((field = zend_hash_index_find(fields, i)) == NULL) {
-			php_error_docref(NULL, E_WARNING, "unexpected error");
-			efree(cp);
-			RETURN_FALSE;
-		}
-		if (Z_TYPE_P(field) == IS_DOUBLE) {
-			zend_string *formatted;
-			size_t formatted_len;
-
-			formatted = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
-			formatted_len = ZSTR_LEN(formatted);
-			if (formatted_len <= cur_f->db_flen) {
-				size_t delta = cur_f->db_flen - formatted_len;
-				memset(t_cp, ' ', delta);
-				memcpy(t_cp + delta, ZSTR_VAL(formatted), formatted_len);
-			} else {
-				memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
-			}
-			zend_string_free(formatted);
-		} else {
-			convert_to_string_ex(field);
-			snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
-		}
-		t_cp += cur_f->db_flen;
-	}
-
-	if (put_dbf_record(dbht, recnum, cp) < 0) {
-		php_error_docref(NULL, E_WARNING, "unable to put record at %ld", dbht->db_records);
-		efree(cp);
-		RETURN_FALSE;
-	}
-
-    put_dbf_info(dbht);
-	efree(cp);
-
-	RETURN_TRUE;
+	php_dbase_put_record(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
 }
 /* }}} */
 
