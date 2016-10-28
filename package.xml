@@ -15,7 +15,7 @@ Two concurrent webserver processes modifying the
 same dBase file will very likely ruin your database.
 
 dBase files are simple sequential files of fixed length records. 
-Records are appended to the end of the file and delete records 
+Records are appended to the end of the file and deleted records 
 are kept until you call dbase_pack().  
 
  </description>
