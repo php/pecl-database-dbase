@@ -246,9 +246,12 @@ PHP_FUNCTION(dbase_pack)
 		RETURN_FALSE;
 	}
 
-        pack_dbf(dbh);
+	if (!pack_dbf(dbh)) {
         put_dbf_info(dbh);
-	RETURN_TRUE;
+		RETURN_TRUE;
+	} else {
+		RETURN_FALSE;
+	}
 }
 /* }}} */
 
