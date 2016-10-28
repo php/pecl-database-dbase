@@ -1,5 +1,5 @@
 dnl
-dnl $Id: config.m4,v 1.8 2005/05/29 23:16:40 sniper Exp $
+dnl $Id$
 dnl
 
 PHP_ARG_ENABLE(dbase,whether to enable dbase support,
