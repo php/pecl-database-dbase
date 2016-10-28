@@ -219,20 +219,17 @@ PHP_FUNCTION(dbase_add_record)
 
 	dbf = dbht->db_fields;
 	for (i = 0, cur_f = dbf; cur_f < &dbf[num_fields]; i++, cur_f++) {
-		zval tmp;
 		if ((field = zend_hash_index_find(fields, i)) == NULL) {
 			php_error_docref(NULL, E_WARNING, "unexpected error");
 			efree(cp);
 			RETURN_FALSE;
 		}
 
-		tmp = *field;
-		zval_copy_ctor(&tmp);
-		if (Z_TYPE(tmp) == IS_DOUBLE) {
+		if (Z_TYPE_P(field) == IS_DOUBLE) {
 			zend_string *formatted;
 			size_t formatted_len;
 
-			formatted = _php_math_number_format_ex(Z_DVAL_P(&tmp), cur_f->db_fdc, ".", 1, "", 0);
+			formatted = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
 			formatted_len = ZSTR_LEN(formatted);
 			if (formatted_len <= cur_f->db_flen) {
 				size_t delta = cur_f->db_flen - formatted_len;
@@ -243,10 +240,9 @@ PHP_FUNCTION(dbase_add_record)
 			}
 			zend_string_free(formatted);
 		} else {
-			convert_to_string(&tmp);
-			snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL(tmp));
+			convert_to_string(field);
+			snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
 		}
-		zval_dtor(&tmp); 
 		t_cp += cur_f->db_flen;
 	}
 
