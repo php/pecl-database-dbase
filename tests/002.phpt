@@ -13,9 +13,9 @@ fclose($fp);
 
 var_dump(dbase_open($file, -1));
 var_dump(dbase_open($file, 1000));
-var_dump(dbase_open($file, 0));
-var_dump(dbase_open($file."nonex", 0));
-var_dump(dbase_open("", 0));
+var_dump(dbase_open($file, DBASE_RDONLY));
+var_dump(dbase_open($file."nonex", DBASE_RDONLY));
+var_dump(dbase_open("", DBASE_RDONLY));
 
 @unlink($file);
 
@@ -28,7 +28,7 @@ $def = array(
 );
 
 var_dump(dbase_create($file, $def));
-var_dump(dbase_open($file, 0));
+var_dump(dbase_open($file, DBASE_RDONLY));
 
 @unlink($file);
 

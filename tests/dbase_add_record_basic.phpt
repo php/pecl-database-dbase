@@ -9,7 +9,7 @@ if (!extension_loaded('dbase')) die('skip dbase extension not available');
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_add_record_basic.dbf';
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 
-$db = dbase_open($filename, 2);
+$db = dbase_open($filename, DBASE_RDWR);
 var_dump($db);
 
 var_dump(dbase_add_record($db, array(4, 'JPLDIS', '19730101', 'F', 1234567.89)));

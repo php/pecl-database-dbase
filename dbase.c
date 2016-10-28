@@ -54,8 +54,11 @@ static void _close_dbase(zend_resource *rsrc)
 
 PHP_MINIT_FUNCTION(dbase)
 {
-	le_dbhead =
-		zend_register_list_destructors_ex(_close_dbase, NULL, "dbase", module_number);
+	le_dbhead = zend_register_list_destructors_ex(_close_dbase, NULL, "dbase", module_number);
+
+	REGISTER_LONG_CONSTANT("DBASE_RDONLY", O_RDONLY, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("DBASE_RDWR",   O_RDWR,   CONST_CS | CONST_PERSISTENT);
+
 	return SUCCESS;
 }
 
@@ -76,10 +79,10 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	if (mode == 1) {
+	if (mode == O_WRONLY) {
 		php_error_docref(NULL, E_WARNING, "Cannot open %s in write-only mode", ZSTR_VAL(dbf_name));
 		RETURN_FALSE;
-	} else if (mode < 0 || mode > 2) {
+	} else if (mode != O_RDONLY && mode != O_RDWR) {
 		php_error_docref(NULL, E_WARNING, "Invalid access mode %ld", mode);
 		RETURN_FALSE;
 	}

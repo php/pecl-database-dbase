@@ -14,7 +14,7 @@ $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_get_record_basic.dbf';
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 setlocale(LC_NUMERIC, 'de_DE.UTF-8', 'de-DE');
 
-$db = dbase_open($filename, 0);
+$db = dbase_open($filename, DBASE_RDONLY);
 var_dump($db);
 
 var_dump(dbase_get_record($db, 1));

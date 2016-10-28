@@ -9,7 +9,7 @@ if (!extension_loaded('dbase')) die('skip dbase extension not available');
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_add_record_error.dbf';
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 
-$db = dbase_open($filename, 2);
+$db = dbase_open($filename, DBASE_RDWR);
 
 try {
     dbase_add_record($db, 'no array');

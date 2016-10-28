@@ -9,7 +9,7 @@ if (!extension_loaded('dbase')) die('skip dbase extension not available');
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_get_header_info_basic.dbf';
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 
-$db = dbase_open($filename, 0);
+$db = dbase_open($filename, DBASE_RDONLY);
 var_dump($db);
 
 var_dump(dbase_get_header_info($db));
