@@ -103,7 +103,7 @@ int del_dbf_record(dbhead_t *dbh, long rec_num)
 	return ret;
 }
 
-void pack_dbf(dbhead_t *dbh)
+int pack_dbf(dbhead_t *dbh)
 {
 	long	out_off, in_off;
 	int	rec_cnt, new_cnt;
@@ -115,13 +115,19 @@ void pack_dbf(dbhead_t *dbh)
 	new_cnt = 0;
 	rec_cnt = dbh->db_records;
 	while (rec_cnt > 0) {
-		if (get_piece(dbh, in_off, cp, dbh->db_rlen) < 0)
-			break;
+		if (get_piece(dbh, in_off, cp, dbh->db_rlen) < 0) {
+			php_error_docref(NULL, E_WARNING, "unable to read from the file");
+			efree(cp);
+			return -1;
+		}
 
 		if (*cp != DELETED_RECORD) {
 			/* write the record into the file */
-			if (put_piece(dbh, out_off, cp, dbh->db_rlen) < 0)
-				break;
+			if (put_piece(dbh, out_off, cp, dbh->db_rlen) < 0) {
+				php_error_docref(NULL, E_WARNING, "unable to write to the file");
+				efree(cp);
+				return -1;
+			}
 			out_off += dbh->db_rlen;
 			new_cnt++;
 		}
@@ -133,10 +139,13 @@ void pack_dbf(dbhead_t *dbh)
 	/* Try to truncate the file to the right size. */
 	if (ftruncate(dbh->db_fd, out_off) != 0) {
 	    php_error_docref(NULL, E_WARNING, "dbase_pack() couldn't truncate the file to the right size. Some deleted records may still be left in there");
+		return -1;
 	}
 
 	if (rec_cnt == 0)
 		dbh->db_records = new_cnt;
+
+	return 0;
 }
 
 /* routine to get a field from a record */
