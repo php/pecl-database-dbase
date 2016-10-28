@@ -1,4 +1,4 @@
-// $Id: config.w32,v 1.1 2003/12/07 00:09:48 edink Exp $
+// $Id$
 // vim:ft=javascript
 
 ARG_ENABLE("dbase", "Enable the bundled dbase library", "no");
