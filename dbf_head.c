@@ -57,6 +57,11 @@ dbhead_t *get_dbf_head(int fd)
 		gf_retval = get_dbf_field(dbh, cur_f);
 
 		if (gf_retval < 0) {
+			for (cur_f = tdbf; cur_f < &tdbf[nfields]; cur_f++) {
+				if (cur_f->db_format) {
+					free(cur_f->db_format);
+				}
+			}
 			free_dbf_head(dbh);
 			free(tdbf);
 			return NULL;
