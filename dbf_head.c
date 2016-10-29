@@ -168,7 +168,7 @@ int get_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 	}
 
 	if ((dbf->db_format = get_dbf_f_fmt(dbf)) == NULL) {
-		/* something went wrong, most likely this fieldtype is not supported */
+		php_error_docref(NULL, E_WARNING, "unknown field type '%c'", dbf->db_type);
 		return -1;
 	}
 
