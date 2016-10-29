@@ -142,8 +142,7 @@ int pack_dbf(dbhead_t *dbh)
 		return -1;
 	}
 
-	if (rec_cnt == 0)
-		dbh->db_records = new_cnt;
+	dbh->db_records = new_cnt;
 
 	return 0;
 }
