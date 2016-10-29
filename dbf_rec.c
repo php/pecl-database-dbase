@@ -88,6 +88,17 @@ int put_piece(dbhead_t *dbh, long offset, char *cp, int len)
 	return write(dbh->db_fd, cp, len);
 }
 
+int put_dbf_eof_marker(dbhead_t *dbh)
+{
+	char eof = 0x1A;
+
+	if (put_piece(dbh, dbh->db_hlen + dbh->db_records * dbh->db_rlen, &eof, sizeof(eof)) != sizeof(eof)) {
+		php_error_docref(NULL, E_WARNING, "unable to write end-of-file marker");
+		return -1;
+	}
+	return 0;
+}
+
 int del_dbf_record(dbhead_t *dbh, long rec_num)
 {
 	int ret = 0;
