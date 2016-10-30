@@ -8,6 +8,7 @@
 #include <fcntl.h>
 
 #include "php.h"
+#include "ext/standard/flock_compat.h" 
 #include "dbf.h"
 
 void free_dbf_head(dbhead_t *dbh);
@@ -275,6 +276,11 @@ dbhead_t *dbf_open(char *dp, int o_flags)
 
 	cp = dp;
 	if ((fd = VCWD_OPEN(cp, o_flags|O_BINARY)) < 0) {
+		return NULL;
+	}
+
+	if (php_flock(fd, (o_flags == O_RDWR ? LOCK_EX : LOCK_SH))) {
+		close(fd);
 		return NULL;
 	}
 

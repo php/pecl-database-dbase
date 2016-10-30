@@ -10,9 +10,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
 in dBase-format (dbf) databases.
 
 There is no support for indexes or memo fields. 
-There is no support for locking, too. 
-Two concurrent webserver processes modifying the 
-same dBase file will very likely ruin your database.
+The databases are automatically locked with blocking flock()s.
 
 dBase files are simple sequential files of fixed length records. 
 Records are appended to the end of the file and deleted records 

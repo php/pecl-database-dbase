@@ -26,6 +26,7 @@
 #include "fopen_wrappers.h"
 #include "php_globals.h"
 #include "ext/standard/php_math.h"
+#include "ext/standard/flock_compat.h"
 
 #include <stdlib.h>
 
@@ -47,6 +48,7 @@ static void _close_dbase(zend_resource *rsrc)
 {
 	dbhead_t *dbhead = (dbhead_t *)rsrc->ptr;
 
+	php_flock(dbhead->db_fd, LOCK_UN);
 	close(dbhead->db_fd);
 	free_dbf_head(dbhead);
 }
@@ -513,6 +515,12 @@ PHP_FUNCTION(dbase_create)
 
 	if ((fd = VCWD_OPEN_MODE(ZSTR_VAL(filename), O_BINARY|O_RDWR|O_CREAT, 0644)) < 0) {
 		php_error_docref(NULL, E_WARNING, "Unable to create database (%d): %s", errno, strerror(errno));
+		RETURN_FALSE;
+	}
+
+	if (php_flock(fd, LOCK_EX)) {
+		php_error_docref(NULL, E_WARNING, "unable to lock database");
+		close(fd);
 		RETURN_FALSE;
 	}
 
