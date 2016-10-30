@@ -36,7 +36,7 @@ array(7) {
   [3]=>
   string(18) "19840501000000.000"
   [4]=>
-  int(1)
+  bool(true)
   [5]=>
   float(123.45)
   ["deleted"]=>
@@ -53,7 +53,7 @@ array(7) {
   [3]=>
   string(18) "19840501000000.000"
   [4]=>
-  int(1)
+  bool(true)
   [5]=>
   float(123.45)
   ["deleted"]=>

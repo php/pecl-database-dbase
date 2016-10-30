@@ -425,15 +425,15 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 						   decimals, which we don't care about.      3/14/2001 LEW */
 				if ((*str_value == 'T') || (*str_value == 'Y')) {
 					if (!assoc) {
-						add_next_index_long(return_value, 1L);
+						add_next_index_bool(return_value, 1);
 					} else {
-						add_assoc_long(return_value, cur_f->db_fname, 1L);
+						add_assoc_bool(return_value, cur_f->db_fname, 1);
 					}
 				} else {
 					if (!assoc) {
-						add_next_index_long(return_value, 0L);
+						add_next_index_bool(return_value, 0);
 					} else {
-						add_assoc_long(return_value, cur_f->db_fname, 0L);
+						add_assoc_bool(return_value, cur_f->db_fname, 0);
 					}
 				}
 				break;

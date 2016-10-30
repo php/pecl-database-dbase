@@ -7,7 +7,7 @@ if (!extension_loaded('dbase')) die('skip dbase extension not available');
 --FILE--
 <?php
 $db = dbase_create(
-    __DIR__ . DIRECTORY_SEPARATOR . 'dbase-logical.dbf',
+    __DIR__ . DIRECTORY_SEPARATOR . 'type_logical.dbf',
     array(
         array('flag', 'L')
     )
@@ -26,22 +26,22 @@ for ($i = 1; $i <= dbase_numrecords($db); $i++) {
 ?>
 ===DONE===
 --EXPECT--
-int(1)
-int(1)
-int(1)
-int(1)
-int(0)
-int(0)
-int(0)
-int(0)
-int(0)
-int(0)
-int(0)
-int(0)
-int(0)
-int(0)
+bool(true)
+bool(true)
+bool(true)
+bool(true)
+bool(false)
+bool(false)
+bool(false)
+bool(false)
+bool(false)
+bool(false)
+bool(false)
+bool(false)
+bool(false)
+bool(false)
 ===DONE===
 --CLEAN--
 <?php
-unlink(__DIR__ . DIRECTORY_SEPARATOR . 'dbase-logical.dbf');
+unlink(__DIR__ . DIRECTORY_SEPARATOR . 'type_logical.dbf');
 ?>

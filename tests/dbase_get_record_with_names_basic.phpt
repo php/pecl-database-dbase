@@ -29,7 +29,7 @@ array(7) {
   ["RELEASED_X"]=>
   string(18) "19840501000000.000"
   ["SUPORTED"]=>
-  int(1)
+  bool(true)
   ["PRICE"]=>
   float(123.45)
   ["deleted"]=>

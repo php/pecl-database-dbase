@@ -36,7 +36,7 @@ array(7) {
   [3]=>
   string(18) "20010627235959.999"
   [4]=>
-  int(0)
+  bool(false)
   [5]=>
   float(0.9)
   ["deleted"]=>
