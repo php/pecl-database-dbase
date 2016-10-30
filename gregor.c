@@ -133,25 +133,24 @@ void db_sdn_to_gregorian(
 	int year;
 	int month;
 	int day;
-	zend_long temp;
+	int temp;
 	int dayOfYear;
 
-	if (sdn <= 0 ||
-			sdn > (LONG_MAX - 4 * GREGOR_SDN_OFFSET) / 4) {
+	if (sdn < 1721426 || sdn > 5373484) {
 		goto fail;
 	}
-	temp = (sdn + GREGOR_SDN_OFFSET) * 4 - 1;
+	temp = (int) ((sdn + GREGOR_SDN_OFFSET) * 4 - 1); // temp <= 0x149ED63
 
 	/* Calculate the century (year/100). */
 	century = temp / DAYS_PER_400_YEARS;
 
 	/* Calculate the year and day of year (1 <= dayOfYear <= 366). */
-	temp = ((temp % DAYS_PER_400_YEARS) / 4) * 4 + 3;
+	temp = ((temp % DAYS_PER_400_YEARS) / 4) * 4 + 3; // temp <= 0x23AB3
 	year = (century * 100) + (temp / DAYS_PER_4_YEARS);
-	dayOfYear = (temp % DAYS_PER_4_YEARS) / 4 + 1;
+	dayOfYear = (temp % DAYS_PER_4_YEARS) / 4 + 1; // dayOfYear = 0x16E
 
 	/* Calculate the month and day of month. */
-	temp = dayOfYear * 5 - 3;
+	temp = dayOfYear * 5 - 3; // temp <= 723
 	month = temp / DAYS_PER_5_MONTHS;
 	day = (temp % DAYS_PER_5_MONTHS) / 5 + 1;
 
