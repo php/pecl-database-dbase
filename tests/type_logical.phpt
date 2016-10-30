@@ -13,7 +13,7 @@ $db = dbase_create(
     )
 );
 
-foreach (array('T', 'Y', 'F', 'N', ' ', '1', '0') as $flag) {
+foreach (array('T', 'Y', 'F', 'N', ' ', '1', '0', '?') as $flag) {
     dbase_add_record($db, array($flag));
 }
 
@@ -40,6 +40,8 @@ bool(false)
 bool(false)
 bool(false)
 bool(false)
+NULL
+NULL
 ===DONE===
 --CLEAN--
 <?php

@@ -431,6 +431,12 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 					} else {
 						add_assoc_bool(return_value, cur_f->db_fname, 1);
 					}
+				} else if (*str_value == '?') {
+					if (!assoc) {
+						add_next_index_null(return_value);
+					} else {
+						add_assoc_null(return_value, cur_f->db_fname);
+					}
 				} else {
 					if (!assoc) {
 						add_next_index_bool(return_value, 0);
