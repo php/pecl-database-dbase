@@ -16,10 +16,15 @@ try {
 } catch (TypeError $ex) {
     echo $ex->getMessage(), PHP_EOL;
 }
+
+var_dump(dbase_replace_record($db, [], 1));
 ?>
 ===DONE===
---EXPECT--
+--EXPECTF--
 Argument 2 passed to dbase_replace_record() must be of the type array, string given
+
+Warning: dbase_replace_record(): expected 5 fields, but got 0 in %s on line %d
+bool(false)
 ===DONE===
 --CLEAN--
 <?php

@@ -219,7 +219,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 	num_fields = zend_hash_num_elements(fields);
 
 	if (num_fields != dbht->db_nfields) {
-		php_error_docref(NULL, E_WARNING, "Wrong number of fields specified");
+		php_error_docref(NULL, E_WARNING, "expected %d fields, but got %d", dbht->db_nfields, num_fields);
 		RETURN_FALSE;
 	}
 
