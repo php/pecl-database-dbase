@@ -234,24 +234,18 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 			RETURN_FALSE;
 		}
 
+		/* force cast to string as if in C locale */
 		if (Z_TYPE_P(field) == IS_DOUBLE) {
 			zend_string *formatted;
-			size_t formatted_len;
 
 			formatted = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
-			formatted_len = ZSTR_LEN(formatted);
-			if (formatted_len <= cur_f->db_flen) {
-				size_t delta = cur_f->db_flen - formatted_len;
-				memset(t_cp, ' ', delta);
-				memcpy(t_cp + delta, ZSTR_VAL(formatted), formatted_len);
-			} else {
-				memcpy(t_cp, ZSTR_VAL(formatted), cur_f->db_flen);
-			}
+			ZVAL_STRING(field, ZSTR_VAL(formatted));
 			zend_string_free(formatted);
-		} else {
-			convert_to_string(field);
-			snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
 		}
+
+		convert_to_string(field);
+		snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
+
 		t_cp += cur_f->db_flen;
 	}
 
