@@ -12,6 +12,16 @@
 
 #include "php_reentrancy.h"
 
+#if (defined(__APPLE__) || defined(__APPLE_CC__)) && (defined(__BIG_ENDIAN__) || defined(__LITTLE_ENDIAN__))
+# if defined(__LITTLE_ENDIAN__)
+#  undef WORDS_BIGENDIAN
+# else
+#  if defined(__BIG_ENDIAN__)
+#   define WORDS_BIGENDIAN
+#  endif
+# endif
+#endif
+
 /*
  * routine to change little endian long to host long
  */
@@ -60,15 +70,15 @@ double get_double(char *cp)
 {
 	double ret;
 	unsigned char *dp = (unsigned char *)&ret;
+	int i;
 
-	dp[7] = *cp++;
-	dp[6] = *cp++;
-	dp[5] = *cp++;
-	dp[4] = *cp++;
-	dp[3] = *cp++;
-	dp[2] = *cp++;
-	dp[1] = *cp++;
-	dp[0] = *cp++;
+#ifdef WORDS_BIGENDIAN
+	for (i = 7; i >= 0; i--) {
+#else
+	for (i = 0; i <= 7; i++) {
+#endif
+		dp[i] = *cp++;
+	}
 
 	return ret;
 }
@@ -76,15 +86,15 @@ double get_double(char *cp)
 void put_double(char *cp, double fval)
 {
 	unsigned char *dp = (unsigned char *)&fval;
+	int i;
 
-	cp[7] = *dp++;
-	cp[6] = *dp++;
-	cp[5] = *dp++;
-	cp[4] = *dp++;
-	cp[3] = *dp++;
-	cp[2] = *dp++;
-	cp[1] = *dp++;
-	cp[0] = *dp++;
+#ifdef WORDS_BIGENDIAN
+	for (i = 7; i >= 0; i--) {
+#else
+	for (i = 0; i <= 7; i++) {
+#endif
+		cp[i] = *dp++;
+	}
 }
 
 void copy_fill(char *dp, char *sp, int len)
