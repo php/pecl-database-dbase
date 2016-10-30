@@ -165,6 +165,7 @@ int get_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 			dbf->db_flen = 1;
 			break;
 	    case 'D':
+	    case 'T':
 			dbf->db_flen = 8;
 			break;
 	    default:
@@ -256,6 +257,9 @@ char *get_dbf_f_fmt(dbfield_t *dbf)
 		break;
 	   case 'M':
 		strlcpy(format, "%s", sizeof(format));
+		break;
+	   case 'T':
+		format[0] = '\0';
 		break;
 	   default:
 		return NULL;

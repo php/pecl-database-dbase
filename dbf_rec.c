@@ -170,6 +170,16 @@ char *get_field_val(char *rp, dbfield_t *fldp, char *cp)
 	return cp;
 }
 
+char *get_binary_field_val(char *rp, dbfield_t *fldp, char *cp)
+{
+	int flen = fldp->db_flen;
+
+	if ( !cp )
+		cp = (char *)emalloc(flen);
+	memcpy(cp, &rp[fldp->db_foffset], flen);
+	return cp;
+}
+
 void put_field_val(char *rp, dbfield_t *fldp, char *cp)
 {
 	strncpy(&rp[fldp->db_foffset], cp, fldp->db_flen);

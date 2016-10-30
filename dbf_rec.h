@@ -5,6 +5,7 @@ extern int put_dbf_eof_marker(dbhead_t *dbh);
 extern int del_dbf_record(dbhead_t *dbh, long rec_num);
 int pack_dbf(dbhead_t *dbh);
 extern char *get_field_val(char *rp, dbfield_t *fldp, char *cp);
+char *get_binary_field_val(char *rp, dbfield_t *fldp, char *cp);
 void put_field_val(char *rp, dbfield_t *fldp, char *cp);
 void out_rec(dbhead_t *dbh, dbfield_t *dbf, char *cp);
 extern int is_valid_rec(char *cp);

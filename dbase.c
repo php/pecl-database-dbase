@@ -244,7 +244,20 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 		}
 
 		convert_to_string(field);
-		snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
+
+		switch (cur_f->db_type) {
+			case 'T':
+				{
+					int jdn, msecs;
+
+					db_get_timestamp(Z_STRVAL_P(field), &jdn, &msecs);
+					put_long(t_cp, jdn);
+					put_long(t_cp + 4, msecs);
+				}
+				break;
+			default:
+				snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
+		}
 
 		t_cp += cur_f->db_flen;
 	}
@@ -355,7 +368,11 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 			cursize = cur_f->db_flen + 1;
 			fnp = erealloc(fnp, cursize);
 		}
-		snprintf(str_value, cursize, cur_f->db_format, get_field_val(data, cur_f, fnp));
+		if (*cur_f->db_format) {
+			snprintf(str_value, cursize, cur_f->db_format, get_field_val(data, cur_f, fnp));
+		} else {
+			memcpy(str_value, get_binary_field_val(data, cur_f, fnp), cur_f->db_flen);
+		}
 
 		/* now convert it to the right php internal type */
 		switch (cur_f->db_type) {
@@ -422,6 +439,18 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 				break;
 			case 'M':
 				/* this is a memo field. don't know how to deal with this yet */
+				break;
+			case 'T':
+				{
+					char buf[19];
+
+					db_set_timestamp(buf, get_long(str_value), get_long(str_value + 4));
+					if (!assoc) {
+						add_next_index_string(return_value, buf);
+					} else {
+						add_assoc_string(return_value, cur_f->db_fname, buf);
+					}
+				}
 				break;
 			default:
 				/* should deal with this in some way */
@@ -571,6 +600,7 @@ PHP_FUNCTION(dbase_create)
 			/* should create the memo file here, probably */
 			break;
 		case 'D':
+		case 'T':
 			cur_f->db_flen = 8;
 			break;
 		case 'F':
@@ -734,14 +764,15 @@ PHP_FUNCTION(dbase_get_header_info)
 		
 		/* field type */
 		switch (cur_f->db_type) {
-			case 'C': add_assoc_string(&row, "type", "character");	break;
-			case 'D': add_assoc_string(&row, "type", "date"); 		break;
-			case 'I': add_assoc_string(&row, "type", "integer"); 		break;
-			case 'N': add_assoc_string(&row, "type", "number"); 		break;
-			case 'L': add_assoc_string(&row, "type", "boolean");		break;
-			case 'M': add_assoc_string(&row, "type", "memo");			break;
+			case 'C': add_assoc_string(&row, "type", "character"); break;
+			case 'D': add_assoc_string(&row, "type", "date");      break;
+			case 'T': add_assoc_string(&row, "type", "datetime");  break;
+			case 'I': add_assoc_string(&row, "type", "integer");   break;
+			case 'N': add_assoc_string(&row, "type", "number");    break;
+			case 'L': add_assoc_string(&row, "type", "boolean");   break;
+			case 'M': add_assoc_string(&row, "type", "memo");      break;
 			case 'F': add_assoc_string(&row, "type", "float");     break;
-			default:  add_assoc_string(&row, "type", "unknown");		break;
+			default:  add_assoc_string(&row, "type", "unknown");   break;
 		}
 		
 		/* length of field */

@@ -11,3 +11,5 @@ extern int db_date_year(char *cp);
 extern int db_date_month(char *cp);
 extern int db_date_day(char *cp);
 extern char *db_cur_date(char *cp);
+void db_set_timestamp(char *cp, int jdn, int msecs);
+void db_get_timestamp(char *cp, int *jdn, int *msecs);

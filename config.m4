@@ -7,5 +7,5 @@ PHP_ARG_ENABLE(dbase,whether to enable dbase support,
 
 if test "$PHP_DBASE" = "yes"; then
   AC_DEFINE(DBASE,1,[ ])
-  PHP_NEW_EXTENSION(dbase, dbf_head.c dbf_rec.c dbf_misc.c dbf_ndx.c dbase.c, $ext_shared)
+  PHP_NEW_EXTENSION(dbase, dbf_head.c dbf_rec.c dbf_misc.c dbf_ndx.c dbase.c gregor.c, $ext_shared)
 fi

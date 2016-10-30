@@ -19,7 +19,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 resource(%d) of type (dbase)
-array(5) {
+array(6) {
   [0]=>
   array(6) {
     ["name"]=>
@@ -68,6 +68,21 @@ array(5) {
   [3]=>
   array(6) {
     ["name"]=>
+    string(10) "RELEASED_X"
+    ["type"]=>
+    string(8) "datetime"
+    ["length"]=>
+    int(8)
+    ["precision"]=>
+    int(0)
+    ["format"]=>
+    string(0) ""
+    ["offset"]=>
+    int(39)
+  }
+  [4]=>
+  array(6) {
+    ["name"]=>
     string(8) "SUPORTED"
     ["type"]=>
     string(7) "boolean"
@@ -78,9 +93,9 @@ array(5) {
     ["format"]=>
     string(3) "%1s"
     ["offset"]=>
-    int(39)
+    int(47)
   }
-  [4]=>
+  [5]=>
   array(6) {
     ["name"]=>
     string(5) "PRICE"
@@ -93,7 +108,7 @@ array(5) {
     ["format"]=>
     string(4) "%10s"
     ["offset"]=>
-    int(40)
+    int(48)
   }
 }
 bool(true)

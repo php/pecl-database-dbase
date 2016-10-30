@@ -16,7 +16,7 @@ $record = dbase_get_record($db, 1);
 var_dump($record);
 
 unset($record['deleted']);
-$record[3] = $record[3] ? 'T' : 'F'; // we have to cater to bool fields ourselves
+$record[4] = $record[4] ? 'T' : 'F'; // we have to cater to bool fields ourselves
 var_dump(dbase_add_record($db, $record));
 
 var_dump(dbase_get_record($db, 4));
@@ -26,7 +26,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 resource(%d) of type (dbase)
-array(6) {
+array(7) {
   [0]=>
   int(1)
   [1]=>
@@ -34,14 +34,16 @@ array(6) {
   [2]=>
   string(8) "19840501"
   [3]=>
-  int(1)
+  string(18) "19840501000000.000"
   [4]=>
+  int(1)
+  [5]=>
   float(123.45)
   ["deleted"]=>
   int(0)
 }
 bool(true)
-array(6) {
+array(7) {
   [0]=>
   int(1)
   [1]=>
@@ -49,8 +51,10 @@ array(6) {
   [2]=>
   string(8) "19840501"
   [3]=>
-  int(1)
+  string(18) "19840501000000.000"
   [4]=>
+  int(1)
+  [5]=>
   float(123.45)
   ["deleted"]=>
   int(0)

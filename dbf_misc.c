@@ -8,6 +8,7 @@
 #include <sys/types.h>
 
 #include "dbf_misc.h"
+#include "dbf_sdncal.h"
 
 #include "php_reentrancy.h"
 
@@ -142,6 +143,33 @@ int db_date_day(char *cp)
 	for (day = 0, i = 6; i < 8; i++)
 		day = day * 10 + (cp[i] - '0');
 	return day;
+}
+
+void db_set_timestamp(char *cp, int jdn, int msecs)
+{
+	int year, month, day, hour, minute, second, millis;
+
+	db_sdn_to_gregorian(jdn, &year, &month, &day);
+
+	millis = msecs % 1000;
+	msecs /= 1000;
+	second = msecs % 60;
+	msecs /= 60;
+	minute = msecs % 60;
+	msecs /= 60;
+	hour = msecs;
+
+	snprintf(cp, 19, "%04d%02d%02d%02d%02d%02d.%03d", year, month, day, hour, minute, second, millis);
+}
+
+void db_get_timestamp(char *cp, int *jdn, int *msecs)
+{
+	int year, month, day, hour, minute, second, millis;
+
+	sscanf(cp, "%04d%02d%02d%02d%02d%02d.%03d", &year, &month, &day, &hour, &minute, &second, &millis);
+
+	*jdn = db_gregorian_to_sdn(year, month, day);
+	*msecs = (hour * 60 * 60 * 1000) + (minute * 60 * 1000) + (second * 1000) + millis;
 }
 
 #include <time.h>

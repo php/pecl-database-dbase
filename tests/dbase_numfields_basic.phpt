@@ -19,7 +19,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 resource(%d) of type (dbase)
-int(5)
+int(6)
 bool(true)
 ===DONE===
 --CLEAN--

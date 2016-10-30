@@ -19,13 +19,15 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 resource(%d) of type (dbase)
-array(6) {
+array(7) {
   ["ID"]=>
   int(1)
   ["NAME"]=>
   string(25) "dBase III                "
   ["RELEASED"]=>
   string(8) "19840501"
+  ["RELEASED_X"]=>
+  string(18) "19840501000000.000"
   ["SUPORTED"]=>
   int(1)
   ["PRICE"]=>
