@@ -285,6 +285,8 @@ dbhead_t *dbf_open(char *dp, int o_flags)
 	}
 
 	if ((dbh = get_dbf_head(fd)) ==	NULL) {
+		php_flock(fd, LOCK_UN);
+		close(fd);
 		return NULL;
 	}
 
