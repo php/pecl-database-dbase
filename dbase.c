@@ -95,7 +95,7 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	dbh = dbf_open(ZSTR_VAL(dbf_name), mode);
+	dbh = dbf_open(ZSTR_VAL(dbf_name), (int) mode);
 	if (dbh == NULL) {
 		php_error_docref(NULL, E_WARNING, "unable to open database %s", ZSTR_VAL(dbf_name));
 		RETURN_FALSE;
@@ -208,6 +208,13 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rhl", &dbh_id, &fields, &recnum) == FAILURE) {
 			return;
 		}
+		if (recnum < 1 || recnum > 0x7FFFFFFF) {
+			zend_string *str = zend_long_to_str(recnum);
+
+			php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is %s", ZSTR_VAL(str));
+			zend_string_free(str);
+			RETURN_FALSE;
+		}
 	} else {
 		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rh", &dbh_id, &fields) == FAILURE) {	
 			return;
@@ -268,7 +275,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 			dbht->db_records++;
 	}
 
-	if (put_dbf_record(dbht, (replace ? recnum : dbht->db_records), cp) < 0) {
+	if (put_dbf_record(dbht, (replace ? (long) recnum : dbht->db_records), cp) < 0) {
 		php_error_docref(NULL, E_WARNING, "unable to put record at %ld", dbht->db_records);
 		efree(cp);
 		RETURN_FALSE;
@@ -317,7 +324,15 @@ PHP_FUNCTION(dbase_delete_record)
 		RETURN_FALSE;
 	}
 
-	if (del_dbf_record(dbht, record) < 0) {
+	if (record < 1 || record > 0x7FFFFFFF) {
+		zend_string *str = zend_long_to_str(record);
+
+		php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is %s", ZSTR_VAL(str));
+		zend_string_free(str);
+		RETURN_FALSE;
+	}
+
+	if (del_dbf_record(dbht, (long) record) < 0) {
 		if (record > dbht->db_records) {
 			php_error_docref(NULL, E_WARNING, "record %ld out of bounds", record);
 		} else {
@@ -352,7 +367,15 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 		RETURN_FALSE;
 	}
 
-	if ((data = get_dbf_record(dbht, record)) == NULL) {
+	if (record < 1 || record > 0x7FFFFFFF) {
+		zend_string *str = zend_long_to_str(record);
+
+		php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is %s", ZSTR_VAL(str));
+		zend_string_free(str);
+		RETURN_FALSE;
+	}
+
+	if ((data = get_dbf_record(dbht, (long) record)) == NULL) {
 		php_error_docref(NULL, E_WARNING, "Tried to read bad record %ld", record);
 		RETURN_FALSE;
 	}
@@ -589,7 +612,7 @@ PHP_FUNCTION(dbase_create)
 			close(fd);
 			RETURN_FALSE;
 		}
-		copy_crimp(cur_f->db_fname, Z_STRVAL_P(value), Z_STRLEN_P(value));
+		copy_crimp(cur_f->db_fname, Z_STRVAL_P(value), (int) Z_STRLEN_P(value));
 
 		/* field type */
 		if ((value = zend_hash_index_find(Z_ARRVAL_P(field), 1)) == NULL) {
