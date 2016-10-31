@@ -71,6 +71,6 @@
 
 /* Gregorian calendar conversions. */
 void db_sdn_to_gregorian(zend_long sdn, int *pYear, int *pMonth, int *pDay);
-zend_long db_gregorian_to_sdn(int year, int month, int day);
+int db_gregorian_to_sdn(int year, int month, int day);
 
 #endif /* DBF_SDNCAL_H */
