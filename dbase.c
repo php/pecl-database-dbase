@@ -630,7 +630,13 @@ PHP_FUNCTION(dbase_create)
 				RETURN_FALSE;
 			}
 			convert_to_long_ex(value);
-			cur_f->db_flen = Z_LVAL_P(value);
+			if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
+				php_error_docref(NULL, E_WARNING, "expected length of field %d to be in range 0..254, but got %d", i, Z_LVAL_P(value));
+				free_dbf_head(dbh);
+				close(fd);
+				RETURN_FALSE;
+			}
+			cur_f->db_flen = (unsigned char) Z_LVAL_P(value);
 
 			if (cur_f->db_type == 'N') {
 				if ((value = zend_hash_index_find(Z_ARRVAL_P(field), 3)) == NULL) {
@@ -640,7 +646,13 @@ PHP_FUNCTION(dbase_create)
 					RETURN_FALSE;
 				}
 				convert_to_long_ex(value);
-				cur_f->db_fdc = Z_LVAL_P(value);
+				if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
+					php_error_docref(NULL, E_WARNING, "expected precision of field %d to be in range 0..254, but got %d", i, Z_LVAL_P(value));
+					free_dbf_head(dbh);
+					close(fd);
+					RETURN_FALSE;
+				}
+				cur_f->db_fdc = (unsigned char) Z_LVAL_P(value);
 			}
 			break;
 		default:

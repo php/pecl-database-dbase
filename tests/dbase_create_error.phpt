@@ -48,8 +48,24 @@ if (file_exists(FILENAME)) unlink(FILENAME);
 var_dump(dbase_create(FILENAME, array(array('foo', 'C'))));
 if (file_exists(FILENAME)) unlink(FILENAME);
 
+/* field length too small */
+var_dump(dbase_create(FILENAME, array(array('foo', 'C', -1))));
+if (file_exists(FILENAME)) unlink(FILENAME);
+
+/* field length too large */
+var_dump(dbase_create(FILENAME, array(array('foo', 'C', 255))));
+if (file_exists(FILENAME)) unlink(FILENAME);
+
 /* field precision missing */
 var_dump(dbase_create(FILENAME, array(array('foo', 'N', 10))));
+if (file_exists(FILENAME)) unlink(FILENAME);
+
+/* field precision too small */
+var_dump(dbase_create(FILENAME, array(array('foo', 'N', 10, -1))));
+if (file_exists(FILENAME)) unlink(FILENAME);
+
+/* field precision too large */
+var_dump(dbase_create(FILENAME, array(array('foo', 'N', 10, 255))));
 if (file_exists(FILENAME)) unlink(FILENAME);
 
 /* unknown field type */
@@ -58,35 +74,47 @@ if (file_exists(FILENAME)) unlink(FILENAME);
 ?>
 ===DONE===
 --EXPECTF--
-Warning: dbase_create() expects exactly 2 parameters, 1 given in %s%edbase_create_error.php on line %d
+Warning: dbase_create() expects exactly 2 parameters, 1 given in %s on line %d
 NULL
 
-Warning: dbase_create() expects exactly 2 parameters, 3 given in %s%edbase_create_error.php on line %d
+Warning: dbase_create() expects exactly 2 parameters, 3 given in %s on line %d
 NULL
 Argument 2 passed to dbase_create() must be of the type array, string given
 
-Warning: dbase_create(): Unable to create database without fields in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): Unable to create database without fields in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field name as first element of list in field 0 in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): expected field name as first element of list in field 0 in %s on line %d
 bool(false)
 
-Warning: dbase_create(): invalid field name '' (must be non-empty and less than or equal to 10 characters) in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): invalid field name '' (must be non-empty and less than or equal to 10 characters) in %s on line %d
 bool(false)
 
-Warning: dbase_create(): invalid field name 'abcdefghijk' (must be non-empty and less than or equal to 10 characters) in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): invalid field name 'abcdefghijk' (must be non-empty and less than or equal to 10 characters) in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field type as second element of list in field 0 in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): expected field type as second element of list in field 0 in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field length as third element of list in field 0 in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): expected field length as third element of list in field 0 in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field precision as fourth element of list in field 0 in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): expected length of field 0 to be in range 0..254, but got -1 in %s on line %d
 bool(false)
 
-Warning: dbase_create(): unknown field type '~' in %s%edbase_create_error.php on line %d
+Warning: dbase_create(): expected length of field 0 to be in range 0..254, but got 255 in %s on line %d
+bool(false)
+
+Warning: dbase_create(): expected field precision as fourth element of list in field 0 in %s on line %d
+bool(false)
+
+Warning: dbase_create(): expected precision of field 0 to be in range 0..254, but got -1 in %s on line %d
+bool(false)
+
+Warning: dbase_create(): expected precision of field 0 to be in range 0..254, but got 255 in %s on line %d
+bool(false)
+
+Warning: dbase_create(): unknown field type '~' in %s on line %d
 bool(false)
 ===DONE===
 --CLEAN--
