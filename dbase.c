@@ -356,7 +356,7 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	dbfield_t *dbf, *cur_f;
 	char *data, *fnp, *str_value;
 	size_t cursize = 0;
-	long overflow_test;
+	zend_long overflow_test;
 	int errno_save;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
@@ -414,7 +414,7 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 				if (cur_f->db_fdc == 0) {
 					/* Large integers in dbase can be larger than long */
 					errno_save = errno;
-					overflow_test = strtol(str_value, NULL, 10);
+					overflow_test = ZEND_STRTOL(str_value, NULL, 10);
 					if (errno == ERANGE) {
 					    /* If the integer is too large, keep it as string */
 						if (!assoc) {
