@@ -88,7 +88,7 @@ Argument 2 passed to dbase_create() must be of the type array, string given
 Warning: dbase_create(): Unable to create database without fields in %s on line %d
 bool(false)
 
-Warning: dbase_create(): unable to find field 0 in %s on line %d
+Warning: dbase_create(): expected plain indexed array in %s on line %d
 bool(false)
 
 Warning: dbase_create(): expected field name as first element of list in field 0 in %s on line %d

@@ -240,7 +240,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 	dbf = dbht->db_fields;
 	for (i = 0, cur_f = dbf; cur_f < &dbf[num_fields]; i++, cur_f++) {
 		if ((field = zend_hash_index_find(fields, i)) == NULL) {
-			php_error_docref(NULL, E_WARNING, "unexpected error");
+			php_error_docref(NULL, E_WARNING, "expected plain indexed array");
 			efree(cp);
 			RETURN_FALSE;
 		}
@@ -597,7 +597,7 @@ PHP_FUNCTION(dbase_create)
 	for (i = 0, cur_f = dbf; i < num_fields; i++, cur_f++) {
 		/* look up the first field */
 		if ((field = zend_hash_index_find(fields, i)) == NULL) {
-			php_error_docref(NULL, E_WARNING, "unable to find field %d", i);
+			php_error_docref(NULL, E_WARNING, "expected plain indexed array");
 			free_dbf_head(dbh);
 			close(fd);
 			RETURN_FALSE;

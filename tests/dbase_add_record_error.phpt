@@ -37,7 +37,7 @@ Argument 2 passed to dbase_add_record() must be of the type array, string given
 Warning: dbase_add_record(): expected 6 fields, but got 0 in %s on line %d
 bool(false)
 
-Warning: dbase_add_record(): unexpected error in %s on line %d
+Warning: dbase_add_record(): expected plain indexed array in %s on line %d
 bool(false)
 ===DONE===
 --CLEAN--
