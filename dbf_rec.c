@@ -185,24 +185,6 @@ void put_field_val(char *rp, dbfield_t *fldp, char *cp)
 	strncpy(&rp[fldp->db_foffset], cp, fldp->db_flen);
 }
 
-/*
- * output a record
- */
-void out_rec(dbhead_t *dbh, dbfield_t *dbf, char *cp)
-{
-	dbfield_t       *cur_f;
-	int     nfields = dbh->db_nfields;
-	char    *fnp = (char *)emalloc(dbh->db_rlen);
-
-	printf("%c", *cp);
-	for (cur_f = dbf; cur_f < &dbf[nfields] ; cur_f++) {
-		printf(" ");
-		printf(cur_f->db_format, get_field_val(cp, cur_f, fnp));
-	}
-	printf("\n");
-	efree(fnp);
-}
-
 /* check for record validity */
 int is_valid_rec(char *cp)
 {

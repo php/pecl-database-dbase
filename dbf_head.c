@@ -307,21 +307,6 @@ dbhead_t *dbf_open(char *dp, int o_flags)
 	dbh->db_cur_rec = 0;
 	return dbh;
 }
-
-void dbf_head_info(dbhead_t *dbh)
-{
-	int	nfields;
-	dbfield_t *dbf, *cur_f;
-
-	nfields = dbh->db_nfields;
-	printf("# fields: %d, record len: %d, total records %ld\n",
-		nfields, dbh->db_rlen, dbh->db_records);
-	dbf = dbh->db_fields;
-	for (cur_f = dbf; cur_f < &dbf[nfields] ; cur_f++) {
-		printf("# %s, %c, %d, %d\n", cur_f->db_fname,
-			cur_f->db_type, cur_f->db_flen, cur_f->db_fdc);
-	}
-}
  
 /*
  * Local variables:
