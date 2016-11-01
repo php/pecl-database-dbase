@@ -28,6 +28,10 @@ if (file_exists(FILENAME)) unlink(FILENAME);
 var_dump(dbase_create(FILENAME, array()));
 if (file_exists(FILENAME)) unlink(FILENAME);
 
+/* associative array */
+var_dump(dbase_create(FILENAME, array('foo' => 'bar')));
+if (file_exists(FILENAME)) unlink(FILENAME);
+
 /* field without name */
 var_dump(dbase_create(FILENAME, array(array())));
 if (file_exists(FILENAME)) unlink(FILENAME);
@@ -82,6 +86,9 @@ NULL
 Argument 2 passed to dbase_create() must be of the type array, string given
 
 Warning: dbase_create(): Unable to create database without fields in %s on line %d
+bool(false)
+
+Warning: dbase_create(): unable to find field 0 in %s on line %d
 bool(false)
 
 Warning: dbase_create(): expected field name as first element of list in field 0 in %s on line %d

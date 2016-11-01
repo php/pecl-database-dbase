@@ -11,6 +11,10 @@ copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 
 $db = dbase_open($filename, DBASE_RDWR);
 
+var_dump(dbase_add_record($db));
+
+var_dump(dbase_add_record(fopen('php://input', 'r'), []));
+
 try {
     dbase_add_record($db, 'no array');
 } catch (TypeError $ex) {
@@ -18,12 +22,22 @@ try {
 }
 
 var_dump(dbase_add_record($db, []));
+
+var_dump(dbase_add_record($db, [0, 1, 2, 3, 4, 'foo' => 5]));
 ?>
 ===DONE===
 --EXPECTF--
+Warning: dbase_add_record() expects exactly 2 parameters, 1 given in %s on line %d
+NULL
+
+Warning: dbase_add_record(): supplied resource is not a valid dbase resource in %s on line %d
+bool(false)
 Argument 2 passed to dbase_add_record() must be of the type array, string given
 
 Warning: dbase_add_record(): expected 6 fields, but got 0 in %s on line %d
+bool(false)
+
+Warning: dbase_add_record(): unexpected error in %s on line %d
 bool(false)
 ===DONE===
 --CLEAN--
