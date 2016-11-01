@@ -821,7 +821,6 @@ PHP_FUNCTION(dbase_get_header_info)
 			case 'C': add_assoc_string(&row, "type", "character"); break;
 			case 'D': add_assoc_string(&row, "type", "date");      break;
 			case 'T': add_assoc_string(&row, "type", "datetime");  break;
-			case 'I': add_assoc_string(&row, "type", "integer");   break;
 			case 'N': add_assoc_string(&row, "type", "number");    break;
 			case 'L': add_assoc_string(&row, "type", "boolean");   break;
 			case 'M': add_assoc_string(&row, "type", "memo");      break;
