@@ -134,7 +134,7 @@ int pack_dbf(dbhead_t *dbh)
 
 		if (*cp != DELETED_RECORD) {
 			/* write the record into the file */
-			if (put_piece(dbh, out_off, cp, dbh->db_rlen) < 0) {
+			if (put_piece(dbh, out_off, cp, dbh->db_rlen) != dbh->db_rlen) {
 				php_error_docref(NULL, E_WARNING, "unable to write to the file");
 				efree(cp);
 				return -1;

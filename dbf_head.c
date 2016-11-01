@@ -106,6 +106,7 @@ void free_dbf_head(dbhead_t *dbh)
 
 /*
  * put out the header info
+ * returns -1 on failure, != -1 on success
  */
 int put_dbf_head(dbhead_t *dbh)
 {
@@ -129,7 +130,7 @@ int put_dbf_head(dbhead_t *dbh)
 
 	if (lseek(fd, 0, 0) < 0)
 		return -1;
-	if ((ret = write(fd, &dbhead, sizeof(dbhead))) <= 0)
+	if ((ret = write(fd, &dbhead, sizeof(dbhead))) != sizeof(dbhead))
 		return -1;
 	return ret;
 }
@@ -184,6 +185,7 @@ int get_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 
 /*
  * put a field out on the disk at the current file offset
+ * returns 1 on success, != 1 on failure
  */
 int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 {
@@ -213,7 +215,7 @@ int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 	}
 
 	/* now write it out to disk */
-	if ((ret = write(dbh->db_fd, &dbfield, sizeof(dbfield))) <= 0) {
+	if ((ret = write(dbh->db_fd, &dbfield, sizeof(dbfield))) != sizeof(dbfield)) {
 		return ret;
 	}
 	return 1;
@@ -221,6 +223,7 @@ int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 
 /*
  * put out all the info at the top of the file...
+ * returns 1 on success, != 1 on failure
  */
 static char end_stuff[2] = {0x0d, 0};
 
@@ -234,11 +237,22 @@ int put_dbf_info(dbhead_t *dbh)
 		strlcpy(dbh->db_date, cp, 9);
 		efree(cp);
 	}
-	put_dbf_head(dbh);
+	if (put_dbf_head(dbh) < 0) {
+		goto fail;
+	}
 	dbf = dbh->db_fields;
-	for (fcnt = dbh->db_nfields; fcnt > 0; fcnt--, dbf++)
-		put_dbf_field(dbh, dbf);
-	return write(dbh->db_fd, end_stuff, 1);
+	for (fcnt = dbh->db_nfields; fcnt > 0; fcnt--, dbf++) {
+		if (put_dbf_field(dbh, dbf) != 1) {
+			goto fail;
+		}
+	}
+	if (write(dbh->db_fd, end_stuff, 1) != 1) {
+		goto fail;
+	}
+	return 1;
+fail:
+	php_error_docref(NULL, E_WARNING, "unable to write dbf header");
+	return -1;
 }
 
 char *get_dbf_f_fmt(dbfield_t *dbf)

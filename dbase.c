@@ -179,7 +179,9 @@ PHP_FUNCTION(dbase_pack)
 	}
 
 	if (!pack_dbf(dbht)) {
-        put_dbf_info(dbht);
+        if (put_dbf_info(dbht) != 1) {
+			RETURN_FALSE;
+		}
 		if (put_dbf_eof_marker(dbht)) {
 			RETURN_FALSE;
 		}
@@ -281,8 +283,10 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 		RETURN_FALSE;
 	}
 
-	put_dbf_info(dbht);
 	efree(cp);
+	if (put_dbf_info(dbht) != 1) {
+		RETURN_FALSE;
+	}
 
 	if (put_dbf_eof_marker(dbht)) {
 		RETURN_FALSE;
@@ -341,7 +345,9 @@ PHP_FUNCTION(dbase_delete_record)
 		RETURN_FALSE;
 	}
 
-        put_dbf_info(dbht);
+	if (put_dbf_info(dbht) != 1) {
+		RETURN_FALSE;
+	}
 	RETURN_TRUE;
 }
 /* }}} */
@@ -691,9 +697,8 @@ PHP_FUNCTION(dbase_create)
 	}
 
 	dbh->db_rlen = rlen;
-	put_dbf_info(dbh);
 
-	if (put_dbf_eof_marker(dbh)) {
+	if (put_dbf_info(dbh) != 1 || put_dbf_eof_marker(dbh)) {
 		free_dbf_head(dbh);
 		close(fd);
 		RETURN_FALSE;
