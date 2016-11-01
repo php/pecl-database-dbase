@@ -7,6 +7,9 @@ if (PHP_INT_SIZE != 4) die('skip for 32bit platforms only');
 ?>
 --FILE--
 <?php
+var_dump(dbase_get_record_with_names());
+var_dump(dbase_get_record_with_names(fopen('php://input', 'r'), 1));
+
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_get_record_with_names_error.dbf';
 $db = dbase_create($filename, [['foo', 'C', 15]]);
 var_dump(dbase_get_record_with_names($db, -1));
@@ -15,6 +18,12 @@ var_dump(dbase_get_record_with_names($db, 2147483648));
 ?>
 ===DONE===
 --EXPECTF--
+Warning: dbase_get_record_with_names() expects exactly 2 parameters, 0 given in %s on line %d
+NULL
+
+Warning: dbase_get_record_with_names(): supplied resource is not a valid dbase resource in %s on line %d
+bool(false)
+
 Warning: dbase_get_record_with_names(): record number has to be in range 1..2147483647, but is -1 in %s on line %d
 bool(false)
 
