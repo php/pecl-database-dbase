@@ -199,6 +199,7 @@ int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 
 	dbfield.dbf_type = dbf->db_type;
 	switch (dbf->db_type) {
+	    case 'F':
 	    case 'N':		
 		dbfield.dbf_flen[0] = dbf->db_flen;
 		dbfield.dbf_flen[1] = dbf->db_fdc;

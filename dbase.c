@@ -741,8 +741,6 @@ PHP_FUNCTION(dbase_create)
 			cur_f->db_flen = 8;
 			break;
 		case 'F':
-			cur_f->db_flen = 20;
-			break;
 		case 'N':
 		case 'C':
 			/* field length */
@@ -755,7 +753,7 @@ PHP_FUNCTION(dbase_create)
 			convert_to_long_ex(value);
 			cur_f->db_flen = Z_LVAL_PP(value);
 
-			if (cur_f->db_type == 'N') {
+			if (cur_f->db_type == 'N' || cur_f->db_type == 'F') {
 				if (zend_hash_index_find(Z_ARRVAL_PP (field), 3, (void **)&value) == FAILURE) {
 					php_error_docref(NULL TSRMLS_CC, E_WARNING, "expected field precision as fourth element of list in field %d", i);
 					free_dbf_head(dbh);
