@@ -246,7 +246,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 		}
 
 		/* force cast to string as if in C locale */
-		if (Z_TYPE_P(field) == IS_DOUBLE) {
+		if (Z_TYPE_P(field) == IS_DOUBLE && (cur_f->db_type == 'N' || cur_f->db_type == 'F')) {
 			zend_string *formatted;
 
 			formatted = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
