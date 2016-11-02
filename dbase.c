@@ -306,7 +306,7 @@ PHP_FUNCTION(dbase_add_record)
 		
 		tmp = **field;
 		zval_copy_ctor(&tmp);
-		if (Z_TYPE(tmp) == IS_DOUBLE) {
+		if (Z_TYPE(tmp) == IS_DOUBLE && (cur_f->db_type == 'N' || cur_f->db_type == 'F')) {
 			char *formatted;
 			size_t formatted_len;
 
@@ -390,7 +390,7 @@ PHP_FUNCTION(dbase_replace_record)
 			efree(cp);
 			RETURN_FALSE;
 		}
-		if (Z_TYPE_PP(field) == IS_DOUBLE) {
+		if (Z_TYPE_PP(field) == IS_DOUBLE && (cur_f->db_type == 'N' || cur_f->db_type == 'F')) {
 			char *formatted;
 			size_t formatted_len;
 
