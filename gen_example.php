@@ -2,8 +2,8 @@
 
 // script to create the example database file
 
-$filename = __DIR__ . DIRECTORY_SEPARATOR
-    . pathinfo(__FILE__, PATHINFO_FILENAME) . '.dbf';
+$filename = __DIR__ . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'example.dbf'; 
+
 $definition = array(
     array('ID', 'N', 5, 0),
     array('NAME', 'C', 25),
