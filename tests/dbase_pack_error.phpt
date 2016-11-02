@@ -4,10 +4,12 @@ dbase_pack(): error conditions
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 ?>
+--INI--
+allow_url_fopen=1
 --FILE--
 <?php
 var_dump(dbase_pack());
-var_dump(dbase_pack(fopen('php://input', 'r')));
+var_dump(dbase_pack(fopen('data://text/plain,foo', 'r')));
 ?>
 ===DONE===
 --EXPECTF--

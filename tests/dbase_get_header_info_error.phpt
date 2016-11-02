@@ -4,10 +4,12 @@ dbase_get_header_info(): error conditions
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 ?>
+--INI--
+allow_url_fopen=1
 --FILE--
 <?php
 var_dump(dbase_get_header_info('no resource'));
-var_dump(dbase_get_header_info(fopen('php://input', 'r')));
+var_dump(dbase_get_header_info(fopen('data://text/plain,foo', 'r')));
 ?>
 ===DONE===
 --EXPECTF--

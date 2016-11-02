@@ -4,10 +4,12 @@ dbase_close(): error conditions
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 ?>
+--INI--
+allow_url_fopen=1
 --FILE--
 <?php
 var_dump(dbase_close());
-var_dump(dbase_close(fopen('php://input', 'r')));
+var_dump(dbase_close(fopen('data://text/plain,foo', 'r')));
 ?>
 ===DONE===
 --EXPECTF--

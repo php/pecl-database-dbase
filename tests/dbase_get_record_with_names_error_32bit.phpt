@@ -5,10 +5,12 @@ dbase_get_record_with_names(): error conditions
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 if (PHP_INT_SIZE != 4) die('skip for 32bit platforms only');
 ?>
+--INI--
+allow_url_fopen=1
 --FILE--
 <?php
 var_dump(dbase_get_record_with_names());
-var_dump(dbase_get_record_with_names(fopen('php://input', 'r'), 1));
+var_dump(dbase_get_record_with_names(fopen('data://text/plain,foo', 'r'), 1));
 
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_get_record_with_names_error.dbf';
 $db = dbase_create($filename, [['foo', 'C', 15]]);

@@ -4,6 +4,8 @@ dbase_add_record(): test error conditions
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 ?>
+--INI--
+allow_url_fopen=1
 --FILE--
 <?php
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_add_record_error.dbf';
@@ -13,7 +15,7 @@ $db = dbase_open($filename, DBASE_RDWR);
 
 var_dump(dbase_add_record($db));
 
-var_dump(dbase_add_record(fopen('php://input', 'r'), []));
+var_dump(dbase_add_record(fopen('data://text/plain,foo', 'r'), []));
 
 try {
     dbase_add_record($db, 'no array');

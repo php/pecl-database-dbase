@@ -5,12 +5,14 @@ dbase_delete_record(): error conditions
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 if (PHP_INT_SIZE != 4) die('skip for 32bit platforms only');
 ?>
+--INI--
+allow_url_fopen=1
 --FILE--
 <?php
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_delete_record_error.dbf';
 $db = dbase_create($filename, [['foo', 'C', 15]]);
 var_dump(dbase_delete_record($db));
-var_dump(dbase_delete_record(fopen('php://input', 'r'), 1));
+var_dump(dbase_delete_record(fopen('data://text/plain,foo', 'r'), 1));
 var_dump(dbase_delete_record($db, -1));
 var_dump(dbase_delete_record($db, 1));
 var_dump(dbase_delete_record($db, 2147483648));
