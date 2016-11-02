@@ -415,7 +415,6 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 					add_assoc_string(return_value, cur_f->db_fname, str_value);
 				}
 				break;
-			case 'I':	/* FALLS THROUGH */
 			case 'N':
 				if (cur_f->db_fdc == 0) {
 					/* Large integers in dbase can be larger than long */
@@ -832,7 +831,6 @@ PHP_FUNCTION(dbase_get_header_info)
 		/* number of decimals in field */
 		switch (cur_f->db_type) {
 			case 'N':
-			case 'I':
 				add_assoc_long(&row, "precision", cur_f->db_fdc);
 				break;
 			default:
