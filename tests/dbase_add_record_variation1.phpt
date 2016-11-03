@@ -26,7 +26,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 resource(%d) of type (dbase)
-array(7) {
+array(8) {
   [0]=>
   int(1)
   [1]=>
@@ -39,11 +39,13 @@ array(7) {
   bool(true)
   [5]=>
   float(123.45)
+  [6]=>
+  float(34.56)
   ["deleted"]=>
   int(0)
 }
 bool(true)
-array(7) {
+array(8) {
   [0]=>
   int(1)
   [1]=>
@@ -56,6 +58,8 @@ array(7) {
   bool(true)
   [5]=>
   float(123.45)
+  [6]=>
+  float(34.56)
   ["deleted"]=>
   int(0)
 }

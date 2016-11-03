@@ -24,7 +24,7 @@ var_dump(dbase_close($db));
 resource(%d) of type (dbase)
 bool(true)
 int(3)
-array(7) {
+array(8) {
   [0]=>
   int(2)
   [1]=>
@@ -37,6 +37,8 @@ array(7) {
   bool(false)
   [5]=>
   float(56.78)
+  [6]=>
+  float(23.45)
   ["deleted"]=>
   int(1)
 }

@@ -19,7 +19,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 resource(%d) of type (dbase)
-array(6) {
+array(7) {
   [0]=>
   array(6) {
     ["name"]=>
@@ -109,6 +109,21 @@ array(6) {
     string(4) "%10s"
     ["offset"]=>
     int(48)
+  }
+  [6]=>
+  array(6) {
+    ["name"]=>
+    string(10) "MARKETSHAR"
+    ["type"]=>
+    string(5) "float"
+    ["length"]=>
+    int(6)
+    ["precision"]=>
+    int(2)
+    ["format"]=>
+    string(3) "%6s"
+    ["offset"]=>
+    int(58)
   }
 }
 bool(true)

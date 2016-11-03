@@ -33,7 +33,7 @@ bool(false)
 Warning: dbase_replace_record() expects parameter 3 to be integer, float given in %s on line %d
 NULL
 
-Warning: dbase_replace_record(): expected 6 fields, but got 0 in %s on line %d
+Warning: dbase_replace_record(): expected 7 fields, but got 0 in %s on line %d
 bool(false)
 ===DONE===
 --CLEAN--

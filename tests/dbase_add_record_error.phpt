@@ -25,7 +25,7 @@ try {
 
 var_dump(dbase_add_record($db, []));
 
-var_dump(dbase_add_record($db, [0, 1, 2, 3, 4, 'foo' => 5]));
+var_dump(dbase_add_record($db, [0, 1, 2, 3, 4, 'foo' => 5, 6]));
 ?>
 ===DONE===
 --EXPECTF--
@@ -36,7 +36,7 @@ Warning: dbase_add_record(): supplied resource is not a valid dbase resource in 
 bool(false)
 Argument 2 passed to dbase_add_record() must be of the type array, string given
 
-Warning: dbase_add_record(): expected 6 fields, but got 0 in %s on line %d
+Warning: dbase_add_record(): expected 7 fields, but got 0 in %s on line %d
 bool(false)
 
 Warning: dbase_add_record(): expected plain indexed array in %s on line %d
