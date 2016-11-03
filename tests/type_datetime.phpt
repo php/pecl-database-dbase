@@ -10,7 +10,8 @@ $db = dbase_create(
     __DIR__ . DIRECTORY_SEPARATOR . 'type_datetime.dbf',
     array(
         array('datetime', 'T')
-    )
+    ),
+    DBASE_TYPE_FOXPRO
 );
 
 $values = array(

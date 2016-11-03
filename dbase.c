@@ -60,6 +60,9 @@ PHP_MINIT_FUNCTION(dbase)
 
 	REGISTER_STRING_CONSTANT("DBASE_VERSION", PHP_DBASE_VERSION, CONST_CS | CONST_PERSISTENT);
 
+	REGISTER_LONG_CONSTANT("DBASE_TYPE_DBASE",  DBH_TYPE_NORMAL, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("DBASE_TYPE_FOXPRO", DBH_TYPE_FOXPRO, CONST_CS | CONST_PERSISTENT);
+
 	REGISTER_LONG_CONSTANT("DBASE_RDONLY", O_RDONLY, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("DBASE_RDWR",   O_RDWR,   CONST_CS | CONST_PERSISTENT);
 
@@ -525,12 +528,13 @@ PHP_FUNCTION(dbase_get_record_with_names)
 }
 /* }}} */
 
-/* {{{ proto resource dbase_create(string filename, array fields)
+/* {{{ proto resource dbase_create(string filename, array fields [, int type])
    Creates a new dBase-format database file */
 PHP_FUNCTION(dbase_create)
 {
 	zend_string *filename;
 	HashTable *fields;
+	zend_long type = DBH_TYPE_NORMAL;
 	zval *field, *value;
 	int fd;
 	dbhead_t *dbh;
@@ -539,7 +543,7 @@ PHP_FUNCTION(dbase_create)
 	dbfield_t *dbf, *cur_f;
 	int i, rlen;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ph", &filename, &fields) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ph|l", &filename, &fields, &type) == FAILURE) {
 		return;
 	}
 
@@ -566,17 +570,26 @@ PHP_FUNCTION(dbase_create)
 		RETURN_FALSE;
 	}
 
+	if (type != DBH_TYPE_NORMAL && type != DBH_TYPE_FOXPRO) {
+		php_error_docref(NULL, E_WARNING, "unknown database type %d", type);
+		close(fd);
+		RETURN_FALSE;
+	}
+
 	dbh = (dbhead_t *)emalloc(sizeof(dbhead_t));
 	dbf = (dbfield_t *)emalloc(sizeof(dbfield_t) * num_fields);
 	
 	/* initialize the header structure */
 	dbh->db_fields = dbf;
 	dbh->db_fd = fd;
-	dbh->db_dbt = DBH_TYPE_NORMAL;
+	dbh->db_dbt = type;
 	strcpy(dbh->db_date, "19930818");
 	dbh->db_records = 0;
 	dbh->db_nfields = num_fields;
 	dbh->db_hlen = sizeof(struct dbf_dhead) + 1 + num_fields * sizeof(struct dbf_dfield);
+	if (type == DBH_TYPE_FOXPRO) {
+		dbh->db_hlen += 263;
+	}
 
 	rlen = 1;
 	/**
@@ -642,7 +655,15 @@ PHP_FUNCTION(dbase_create)
 			/* should create the memo file here, probably */
 			break;
 		case 'D':
+			cur_f->db_flen = 8;
+			break;
 		case 'T':
+			if (type != DBH_TYPE_FOXPRO) {
+				php_error_docref(NULL, E_WARNING, "datetime fields are not supported by dBASE");
+				free_dbf_head(dbh);
+				close(fd);
+				RETURN_FALSE;
+			}
 			cur_f->db_flen = 8;
 			break;
 		case 'F':
@@ -756,6 +777,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_create, 0)
 	ZEND_ARG_INFO(0, filename)
 	ZEND_ARG_ARRAY_INFO(0, fields, 0)
+	ZEND_ARG_INFO(0, type)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_header_info, 0)

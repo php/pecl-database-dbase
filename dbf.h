@@ -82,6 +82,7 @@ struct db_head {
 typedef struct db_head	dbhead_t;
 
 #define	DBH_TYPE_NORMAL	0x03
+#define DBH_TYPE_FOXPRO 0x30
 #define	DBH_TYPE_MEMO	0x83
 
 #define	VALID_RECORD	' '

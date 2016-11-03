@@ -13,7 +13,7 @@ var_dump(dbase_create(FILENAME));
 if (file_exists(FILENAME)) unlink(FILENAME);
 
 /* too many arguments */
-var_dump(dbase_create(FILENAME, array(), 'additional argument'));
+var_dump(dbase_create(FILENAME, array(), DBASE_TYPE_DBASE, 'additional argument'));
 if (file_exists(FILENAME)) unlink(FILENAME);
 
 /* second argument is no array */
@@ -75,13 +75,21 @@ if (file_exists(FILENAME)) unlink(FILENAME);
 /* unknown field type */
 var_dump(dbase_create(FILENAME, array(array('foo', '~'))));
 if (file_exists(FILENAME)) unlink(FILENAME);
+
+/* unsupported field type*/
+var_dump(dbase_create(FILENAME, array(array('foo', 'T'))));
+if (file_exists(FILENAME)) unlink(FILENAME);
+
+/* unknown database type */
+var_dump(dbase_create(FILENAME, array(array('foo', 'C', 15)), 17));
+if (file_exists(FILENAME)) unlink(FILENAME);
 ?>
 ===DONE===
 --EXPECTF--
-Warning: dbase_create() expects exactly 2 parameters, 1 given in %s on line %d
+Warning: dbase_create() expects at least 2 parameters, 1 given in %s on line %d
 NULL
 
-Warning: dbase_create() expects exactly 2 parameters, 3 given in %s on line %d
+Warning: dbase_create() expects at most 3 parameters, 4 given in %s on line %d
 NULL
 Argument 2 passed to dbase_create() must be of the type array, string given
 
@@ -122,6 +130,12 @@ Warning: dbase_create(): expected precision of field 0 to be in range 0..254, bu
 bool(false)
 
 Warning: dbase_create(): unknown field type '~' in %s on line %d
+bool(false)
+
+Warning: dbase_create(): datetime fields are not supported by dBASE in %s on line %d
+bool(false)
+
+Warning: dbase_create(): unknown database type 17 in %s on line %d
 bool(false)
 ===DONE===
 --CLEAN--

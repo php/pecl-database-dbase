@@ -233,6 +233,7 @@ int put_dbf_info(dbhead_t *dbh)
 	dbfield_t	*dbf;
 	char		*cp;
 	int		fcnt;
+	char buf[263];
 
 	if ((cp = db_cur_date(NULL))) {
 		strlcpy(dbh->db_date, cp, 9);
@@ -249,6 +250,12 @@ int put_dbf_info(dbhead_t *dbh)
 	}
 	if (write(dbh->db_fd, end_stuff, 1) != 1) {
 		goto fail;
+	}
+	if (dbh->db_dbt == DBH_TYPE_FOXPRO) {
+		memset(&buf, 0, sizeof(buf));
+		if (write(dbh->db_fd, &buf, sizeof(buf)) != sizeof(buf)) {
+			goto fail;
+		}
 	}
 	return 1;
 fail:
