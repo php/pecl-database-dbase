@@ -932,6 +932,7 @@ PHP_FUNCTION(dbase_get_header_info)
 		
 		/* number of decimals in field */
 		switch (cur_f->db_type) {
+			case 'F':
 			case 'N':
 			case 'I':
 				add_assoc_long(row, "precision", cur_f->db_fdc);

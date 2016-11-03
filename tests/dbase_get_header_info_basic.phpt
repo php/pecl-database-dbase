@@ -104,7 +104,7 @@ array(6) {
     ["length"]=>
     int(6)
     ["precision"]=>
-    int(0)
+    int(2)
     ["format"]=>
     string(3) "%6s"
     ["offset"]=>
