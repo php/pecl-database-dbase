@@ -24,7 +24,7 @@ var_dump(dbase_close($db));
 int(%d)
 bool(true)
 int(3)
-array(6) {
+array(7) {
   [0]=>
   int(2)
   [1]=>
@@ -35,6 +35,8 @@ array(6) {
   int(0)
   [4]=>
   float(56.78)
+  [5]=>
+  float(23.45)
   ["deleted"]=>
   int(1)
 }

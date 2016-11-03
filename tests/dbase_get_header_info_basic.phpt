@@ -19,7 +19,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 int(%d)
-array(5) {
+array(6) {
   [0]=>
   array(6) {
     ["name"]=>
@@ -94,6 +94,21 @@ array(5) {
     string(4) "%10s"
     ["offset"]=>
     int(40)
+  }
+  [5]=>
+  array(6) {
+    ["name"]=>
+    string(10) "MARKETSHAR"
+    ["type"]=>
+    string(5) "float"
+    ["length"]=>
+    int(6)
+    ["precision"]=>
+    int(0)
+    ["format"]=>
+    string(3) "%6s"
+    ["offset"]=>
+    int(50)
   }
 }
 bool(true)

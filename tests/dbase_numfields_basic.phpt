@@ -19,7 +19,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 int(%d)
-int(5)
+int(6)
 bool(true)
 ===DONE===
 --CLEAN--

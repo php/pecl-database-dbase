@@ -26,7 +26,7 @@ int(%d)
 bool(true)
 bool(true)
 int(2)
-array(6) {
+array(7) {
   [0]=>
   int(3)
   [1]=>
@@ -37,6 +37,8 @@ array(6) {
   int(0)
   [4]=>
   float(0.9)
+  [5]=>
+  float(12.34)
   ["deleted"]=>
   int(0)
 }

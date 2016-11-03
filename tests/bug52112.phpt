@@ -25,7 +25,7 @@ var_dump(dbase_close($db));
 ===DONE===
 --EXPECTF--
 int(%d)
-array(6) {
+array(7) {
   [0]=>
   int(1)
   [1]=>
@@ -36,10 +36,12 @@ array(6) {
   int(1)
   [4]=>
   float(123,45)
+  [5]=>
+  float(34,56)
   ["deleted"]=>
   int(0)
 }
-array(6) {
+array(7) {
   ["ID"]=>
   int(1)
   ["NAME"]=>
@@ -50,6 +52,8 @@ array(6) {
   int(1)
   ["PRICE"]=>
   float(123,45)
+  ["MARKETSHAR"]=>
+  float(34,56)
   ["deleted"]=>
   int(0)
 }

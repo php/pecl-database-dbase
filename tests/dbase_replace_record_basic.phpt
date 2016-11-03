@@ -12,7 +12,7 @@ copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 $db = dbase_open($filename, 2);
 var_dump($db);
 
-var_dump(dbase_replace_record($db, array(4, 'JPLDIS', '19730101', 'F', 1234567.89), 2));
+var_dump(dbase_replace_record($db, array(4, 'JPLDIS', '19730101', 'F', 1234567.89, 0.12), 2));
 
 var_dump(dbase_numrecords($db));
 var_dump(dbase_get_record($db, 2));
@@ -24,7 +24,7 @@ var_dump(dbase_close($db));
 int(%d)
 bool(true)
 int(3)
-array(6) {
+array(7) {
   [0]=>
   int(4)
   [1]=>
@@ -35,6 +35,8 @@ array(6) {
   int(0)
   [4]=>
   float(1234567.89)
+  [5]=>
+  float(0.12)
   ["deleted"]=>
   int(0)
 }
