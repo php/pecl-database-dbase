@@ -41,7 +41,7 @@ var_dump(dbase_get_record($db, 1));
 dbase_close($db);
 
 $db = dbase_open($filename, DBASE_RDONLY);
-var_dump(dbase_get_record($db, 1));
+var_dump(dbase_get_record_with_names($db, 1));
 ?>
 ===DONE===
 --EXPECT--
@@ -82,35 +82,35 @@ array(16) {
   int(0)
 }
 array(16) {
-  [0]=>
+  ["A"]=>
   string(15) "               "
-  [1]=>
+  ["B"]=>
   NULL
-  [2]=>
+  ["C"]=>
   string(15) "foo            "
-  [3]=>
+  ["D"]=>
   int(0)
-  [4]=>
+  ["E"]=>
   NULL
-  [5]=>
+  ["F"]=>
   int(42)
-  [6]=>
+  ["G"]=>
   bool(false)
-  [7]=>
+  ["H"]=>
   NULL
-  [8]=>
+  ["I"]=>
   bool(true)
-  [9]=>
+  ["J"]=>
   string(8) "        "
-  [10]=>
+  ["K"]=>
   NULL
-  [11]=>
+  ["L"]=>
   string(8) "20161105"
-  [12]=>
+  ["M"]=>
   float(0)
-  [13]=>
+  ["N"]=>
   NULL
-  [14]=>
+  ["O"]=>
   float(3.14)
   ["deleted"]=>
   int(0)
