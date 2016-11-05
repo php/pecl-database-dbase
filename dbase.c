@@ -556,7 +556,7 @@ PHP_FUNCTION(dbase_get_record_with_names)
 /* }}} */
 
 
-static dbhead_t *create_head_from_spec(HashTable *fields, int fd, zend_long type)
+static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char type)
 {
 	int num_fields;
 	dbfield_t *dbf, *cur_f;
@@ -757,7 +757,7 @@ PHP_FUNCTION(dbase_create)
 		goto fail;
 	}
 
-	if ((dbh = create_head_from_spec(fields, fd, type)) == NULL) {
+	if ((dbh = create_head_from_spec(fields, fd, (unsigned char) type)) == NULL) {
 		goto fail;
 	}
 
