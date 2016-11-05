@@ -50,7 +50,7 @@ bool(false)
 string(38) "dbase_create(): unknown field type '-'"
 bool(false)
 resource(%d) of type (dbase)
-string(71) "dbase_create(): expected field name as first element of list in field 0"
+string(67) "dbase_create(): expected field name as element 0 of list in field 0"
 bool(false)
 string(56) "dbase_create(): Unable to create database without fields"
 bool(false)

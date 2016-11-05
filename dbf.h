@@ -52,7 +52,8 @@ struct dbf_dfield {
 	char	dbf_type;		/* type of field */
 	char	dbf_fda[4];		/* something for dbase III */
 	char	dbf_flen[2];		/* field length [and decimal if N] */
-	char	dbf_res[14];		/* padding */
+	char    dbf_flags;           /* field flags (FoxPro) */
+	char	dbf_res[13];		/* padding */
 };
 
 struct db_field {
@@ -63,6 +64,7 @@ struct db_field {
 
 	char	*db_format;		/* format for printing %s etc */
 	int	db_foffset;		/* offset within record */
+	int db_fnullable; /* nullable bit position */
 };
 typedef struct db_field	dbfield_t;
 
@@ -78,12 +80,16 @@ struct db_head {
 	dbfield_t	*db_fields;	/* field info */
 	char	*db_name;		/* name of dbf file */
 	int	db_cur_rec;		/* current record */
+	int db_nnullable;    /* number of nullable fields */
 };
 typedef struct db_head	dbhead_t;
 
 #define	DBH_TYPE_NORMAL	0x03
 #define DBH_TYPE_FOXPRO 0x30
 #define	DBH_TYPE_MEMO	0x83
+
+/* dBase5 (for Win) allows that many */
+#define DBH_MAX_FIELDS  1024
 
 #define	VALID_RECORD	' '
 #define	DELETED_RECORD	'*'

@@ -10,7 +10,7 @@ dbase_create(__DIR__ . DIRECTORY_SEPARATOR . 'bug73395.dbf', array(array('foo'))
 ?>
 ===DONE===
 --EXPECTF--
-Warning: dbase_create(): expected field type as second element of list in field 0 in %s on line %d
+Warning: dbase_create(): expected field type as element 1 of list in field 0 in %s on line %d
 ===DONE===
 --CLEAN--
 <?php

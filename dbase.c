@@ -162,7 +162,7 @@ PHP_FUNCTION(dbase_numfields)
 		RETURN_FALSE;
 	}
 
-	RETURN_LONG(dbht->db_nfields);
+	RETURN_LONG(dbht->db_nfields - (dbht->db_nnullable ? 1 : 0));
 }
 /* }}} */
 
@@ -208,6 +208,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 	dbfield_t *dbf, *cur_f;
 	char *cp, *t_cp;
 	int i;
+	char nullable_flags[DBH_MAX_FIELDS / 8];
 
 	if (replace) {
 		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rhl", &dbh_id, &fields, &recnum) == FAILURE) {
@@ -230,9 +231,11 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 		RETURN_FALSE;
 	}
 
+	memset(nullable_flags, 0, sizeof(nullable_flags));
+
 	num_fields = zend_hash_num_elements(fields);
 
-	if (num_fields != dbht->db_nfields) {
+	if (num_fields != dbht->db_nfields - (dbht->db_nnullable ? 1 : 0)) {
 		php_error_docref(NULL, E_WARNING, "expected %d fields, but got %d", dbht->db_nfields, num_fields);
 		RETURN_FALSE;
 	}
@@ -246,6 +249,10 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 			php_error_docref(NULL, E_WARNING, "expected plain indexed array");
 			efree(cp);
 			RETURN_FALSE;
+		}
+
+		if (Z_TYPE_P(field) == IS_NULL && cur_f->db_fnullable >= 0) {
+			nullable_flags[cur_f->db_fnullable / 8] |= (1 << (cur_f->db_fnullable % 8));
 		}
 
 		/* force cast to string as if in C locale */
@@ -274,6 +281,10 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 		}
 
 		t_cp += cur_f->db_flen;
+	}
+
+	if (dbht->db_nnullable > 0) {
+		memcpy(t_cp, nullable_flags, (dbht->db_nnullable - 1) / 8 + 1);
 	}
 
 	if (!replace) {
@@ -367,6 +378,7 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	size_t cursize = 0;
 	zend_long overflow_test;
 	int errno_save;
+	char nullable_flags[DBH_MAX_FIELDS / 8];
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
 		return;
@@ -391,10 +403,25 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 
 	dbf = dbht->db_fields;
 
+	if (dbht->db_nnullable > 0) {
+		memset(nullable_flags, 0, sizeof(nullable_flags));
+		cur_f = &dbf[dbht->db_nfields - 1];
+		get_binary_field_val(data, cur_f, nullable_flags);
+	}
+
 	array_init(return_value);
 
 	fnp = NULL;
-	for (cur_f = dbf; cur_f < &dbf[dbht->db_nfields]; cur_f++) {
+	for (cur_f = dbf; cur_f < &dbf[dbht->db_nfields - (dbht->db_nnullable ? 1 : 0)]; cur_f++) {
+		if (cur_f->db_fnullable >= 0 && (nullable_flags[cur_f->db_fnullable / 8] & (1 << (cur_f->db_fnullable % 8)))) {
+			if (!assoc) {
+				add_next_index_null(return_value);
+			} else {
+				add_assoc_null(return_value, cur_f->db_fname);
+			}
+			continue;
+		}
+
 		/* get the value */
 		str_value = (char *)emalloc(cur_f->db_flen + 1);
 
@@ -528,56 +555,25 @@ PHP_FUNCTION(dbase_get_record_with_names)
 }
 /* }}} */
 
-/* {{{ proto resource dbase_create(string filename, array fields [, int type])
-   Creates a new dBase-format database file */
-PHP_FUNCTION(dbase_create)
-{
-	zend_string *filename;
-	HashTable *fields;
-	zend_long type = DBH_TYPE_NORMAL;
-	zval *field, *value;
-	int fd;
-	dbhead_t *dbh;
 
+static dbhead_t *create_head_from_spec(HashTable *fields, int fd, zend_long type)
+{
 	int num_fields;
 	dbfield_t *dbf, *cur_f;
 	int i, rlen;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ph|l", &filename, &fields, &type) == FAILURE) {
-		return;
-	}
-
-	if (php_check_open_basedir(ZSTR_VAL(filename))) {
-		RETURN_FALSE;
-	}
-
-	if ((fd = VCWD_OPEN_MODE(ZSTR_VAL(filename), O_BINARY|O_RDWR|O_CREAT, 0644)) < 0) {
-		php_error_docref(NULL, E_WARNING, "Unable to create database (%d): %s", errno, strerror(errno));
-		RETURN_FALSE;
-	}
-
-	if (php_flock(fd, LOCK_EX)) {
-		php_error_docref(NULL, E_WARNING, "unable to lock database");
-		close(fd);
-		RETURN_FALSE;
-	}
+	zval *field, *value;
+	dbhead_t *dbh;
+	int nullable_bit = 0;
 
 	num_fields = zend_hash_num_elements(fields);
 
 	if (num_fields <= 0) {
 		php_error_docref(NULL, E_WARNING, "Unable to create database without fields");
-		close(fd);
-		RETURN_FALSE;
-	}
-
-	if (type != DBH_TYPE_NORMAL && type != DBH_TYPE_FOXPRO) {
-		php_error_docref(NULL, E_WARNING, "unknown database type %d", type);
-		close(fd);
-		RETURN_FALSE;
+		return NULL;
 	}
 
 	dbh = (dbhead_t *)emalloc(sizeof(dbhead_t));
-	dbf = (dbfield_t *)emalloc(sizeof(dbfield_t) * num_fields);
+	dbf = (dbfield_t *)emalloc(sizeof(dbfield_t) * (num_fields + 1));
 	
 	/* initialize the header structure */
 	dbh->db_fields = dbf;
@@ -598,7 +594,7 @@ PHP_FUNCTION(dbase_create)
 	/* make sure that the db_format entries for all fields are set to NULL to ensure we
        don't seg fault if there's an error and we need to call free_dbf_head() before all
        fields have been defined. */
-	for (i = 0, cur_f = dbf; i < num_fields; i++, cur_f++) {
+	for (i = 0, cur_f = dbf; i < num_fields + 1; i++, cur_f++) {
 		cur_f->db_format = NULL;
 	}
 	/**
@@ -607,37 +603,31 @@ PHP_FUNCTION(dbase_create)
 
 
 	for (i = 0, cur_f = dbf; i < num_fields; i++, cur_f++) {
-		/* look up the first field */
+		int element = 0;
+
+		/* look up the field */
 		if ((field = zend_hash_index_find(fields, i)) == NULL) {
 			php_error_docref(NULL, E_WARNING, "expected plain indexed array");
-			free_dbf_head(dbh);
-			close(fd);
-			RETURN_FALSE;
+			goto fail;
 		}
 
 		/* field name */
 		
-		if (Z_TYPE_P(field) != IS_ARRAY || (value = zend_hash_index_find(Z_ARRVAL_P(field), 0)) == NULL) {
-			php_error_docref(NULL, E_WARNING, "expected field name as first element of list in field %d", i);
-			free_dbf_head(dbh);
-			close(fd);
-			RETURN_FALSE;
+		if (Z_TYPE_P(field) != IS_ARRAY || (value = zend_hash_index_find(Z_ARRVAL_P(field), element)) == NULL) {
+			php_error_docref(NULL, E_WARNING, "expected field name as element %d of list in field %d", element, i);
+			goto fail;
 		}
 		convert_to_string_ex(value);
 		if (Z_STRLEN_P(value) > 10 || Z_STRLEN_P(value) == 0) {
 			php_error_docref(NULL, E_WARNING, "invalid field name '%s' (must be non-empty and less than or equal to 10 characters)", Z_STRVAL_P(value));
-			free_dbf_head(dbh);
-			close(fd);
-			RETURN_FALSE;
+			goto fail;
 		}
 		copy_crimp(cur_f->db_fname, Z_STRVAL_P(value), (int) Z_STRLEN_P(value));
 
 		/* field type */
-		if ((value = zend_hash_index_find(Z_ARRVAL_P(field), 1)) == NULL) {
-			php_error_docref(NULL, E_WARNING, "expected field type as second element of list in field %d", i);
-			free_dbf_head(dbh);
-			close(fd);
-			RETURN_FALSE;
+		if ((value = zend_hash_index_find(Z_ARRVAL_P(field), ++element)) == NULL) {
+			php_error_docref(NULL, E_WARNING, "expected field type as element %d of list in field %d", element, i);
+			goto fail;
 		}
 		convert_to_string_ex(value);
 		cur_f->db_type = toupper(*Z_STRVAL_P(value));
@@ -660,9 +650,7 @@ PHP_FUNCTION(dbase_create)
 		case 'T':
 			if (type != DBH_TYPE_FOXPRO) {
 				php_error_docref(NULL, E_WARNING, "datetime fields are not supported by dBASE");
-				free_dbf_head(dbh);
-				close(fd);
-				RETURN_FALSE;
+				goto fail;
 			}
 			cur_f->db_flen = 8;
 			break;
@@ -670,59 +658,119 @@ PHP_FUNCTION(dbase_create)
 		case 'N':
 		case 'C':
 			/* field length */
-			if ((value = zend_hash_index_find(Z_ARRVAL_P(field), 2)) == NULL) {
-				php_error_docref(NULL, E_WARNING, "expected field length as third element of list in field %d", i);
-				free_dbf_head(dbh);
-				close(fd);
-				RETURN_FALSE;
+			if ((value = zend_hash_index_find(Z_ARRVAL_P(field), ++element)) == NULL) {
+				php_error_docref(NULL, E_WARNING, "expected field length as element %d of list in field %d", element, i);
+				goto fail;
 			}
 			convert_to_long_ex(value);
 			if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
 				php_error_docref(NULL, E_WARNING, "expected length of field %d to be in range 0..254, but got %d", i, Z_LVAL_P(value));
-				free_dbf_head(dbh);
-				close(fd);
-				RETURN_FALSE;
+				goto fail;
 			}
 			cur_f->db_flen = (unsigned char) Z_LVAL_P(value);
 
 			if (cur_f->db_type == 'N' || cur_f->db_type == 'F') {
-				if ((value = zend_hash_index_find(Z_ARRVAL_P(field), 3)) == NULL) {
-					php_error_docref(NULL, E_WARNING, "expected field precision as fourth element of list in field %d", i);
-					free_dbf_head(dbh);
-					close(fd);
-					RETURN_FALSE;
+				if ((value = zend_hash_index_find(Z_ARRVAL_P(field), ++element)) == NULL) {
+					php_error_docref(NULL, E_WARNING, "expected field precision as element %d of list in field %d", element, i);
+					goto fail;
 				}
 				convert_to_long_ex(value);
 				if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
 					php_error_docref(NULL, E_WARNING, "expected precision of field %d to be in range 0..254, but got %d", i, Z_LVAL_P(value));
-					free_dbf_head(dbh);
-					close(fd);
-					RETURN_FALSE;
+					goto fail;
 				}
 				cur_f->db_fdc = (unsigned char) Z_LVAL_P(value);
 			}
 			break;
 		default:
 			php_error_docref(NULL, E_WARNING, "unknown field type '%c'", cur_f->db_type);
-			free_dbf_head(dbh);
-			close(fd);
-			RETURN_FALSE;
+			goto fail;
 		}
 		cur_f->db_foffset = rlen;
 		rlen += cur_f->db_flen;
 	
 		cur_f->db_format = get_dbf_f_fmt(cur_f);
+
+		cur_f->db_fnullable = -1;
+		if (type == DBH_TYPE_FOXPRO && (value = zend_hash_index_find(Z_ARRVAL_P(field), ++element)) != NULL) {
+			convert_to_boolean(value);
+			if (Z_TYPE_P(value) == IS_TRUE) {
+				cur_f->db_fnullable = nullable_bit++;
+			}
+		}
 	}
 
+	if (nullable_bit) {
+		dbh->db_nfields++;
+		dbh->db_hlen += sizeof(struct dbf_dfield);
+		copy_crimp(cur_f->db_fname, "_NullFlags", sizeof("_NullFlags") - 1);
+		cur_f->db_type = '0';
+		cur_f->db_flen = ((nullable_bit - 1)) / 8 + 1;
+		cur_f->db_fdc = 0;
+		cur_f->db_format = estrdup("");
+		cur_f->db_foffset = rlen;
+		cur_f->db_fnullable = -1;
+		rlen += cur_f->db_flen;
+	}
+
+	dbh->db_nnullable = nullable_bit;
 	dbh->db_rlen = rlen;
 
-	if (put_dbf_info(dbh) != 1 || put_dbf_eof_marker(dbh)) {
-		free_dbf_head(dbh);
-		close(fd);
+	return dbh;
+
+fail:
+	free_dbf_head(dbh);
+	return NULL;
+}
+
+
+/* {{{ proto resource dbase_create(string filename, array fields [, int type])
+   Creates a new dBase-format database file */
+PHP_FUNCTION(dbase_create)
+{
+	zend_string *filename;
+	HashTable *fields;
+	zend_long type = DBH_TYPE_NORMAL;
+	int fd;
+	dbhead_t *dbh;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ph|l", &filename, &fields, &type) == FAILURE) {
+		return;
+	}
+
+	if (php_check_open_basedir(ZSTR_VAL(filename))) {
 		RETURN_FALSE;
 	}
 
+	if ((fd = VCWD_OPEN_MODE(ZSTR_VAL(filename), O_BINARY|O_RDWR|O_CREAT, 0644)) < 0) {
+		php_error_docref(NULL, E_WARNING, "Unable to create database (%d): %s", errno, strerror(errno));
+		RETURN_FALSE;
+	}
+
+	if (php_flock(fd, LOCK_EX)) {
+		php_error_docref(NULL, E_WARNING, "unable to lock database");
+		goto fail;
+	}
+
+	if (type != DBH_TYPE_NORMAL && type != DBH_TYPE_FOXPRO) {
+		php_error_docref(NULL, E_WARNING, "unknown database type %d", type);
+		goto fail;
+	}
+
+	if ((dbh = create_head_from_spec(fields, fd, type)) == NULL) {
+		goto fail;
+	}
+
+	if (put_dbf_info(dbh) != 1 || put_dbf_eof_marker(dbh)) {
+		free_dbf_head(dbh);
+		goto fail;
+	}
+
 	RETURN_RES(zend_register_resource(dbh, le_dbhead));
+
+fail:
+	close(fd);
+	RETURN_FALSE;
 }
 /* }}} */
 
@@ -827,6 +875,9 @@ PHP_FUNCTION(dbase_get_header_info)
 
 	dbf = dbht->db_fields;
 	for (cur_f = dbf; cur_f < &dbht->db_fields[dbht->db_nfields]; ++cur_f) {
+		if (cur_f->db_type == '0') {
+			continue;
+		}
 		
 		array_init(&row);
 		

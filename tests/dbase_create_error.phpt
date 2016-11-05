@@ -99,7 +99,7 @@ bool(false)
 Warning: dbase_create(): expected plain indexed array in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field name as first element of list in field 0 in %s on line %d
+Warning: dbase_create(): expected field name as element 0 of list in field 0 in %s on line %d
 bool(false)
 
 Warning: dbase_create(): invalid field name '' (must be non-empty and less than or equal to 10 characters) in %s on line %d
@@ -108,10 +108,10 @@ bool(false)
 Warning: dbase_create(): invalid field name 'abcdefghijk' (must be non-empty and less than or equal to 10 characters) in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field type as second element of list in field 0 in %s on line %d
+Warning: dbase_create(): expected field type as element 1 of list in field 0 in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field length as third element of list in field 0 in %s on line %d
+Warning: dbase_create(): expected field length as element 2 of list in field 0 in %s on line %d
 bool(false)
 
 Warning: dbase_create(): expected length of field 0 to be in range 0..254, but got -1 in %s on line %d
@@ -120,7 +120,7 @@ bool(false)
 Warning: dbase_create(): expected length of field 0 to be in range 0..254, but got 255 in %s on line %d
 bool(false)
 
-Warning: dbase_create(): expected field precision as fourth element of list in field 0 in %s on line %d
+Warning: dbase_create(): expected field precision as element 3 of list in field 0 in %s on line %d
 bool(false)
 
 Warning: dbase_create(): expected precision of field 0 to be in range 0..254, but got -1 in %s on line %d

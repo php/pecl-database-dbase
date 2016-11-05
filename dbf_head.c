@@ -24,6 +24,7 @@ dbhead_t *get_dbf_head(int fd)
 	struct dbf_dhead  dbhead;
 	dbfield_t *dbf, *cur_f, *tdbf;
 	int ret, nfields, offset, gf_retval;
+	int nullable_bit = 0;
 
 	dbh = (dbhead_t *)ecalloc(1, sizeof(dbhead_t));
 	if (lseek(fd, 0, 0) < 0) {
@@ -46,34 +47,49 @@ dbhead_t *get_dbf_head(int fd)
 		dbhead.dbh_date[DBH_DATE_MONTH],
 		dbhead.dbh_date[DBH_DATE_DAY]);
 
-	/* malloc enough memory for the maximum number of fields:
-	   32 * 1024 = 32K dBase5 (for Win) seems to allow that many */
-	tdbf = (dbfield_t *)ecalloc(1024, sizeof(dbfield_t));
+	/* malloc enough memory for the maximum number of fields: */
+	tdbf = (dbfield_t *)ecalloc(DBH_MAX_FIELDS, sizeof(dbfield_t));
 	
 	offset = 1;
 	nfields = 0;
 	gf_retval = 0;
-	for (cur_f = tdbf; gf_retval < 2 && nfields < 1024; cur_f++) {
+	for (cur_f = tdbf; gf_retval < 2 && nfields < DBH_MAX_FIELDS; cur_f++) {
 		gf_retval = get_dbf_field(dbh, cur_f);
 
 		if (gf_retval < 0) {
-			for (cur_f = tdbf; cur_f < &tdbf[nfields]; cur_f++) {
-				if (cur_f->db_format) {
-					efree(cur_f->db_format);
-				}
-			}
-			free_dbf_head(dbh);
-			efree(tdbf);
-			return NULL;
+			goto fail;
 		}
 		if (gf_retval != 2 ) {
 			cur_f->db_foffset = offset;
 			offset += cur_f->db_flen;
+			if (cur_f->db_fnullable) {
+				cur_f->db_fnullable = nullable_bit++;
+			} else {
+				cur_f->db_fnullable = -1;
+			}
 			nfields++;
 		}
 	}
+
+	for (cur_f = tdbf; cur_f < &tdbf[nfields - 1]; cur_f++) {
+		if (cur_f->db_type == '0') {
+			php_error_docref(NULL, E_WARNING, "unexpected field type '0'");
+			goto fail;
+		}
+	}
+	if (cur_f->db_type == '0') {
+		if (!strcmp(cur_f->db_fname, "_NullFlags")) {
+			dbh->db_nnullable = nullable_bit;
+		} else {
+			php_error_docref(NULL, E_WARNING, "unexpected field type '0'");
+			goto fail;
+		}
+	} else {
+		dbh->db_nnullable = 0;
+	}
+
 	dbh->db_nfields = nfields;
-	
+
 	/* malloc the right amount of space for records, copy and destroy old */
 	dbf = (dbfield_t *)emalloc(sizeof(dbfield_t)*nfields);
 	memcpy(dbf, tdbf, sizeof(dbfield_t)*nfields);
@@ -82,6 +98,15 @@ dbhead_t *get_dbf_head(int fd)
 	dbh->db_fields = dbf;
 
 	return dbh;
+fail:
+	for (cur_f = tdbf; cur_f < &tdbf[nfields]; cur_f++) {
+		if (cur_f->db_format) {
+			efree(cur_f->db_format);
+		}
+	}
+	free_dbf_head(dbh);
+	efree(tdbf);
+	return NULL;
 }
 
 /*
@@ -180,6 +205,10 @@ int get_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 		return -1;
 	}
 
+	if (dbh->db_dbt == DBH_TYPE_FOXPRO) {
+		dbf->db_fnullable = dbfield.dbf_flags & 0x2;
+	}
+
 	return 0;
 }
 
@@ -213,6 +242,15 @@ int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 		break;
 	    default:
 	    	put_short(dbfield.dbf_flen, dbf->db_flen);
+	}
+
+	if (dbh->db_dbt == DBH_TYPE_FOXPRO) {
+		if (dbf->db_fnullable >= 0) {
+			dbfield.dbf_flags = 0x2;
+		}
+		if (dbf->db_type == '0') {
+			dbfield.dbf_flags = 0x5;
+		}
 	}
 
 	/* now write it out to disk */
@@ -282,6 +320,7 @@ char *get_dbf_f_fmt(dbfield_t *dbf)
 		strlcpy(format, "%s", sizeof(format));
 		break;
 	   case 'T':
+	   case '0':
 		format[0] = '\0';
 		break;
 	   default:
