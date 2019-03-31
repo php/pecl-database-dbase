@@ -74,6 +74,8 @@ are kept until you call dbase_pack().
    <file name="dbf_ndx.h" role="src" />
    <file name="dbf_rec.c" role="src" />
    <file name="dbf_rec.h" role="src" />
+   <file name="dbf_sdncal.h" role="src" />
+   <file name="gregor.c" role="src" />
    <file name="LICENSE" role="doc" />
    <file name="php_dbase.h" role="src" />
    <dir name="tests">
@@ -84,26 +86,66 @@ are kept until you call dbase_pack().
     <file name="bug52112.phpt" role="test" />
     <file name="bug73391.phpt" role="test" />
     <file name="bug73395.phpt" role="test" />
+    <file name="bug73411.phpt" role="test" />
+    <file name="bug73414.dbf" role="test" />
+    <file name="bug73414.phpt" role="test" />
+    <file name="bug73442.phpt" role="test" />
+    <file name="bug73447.phpt" role="test" />
     <file name="dbase_add_record_basic.phpt" role="test" />
     <file name="dbase_add_record_error.phpt" role="test" />
     <file name="dbase_add_record_variation1.phpt" role="test" />
     <file name="dbase_add_record_variation2.phpt" role="test" />
+    <file name="dbase_add_record_variation3.phpt" role="test" />
+    <file name="dbase_add_record_variation4.phpt" role="test" />
+    <file name="dbase_close_error.phpt" role="test" />
     <file name="dbase_create_basic.phpt" role="test" />
     <file name="dbase_create_error.phpt" role="test" />
+    <file name="dbase_create_error_open_basedir.phpt" role="test" />
+    <file name="dbase_create_variation1.phpt" role="test" />
+    <file name="dbase_create_variation2.phpt" role="test" />
+    <file name="dbase_create_variation3.phpt" role="test" />
     <file name="dbase_delete_record_basic.phpt" role="test" />
+    <file name="dbase_delete_record_error_32bit.phpt" role="test" />
+    <file name="dbase_delete_record_error_64bit.phpt" role="test" />
+    <file name="dbase_delete_record_variation1.phpt" role="test" />
     <file name="dbase_get_header_info_basic.phpt" role="test" />
+    <file name="dbase_get_header_info_error.phpt" role="test" />
     <file name="dbase_get_record_basic.phpt" role="test" />
+    <file name="dbase_get_record_error_32bit.phpt" role="test" />
+    <file name="dbase_get_record_error_64bit.phpt" role="test" />
     <file name="dbase_get_record_with_names_basic.phpt" role="test" />
+    <file name="dbase_get_record_with_names_error_32bit.phpt" role="test" />
+    <file name="dbase_get_record_with_names_error_64bit.phpt" role="test" />
+    <file name="dbase_get_record_with_names_variation1.phpt" role="test" />
     <file name="dbase_numfields_basic.phpt" role="test" />
+    <file name="dbase_numfields_error.phpt" role="test" />
     <file name="dbase_numrecords_basic.phpt" role="test" />
+    <file name="dbase_numrecords_error.phpt" role="test" />
+    <file name="dbase_open_error.phpt" role="test" />
+    <file name="dbase_open_error1.dbf" role="test" />
+    <file name="dbase_open_error1.phpt" role="test" />
+    <file name="dbase_open_error2.dbf" role="test" />
+    <file name="dbase_open_error2.phpt" role="test" />
+    <file name="dbase_open_error3.dbf" role="test" />
+    <file name="dbase_open_error3.phpt" role="test" />
+    <file name="dbase_open_error_open_basedir.phpt" role="test" />
     <file name="dbase_pack_basic.phpt" role="test" />
+    <file name="dbase_pack_error.phpt" role="test" />
+    <file name="dbase_pack_variation1.phpt" role="test" />
+    <file name="dbase_pack_variation2.phpt" role="test" />
     <file name="dbase_replace_record_basic.phpt" role="test" />
     <file name="dbase_replace_record_error.phpt" role="test" />
+    <file name="dbase_replace_record_error_32bit.phpt" role="test" />
+    <file name="dbase_replace_record_error_64bit.phpt" role="test" />
     <file name="dbase_replace_record_variation1.phpt" role="test" />
     <file name="dbase_replace_record_variation2.phpt" role="test" />
+    <file name="dbase_replace_record_variation3.phpt" role="test" />
     <file name="example.dbf" role="test" />
-    <file name="example.php" role="test" />
+    <file name="nullable.phpt" role="test" />
+    <file name="type_datetime.phpt" role="test" />
     <file name="type_logical.phpt" role="test" />
+    <file name="type_numeric_int_32bit.phpt" role="test" />
+    <file name="type_numeric_int_64bit.phpt" role="test" />
    </dir> <!-- tests -->
   </dir> <!-- / -->
  </contents>
