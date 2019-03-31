@@ -164,6 +164,25 @@ are kept until you call dbase_pack().
    <changelog>
     <release>
      <version>
+      <release>5.1.1</release>
+      <api>5.0</api>
+     </version>
+     <stability>
+      <release>stable</release>
+      <api>stable</api>
+     </stability>
+     <date>2016-10-26</date>
+     <license uri="http://www.php.net/license">PHP</license>
+     <notes>
+   - Fixed #39305 (Use of decimal point in different countries)
+   - Fixed #52112 (dbase_get_record() returns integer instead of decimal values)
+   - Fixed #68289 (wrong strlcpy call)
+   - Fixed #72812 (dbase_create does not close the FD on failure)
+   - Fixed #73391 (Writing of floats can cause OOB reads)
+     </notes>
+    </release>
+    <release>
+     <version>
       <release>5.1.0</release>
       <api>5.0</api>
      </version>
