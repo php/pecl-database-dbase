@@ -664,7 +664,7 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 			}
 			convert_to_long_ex(value);
 			if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
-				php_error_docref(NULL, E_WARNING, "expected length of field %d to be in range 0..254, but got %d", i, Z_LVAL_P(value));
+				php_error_docref(NULL, E_WARNING, "expected length of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL_P(value));
 				goto fail;
 			}
 			cur_f->db_flen = (unsigned char) Z_LVAL_P(value);
@@ -676,7 +676,7 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 				}
 				convert_to_long_ex(value);
 				if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
-					php_error_docref(NULL, E_WARNING, "expected precision of field %d to be in range 0..254, but got %d", i, Z_LVAL_P(value));
+					php_error_docref(NULL, E_WARNING, "expected precision of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL_P(value));
 					goto fail;
 				}
 				cur_f->db_fdc = (unsigned char) Z_LVAL_P(value);
@@ -753,7 +753,7 @@ PHP_FUNCTION(dbase_create)
 	}
 
 	if (type != DBH_TYPE_NORMAL && type != DBH_TYPE_FOXPRO) {
-		php_error_docref(NULL, E_WARNING, "unknown database type %d", type);
+		php_error_docref(NULL, E_WARNING, "unknown database type " ZEND_LONG_FMT, type);
 		goto fail;
 	}
 
