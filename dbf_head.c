@@ -223,7 +223,7 @@ int put_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 
 	memset (&dbfield, 0, sizeof(dbfield));
 
-	strlcpy(dbfield.dbf_name, dbf->db_fname, DBF_NAMELEN + 1);
+	strlcpy(dbfield.dbf_name, dbf->db_fname, DBF_NAMELEN);
 
 	dbfield.dbf_type = dbf->db_type;
 	switch (dbf->db_type) {
