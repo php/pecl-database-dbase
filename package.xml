@@ -38,7 +38,7 @@ are kept until you call dbase_pack().
   <active>yes</active>
  </lead>
 
- <date>2019-03-31</date>
+ <date>2019-04-04</date>
   <version>
   <release>7.0.0RC1</release>
   <api>7.0</api>
