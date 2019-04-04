@@ -30,7 +30,7 @@ Argument 2 passed to dbase_replace_record() must be of the type array, string gi
 Warning: dbase_replace_record(): record number has to be in range 1..2147483647, but is -1 in %s on line %d
 bool(false)
 
-Warning: dbase_replace_record() expects parameter 3 to be integer, float given in %s on line %d
+Warning: dbase_replace_record() expects parameter 3 to be in%s, float given in %s on line %d
 NULL
 
 Warning: dbase_replace_record(): expected 7 fields, but got 0 in %s on line %d

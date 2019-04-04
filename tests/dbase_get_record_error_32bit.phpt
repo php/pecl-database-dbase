@@ -32,7 +32,7 @@ bool(false)
 Warning: dbase_get_record(): Tried to read bad record 1 in %s on line %d
 bool(false)
 
-Warning: dbase_get_record() expects parameter 2 to be integer, float given in %s on line %d
+Warning: dbase_get_record() expects parameter 2 to be in%s, float given in %s on line %d
 NULL
 ===DONE===
 --CLEAN--

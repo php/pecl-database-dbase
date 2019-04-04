@@ -31,7 +31,7 @@ bool(false)
 Warning: dbase_delete_record(): record 1 out of bounds in %s on line %d
 bool(false)
 
-Warning: dbase_delete_record() expects parameter 2 to be integer, float given in %s on line %d
+Warning: dbase_delete_record() expects parameter 2 to be in%s, float given in %s on line %d
 NULL
 ===DONE===
 --CLEAN--
