@@ -849,7 +849,7 @@ const zend_function_entry dbase_functions[] = {
 	PHP_FE(dbase_delete_record,						arginfo_dbase_delete_record)
 	PHP_FE(dbase_pack,								arginfo_dbase_pack)
 	PHP_FE(dbase_get_header_info,					arginfo_dbase_get_header_info)
-	{NULL, NULL, NULL}
+	PHP_FE_END
 };
 /* }}} */
 
