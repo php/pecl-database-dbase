@@ -822,7 +822,7 @@ ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_record_with_names, 0)
 	ZEND_ARG_INFO(0, record)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_create, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_create, 0, 0, 2)
 	ZEND_ARG_INFO(0, filename)
 	ZEND_ARG_ARRAY_INFO(0, fields, 0)
 	ZEND_ARG_INFO(0, type)
