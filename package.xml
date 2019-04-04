@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+ <name>dbase</name>
+ <channel>pecl.php.net</channel>
+ <summary>dBase database file access functions</summary>
+ <description>These functions allow you to access records stored 
+in dBase-format (dbf) databases.
+
+There is no support for indexes or memo fields. 
+The databases are automatically locked with blocking flock()s.
+
+dBase files are simple sequential files of fixed length records. 
+Records are appended to the end of the file and deleted records 
+are kept until you call dbase_pack().  
+
+ </description>
+ <lead>
+  <name>Jim Winstead</name>
+  <user>jimw</user>
+  <email>jimw@php.net</email>
+  <active>no</active>
+ </lead>
+ 
+ <lead>
+  <name>Alan Knowles</name>
+  <user>alan_k</user>
+  <email>alan@roojs.com</email>
+  <active>yes</active>
+ </lead>
+ 
+ <lead>
+  <name>Christoph M. Becker</name>
+  <user>cmb</user>
+  <email>cmbecker69@gmx.de</email>
+  <active>yes</active>
+ </lead>
+
+ <date>2019-04-04</date>
+  <version>
+  <release>7.0.0RC1</release>
+  <api>7.0</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP</license>
+ <notes>
+Backward Incompatible Changes
+
+  - database link identifiers are now proper resources instead of integers
+  - logical values are now retrieved as booleans instead of integers
+
+New Features
+
+  - FoxPro datetime fields ('T') are now supported as "YYYYMMDDhhmmss.uuu"
+  - Uninitialized logical fields are now supported as NULL
+  - base_create() now supports an optional $type parameter (either DBASE_TYPE_DBASE
+    or DBASE_TYPE_FOXPRO) to define the type of database to be created
+  - FoxPro nullable fields are now transparently supported
+  - The $mode of dbase_open() can now be specified as DBASE_RDONLY or DBASE_RDWR
+  - The version of the dbase extension is now available as DBASE_VERSION
+  - Basic database locking has been implemented
+  - Internally the Zend memory manager is now used
+  - Error reporting has been improved; e.g. unsupported field type now raise a
+    warning
+
+Bug Fixes
+
+  - Fixed #73391 (Writing of floats can cause OOB reads)
+  - Fixed #73395 (failing dbase_create() may leak memory)
+  - Fixed #73411 (dbase_pack() returns TRUE on failure)
+  - Fixed #73414 (Unsupported field types may cause dbase_open() to leak memory)
+  - Fixed #73442 (Float fields always have precision 0)
+  - Fixed #73447 (Floats written to character fields are truncated to integer)
+  - Fixed #74983 (SIGABRT when function put_dbf_field is called)
+ </notes>
+ 
+ 
+ <contents>
+  <dir name="/">
+   <file name="config.m4" role="src" />
+   <file name="config.w32" role="src" />
+   <file name="CREDITS" role="doc" />
+   <file name="dbase.c" role="src" />
+   <file name="dbf.h" role="src" />
+   <file name="dbf_head.c" role="src" />
+   <file name="dbf_head.h" role="src" />
+   <file name="dbf_misc.c" role="src" />
+   <file name="dbf_misc.h" role="src" />
+   <file name="dbf_ndx.c" role="src" />
+   <file name="dbf_ndx.h" role="src" />
+   <file name="dbf_rec.c" role="src" />
+   <file name="dbf_rec.h" role="src" />
+   <file name="dbf_sdncal.h" role="src" />
+   <file name="gregor.c" role="src" />
+   <file name="LICENSE" role="doc" />
+   <file name="php_dbase.h" role="src" />
+   <dir name="tests">
+    <file name="001.phpt" role="test" />
+    <file name="002.phpt" role="test" />
+    <file name="bug31754.phpt" role="test" />
+    <file name="bug39305.phpt" role="test" />
+    <file name="bug52112.phpt" role="test" />
+    <file name="bug73391.phpt" role="test" />
+    <file name="bug73395.phpt" role="test" />
+    <file name="bug73411.phpt" role="test" />
+    <file name="bug73414.dbf" role="test" />
+    <file name="bug73414.phpt" role="test" />
+    <file name="bug73442.phpt" role="test" />
+    <file name="bug73447.phpt" role="test" />
+    <file name="dbase_add_record_basic.phpt" role="test" />
+    <file name="dbase_add_record_error.phpt" role="test" />
+    <file name="dbase_add_record_variation1.phpt" role="test" />
+    <file name="dbase_add_record_variation2.phpt" role="test" />
+    <file name="dbase_add_record_variation3.phpt" role="test" />
+    <file name="dbase_add_record_variation4.phpt" role="test" />
+    <file name="dbase_close_error.phpt" role="test" />
+    <file name="dbase_create_basic.phpt" role="test" />
+    <file name="dbase_create_error.phpt" role="test" />
+    <file name="dbase_create_error_open_basedir.phpt" role="test" />
+    <file name="dbase_create_variation1.phpt" role="test" />
+    <file name="dbase_create_variation2.phpt" role="test" />
+    <file name="dbase_create_variation3.phpt" role="test" />
+    <file name="dbase_delete_record_basic.phpt" role="test" />
+    <file name="dbase_delete_record_error_32bit.phpt" role="test" />
+    <file name="dbase_delete_record_error_64bit.phpt" role="test" />
+    <file name="dbase_delete_record_variation1.phpt" role="test" />
+    <file name="dbase_get_header_info_basic.phpt" role="test" />
+    <file name="dbase_get_header_info_error.phpt" role="test" />
+    <file name="dbase_get_record_basic.phpt" role="test" />
+    <file name="dbase_get_record_error_32bit.phpt" role="test" />
+    <file name="dbase_get_record_error_64bit.phpt" role="test" />
+    <file name="dbase_get_record_with_names_basic.phpt" role="test" />
+    <file name="dbase_get_record_with_names_error_32bit.phpt" role="test" />
+    <file name="dbase_get_record_with_names_error_64bit.phpt" role="test" />
+    <file name="dbase_get_record_with_names_variation1.phpt" role="test" />
+    <file name="dbase_numfields_basic.phpt" role="test" />
+    <file name="dbase_numfields_error.phpt" role="test" />
+    <file name="dbase_numrecords_basic.phpt" role="test" />
+    <file name="dbase_numrecords_error.phpt" role="test" />
+    <file name="dbase_open_error.phpt" role="test" />
+    <file name="dbase_open_error1.dbf" role="test" />
+    <file name="dbase_open_error1.phpt" role="test" />
+    <file name="dbase_open_error2.dbf" role="test" />
+    <file name="dbase_open_error2.phpt" role="test" />
+    <file name="dbase_open_error3.dbf" role="test" />
+    <file name="dbase_open_error3.phpt" role="test" />
+    <file name="dbase_open_error_open_basedir.phpt" role="test" />
+    <file name="dbase_pack_basic.phpt" role="test" />
+    <file name="dbase_pack_error.phpt" role="test" />
+    <file name="dbase_pack_variation1.phpt" role="test" />
+    <file name="dbase_pack_variation2.phpt" role="test" />
+    <file name="dbase_replace_record_basic.phpt" role="test" />
+    <file name="dbase_replace_record_error.phpt" role="test" />
+    <file name="dbase_replace_record_error_32bit.phpt" role="test" />
+    <file name="dbase_replace_record_error_64bit.phpt" role="test" />
+    <file name="dbase_replace_record_variation1.phpt" role="test" />
+    <file name="dbase_replace_record_variation2.phpt" role="test" />
+    <file name="dbase_replace_record_variation3.phpt" role="test" />
+    <file name="example.dbf" role="test" />
+    <file name="nullable.phpt" role="test" />
+    <file name="type_datetime.phpt" role="test" />
+    <file name="type_logical.phpt" role="test" />
+    <file name="type_numeric_int_32bit.phpt" role="test" />
+    <file name="type_numeric_int_64bit.phpt" role="test" />
+   </dir> <!-- tests -->
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>7.0.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>dbase</providesextension>
+ <extsrcrelease />
+   <changelog>
+    <release>
+     <version>
+      <release>7.0.0beta1</release>
+      <api>7.0</api>
+     </version>
+     <stability>
+      <release>beta</release>
+      <api>beta</api>
+     </stability>
+     <date>2016-10-26</date>
+     <license uri="http://www.php.net/license">PHP</license>
+     <notes>
+   - PHP 7 compatibility (use dbase-5 with PHP 5)
+   - Fixed #39305 (Use of decimal point in different countries)
+   - Fixed #52112 (dbase_get_record() returns integer instead of decimal values)
+   - Fixed #68289 (wrong strlcpy call)
+   - Fixed #72812 (dbase_create does not close the FD on failure)
+   - Fixed #72815 (zend_get_parameters_ex() is deprecated)
+   - Fixed #73391 (Writing of floats can cause OOB reads)
+     </notes>
+    </release>
+    <release>
+     <version>
+      <release>5.1.1</release>
+      <api>5.0</api>
+     </version>
+     <stability>
+      <release>stable</release>
+      <api>stable</api>
+     </stability>
+     <date>2016-10-26</date>
+     <license uri="http://www.php.net/license">PHP</license>
+     <notes>
+   - Fixed #39305 (Use of decimal point in different countries)
+   - Fixed #52112 (dbase_get_record() returns integer instead of decimal values)
+   - Fixed #68289 (wrong strlcpy call)
+   - Fixed #72812 (dbase_create does not close the FD on failure)
+   - Fixed #73391 (Writing of floats can cause OOB reads)
+     </notes>
+    </release>
+    <release>
+     <version>
+      <release>5.1.0</release>
+      <api>5.0</api>
+     </version>
+     <stability>
+      <release>stable</release>
+      <api>stable</api>
+     </stability>
+     <date>2012-06-12</date>
+     <license uri="http://www.php.net/license">PHP</license>
+     <notes>
+   - Fixed build on PHP 5.4+
+     </notes>
+    </release>
+      <release>       
+       <version>
+	    <release>5.0.1</release>
+	    <api>5.0</api>
+	   </version>
+	   <stability>
+	    <release>stable</release>
+	    <api>stable</api>
+	   </stability>
+	   <date>2010-10-11</date>
+	   <license uri="http://www.php.net/license">PHP</license>
+	   <notes>
+		Bug fix release 
+			#18831 - invalid length field when writing date and boolean types.
+       </notes>
+      </release>
+      <release>
+            
+         <date>2009-11-05</date>
+          <version>
+          <release>5.0rc1</release>
+          <api>5.0rc1</api>
+         </version>
+         <stability>
+          <release>beta</release>
+          <api>beta</api>
+         </stability>
+         <license uri="http://www.php.net/license">PHP</license>
+         <notes>
+        package.xml added to support installation using pear installer
+         </notes>
+         
+     
+        
+    </release>
+  </changelog>      
+</package>

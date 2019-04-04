@@ -1,0 +1,11 @@
+extern char *get_dbf_record(dbhead_t *dbh, long rec_num);
+extern long put_dbf_record(dbhead_t *dbh, long rec_num, char *cp);
+extern int put_piece(dbhead_t *dbh, long offset, char *cp, int len);
+extern int put_dbf_eof_marker(dbhead_t *dbh);
+extern int del_dbf_record(dbhead_t *dbh, long rec_num);
+int pack_dbf(dbhead_t *dbh);
+extern char *get_field_val(char *rp, dbfield_t *fldp, char *cp);
+char *get_binary_field_val(char *rp, dbfield_t *fldp, char *cp);
+void put_field_val(char *rp, dbfield_t *fldp, char *cp);
+extern int is_valid_rec(char *cp);
+extern char *dbf_get_next(dbhead_t *dbh);
