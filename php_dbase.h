@@ -42,6 +42,6 @@ PHP_FUNCTION(dbase_get_header_info);
 
 #define phpext_dbase_ptr dbase_module_ptr
 
-#define PHP_DBASE_VERSION "7.0.0RC1"
+#define PHP_DBASE_VERSION "7.0.0"
 
 #endif /* PHP_DBASE_H */
