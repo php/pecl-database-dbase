@@ -245,6 +245,8 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 
 	dbf = dbht->db_fields;
 	for (i = 0, cur_f = dbf; cur_f < &dbf[num_fields]; i++, cur_f++) {
+		zval tmp_field;
+
 		if ((field = zend_hash_index_find(fields, i)) == NULL) {
 			php_error_docref(NULL, E_WARNING, "expected plain indexed array");
 			efree(cp);
@@ -264,22 +266,25 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 			zend_string_free(formatted);
 		}
 
-		convert_to_string(field);
+		ZVAL_COPY_VALUE(&tmp_field, field);
+		zval_copy_ctor(&tmp_field);
+		convert_to_string(&tmp_field);
 
 		switch (cur_f->db_type) {
 			case 'T':
 				{
 					int jdn, msecs;
 
-					db_get_timestamp(Z_STRVAL_P(field), &jdn, &msecs);
+					db_get_timestamp(Z_STRVAL(tmp_field), &jdn, &msecs);
 					put_long(t_cp, jdn);
 					put_long(t_cp + 4, msecs);
 				}
 				break;
 			default:
-				snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL_P(field));
+				snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL(tmp_field));
 		}
 
+		zval_dtor(&tmp_field);
 		t_cp += cur_f->db_flen;
 	}
 
@@ -604,6 +609,7 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 
 	for (i = 0, cur_f = dbf; i < num_fields; i++, cur_f++) {
 		int element = 0;
+		zval tmp_value;
 
 		/* look up the field */
 		if ((field = zend_hash_index_find(fields, i)) == NULL) {
@@ -617,20 +623,26 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 			php_error_docref(NULL, E_WARNING, "expected field name as element %d of list in field %d", element, i);
 			goto fail;
 		}
-		convert_to_string_ex(value);
-		if (Z_STRLEN_P(value) > 10 || Z_STRLEN_P(value) == 0) {
+		ZVAL_COPY_VALUE(&tmp_value, value);
+		zval_copy_ctor(&tmp_value);
+		convert_to_string(&tmp_value);
+		if (Z_STRLEN(tmp_value) > 10 || Z_STRLEN(tmp_value) == 0) {
 			php_error_docref(NULL, E_WARNING, "invalid field name '%s' (must be non-empty and less than or equal to 10 characters)", Z_STRVAL_P(value));
 			goto fail;
 		}
-		copy_crimp(cur_f->db_fname, Z_STRVAL_P(value), (int) Z_STRLEN_P(value));
+		copy_crimp(cur_f->db_fname, Z_STRVAL(tmp_value), (int) Z_STRLEN(tmp_value));
+		zval_dtor(&tmp_value);
 
 		/* field type */
 		if ((value = zend_hash_index_find(Z_ARRVAL_P(field), ++element)) == NULL) {
 			php_error_docref(NULL, E_WARNING, "expected field type as element %d of list in field %d", element, i);
 			goto fail;
 		}
-		convert_to_string_ex(value);
-		cur_f->db_type = toupper(*Z_STRVAL_P(value));
+		ZVAL_COPY_VALUE(&tmp_value, value);
+		zval_copy_ctor(&tmp_value);
+		convert_to_string(&tmp_value);
+		cur_f->db_type = toupper(*Z_STRVAL(tmp_value));
+		zval_dtor(&tmp_value);
 
 		cur_f->db_fdc = 0;
 
@@ -662,24 +674,30 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 				php_error_docref(NULL, E_WARNING, "expected field length as element %d of list in field %d", element, i);
 				goto fail;
 			}
-			convert_to_long_ex(value);
-			if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
+			ZVAL_COPY_VALUE(&tmp_value, value);
+			zval_copy_ctor(&tmp_value);
+			convert_to_long(&tmp_value);
+			if (Z_LVAL(tmp_value) < 0 || Z_LVAL(tmp_value) > 254) {
 				php_error_docref(NULL, E_WARNING, "expected length of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL_P(value));
 				goto fail;
 			}
-			cur_f->db_flen = (unsigned char) Z_LVAL_P(value);
+			cur_f->db_flen = (unsigned char) Z_LVAL(tmp_value);
+			zval_dtor(&tmp_value);
 
 			if (cur_f->db_type == 'N' || cur_f->db_type == 'F') {
 				if ((value = zend_hash_index_find(Z_ARRVAL_P(field), ++element)) == NULL) {
 					php_error_docref(NULL, E_WARNING, "expected field precision as element %d of list in field %d", element, i);
 					goto fail;
 				}
-				convert_to_long_ex(value);
-				if (Z_LVAL_P(value) < 0 || Z_LVAL_P(value) > 254) {
-					php_error_docref(NULL, E_WARNING, "expected precision of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL_P(value));
+				ZVAL_COPY_VALUE(&tmp_value, value);
+				zval_copy_ctor(&tmp_value);
+				convert_to_long(&tmp_value);
+				if (Z_LVAL(tmp_value) < 0 || Z_LVAL(tmp_value) > 254) {
+					php_error_docref(NULL, E_WARNING, "expected precision of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL(tmp_value));
 					goto fail;
 				}
-				cur_f->db_fdc = (unsigned char) Z_LVAL_P(value);
+				cur_f->db_fdc = (unsigned char) Z_LVAL(tmp_value);
+				zval_dtor(&tmp_value);
 			}
 			break;
 		default:
@@ -693,10 +711,13 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 
 		cur_f->db_fnullable = -1;
 		if (type == DBH_TYPE_FOXPRO && (value = zend_hash_index_find(Z_ARRVAL_P(field), ++element)) != NULL) {
-			convert_to_boolean(value);
-			if (Z_TYPE_P(value) == IS_TRUE) {
+			ZVAL_COPY_VALUE(&tmp_value, value);
+			zval_copy_ctor(&tmp_value);
+			convert_to_boolean(&tmp_value);
+			if (Z_TYPE(tmp_value) == IS_TRUE) {
 				cur_f->db_fnullable = nullable_bit++;
 			}
+			zval_dtor(&tmp_value);
 		}
 	}
 
