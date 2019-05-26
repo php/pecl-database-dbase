@@ -627,7 +627,8 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 		zval_copy_ctor(&tmp_value);
 		convert_to_string(&tmp_value);
 		if (Z_STRLEN(tmp_value) > 10 || Z_STRLEN(tmp_value) == 0) {
-			php_error_docref(NULL, E_WARNING, "invalid field name '%s' (must be non-empty and less than or equal to 10 characters)", Z_STRVAL_P(value));
+			php_error_docref(NULL, E_WARNING, "invalid field name '%s' (must be non-empty and less than or equal to 10 characters)", Z_STRVAL(tmp_value));
+			zval_dtor(&tmp_value);
 			goto fail;
 		}
 		copy_crimp(cur_f->db_fname, Z_STRVAL(tmp_value), (int) Z_STRLEN(tmp_value));
@@ -678,7 +679,8 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 			zval_copy_ctor(&tmp_value);
 			convert_to_long(&tmp_value);
 			if (Z_LVAL(tmp_value) < 0 || Z_LVAL(tmp_value) > 254) {
-				php_error_docref(NULL, E_WARNING, "expected length of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL_P(value));
+				php_error_docref(NULL, E_WARNING, "expected length of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL(tmp_value));
+				zval_dtor(&tmp_value);
 				goto fail;
 			}
 			cur_f->db_flen = (unsigned char) Z_LVAL(tmp_value);
@@ -694,6 +696,7 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 				convert_to_long(&tmp_value);
 				if (Z_LVAL(tmp_value) < 0 || Z_LVAL(tmp_value) > 254) {
 					php_error_docref(NULL, E_WARNING, "expected precision of field %d to be in range 0..254, but got " ZEND_LONG_FMT, i, Z_LVAL(tmp_value));
+					zval_dtor(&tmp_value);
 					goto fail;
 				}
 				cur_f->db_fdc = (unsigned char) Z_LVAL(tmp_value);
