@@ -65,6 +65,6 @@ bool(true)
 ===DONE===
 --CLEAN--
 <?php
-$filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_get_record_basic.dbf';
+$filename = __DIR__ . DIRECTORY_SEPARATOR . 'bug52112.dbf';
 unlink($filename);
 ?>
