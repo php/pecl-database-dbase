@@ -10,7 +10,7 @@ if (array_search(setlocale(LC_NUMERIC, $locales), $locales) === false) {
 ?>
 --FILE--
 <?php
-$filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_get_record_basic.dbf';
+$filename = __DIR__ . DIRECTORY_SEPARATOR . 'bug52112.dbf';
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 setlocale(LC_NUMERIC, 'de_DE.UTF-8', 'de-DE');
 

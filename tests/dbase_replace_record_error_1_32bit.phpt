@@ -3,11 +3,11 @@ dbase_replace_record(): error conditions
 --SKIPIF--
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
-if (PHP_INT_SIZE != 8) die('skip for 64bit platforms only');
+if (PHP_INT_SIZE != 4) die('skip for 32bit platforms only');
 ?>
 --FILE--
 <?php
-$filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_replace_record_error.dbf';
+$filename = __DIR__ . DIRECTORY_SEPARATOR . 'dbase_replace_record_error_1.dbf';
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'example.dbf', $filename);
 
 $db = dbase_open($filename, DBASE_RDWR);
@@ -30,8 +30,8 @@ Argument 2 passed to dbase_replace_record() must be of the type array, string gi
 Warning: dbase_replace_record(): record number has to be in range 1..2147483647, but is -1 in %s on line %d
 bool(false)
 
-Warning: dbase_replace_record(): record number has to be in range 1..2147483647, but is 2147483648 in %s on line %d
-bool(false)
+Warning: dbase_replace_record() expects parameter 3 to be in%s, float given in %s on line %d
+NULL
 
 Warning: dbase_replace_record(): expected 7 fields, but got 0 in %s on line %d
 bool(false)
