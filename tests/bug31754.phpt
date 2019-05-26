@@ -10,11 +10,6 @@ if (!extension_loaded('dbase')) {
 <?php
 $filename = __DIR__ . DIRECTORY_SEPARATOR . 'bug31754.dbf';
 
-// database "definition"
-$def = array(
-	array("foo", "L")
-);
-
 // creation
 $dbh = dbase_create($filename, array(array('foo', 'L')));
 dbase_close($dbh);
