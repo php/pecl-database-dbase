@@ -26,6 +26,9 @@
 #include "fopen_wrappers.h"
 #include "php_globals.h"
 #include "ext/standard/php_math.h"
+#ifdef HAVE_SYS_FILE_H
+# include <sys/file.h>
+#endif
 #include "ext/standard/flock_compat.h"
 
 #include <stdlib.h>

@@ -6,6 +6,9 @@
 
 #include <stdio.h>
 #include <fcntl.h>
+#ifdef HAVE_SYS_FILE_H
+# include <sys/file.h>
+#endif
 
 #include "php.h"
 #include "ext/standard/flock_compat.h" 
