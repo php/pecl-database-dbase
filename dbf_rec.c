@@ -126,7 +126,7 @@ int pack_dbf(dbhead_t *dbh)
 	new_cnt = 0;
 	rec_cnt = dbh->db_records;
 	while (rec_cnt > 0) {
-		if (get_piece(dbh, in_off, cp, dbh->db_rlen) < 0) {
+		if (get_piece(dbh, in_off, cp, dbh->db_rlen) != dbh->db_rlen) {
 			php_error_docref(NULL, E_WARNING, "unable to read from the file");
 			efree(cp);
 			return -1;

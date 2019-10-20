@@ -34,7 +34,7 @@ dbhead_t *get_dbf_head(int fd)
 		efree(dbh);
 		return NULL;
 	}
-	if ((ret = read(fd, &dbhead, sizeof(dbhead))) <= 0) {
+	if ((ret = read(fd, &dbhead, sizeof(dbhead)))  != sizeof(dbhead)) {
 		efree(dbh);
 		return NULL;
 	}
@@ -171,7 +171,7 @@ int get_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 	struct dbf_dfield	dbfield;
 	int ret;
 
-	if ((ret = read(dbh->db_fd, &dbfield, sizeof(dbfield))) <= 0) {
+	if ((ret = read(dbh->db_fd, &dbfield, sizeof(dbfield))) != sizeof(dbfield)) {
 		return ret;
 	}
 

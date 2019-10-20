@@ -20,7 +20,7 @@ ndx_header_t *ndx_get_header(int fd)
 
 	dp = (dndx_header_t *)emalloc(NDX_PAGE_SZ);
 	np = (ndx_header_t *)emalloc(sizeof(ndx_header_t));
-	if ((lseek(fd, 0, 0) < 0) || (read(fd, dp, NDX_PAGE_SZ) < 0)) {
+	if ((lseek(fd, 0, 0) < 0) || (read(fd, dp, NDX_PAGE_SZ) != NDX_PAGE_SZ)) {
 		efree(dp); efree(np);
 		return NULL;
 	}
@@ -54,7 +54,7 @@ static ndx_page_t *ndx_get_page(ndx_header_t *hp, int pageno)
 	rp = (ndx_record_t *)emalloc(sizeof(ndx_record_t) * hp->ndx_keys_ppg);
 	fp->ndxp_page_data = dp;
 	if ((lseek(hp->ndx_fd, pageno * NDX_PAGE_SZ, 0) < 0) ||
-		(read(hp->ndx_fd, dp, NDX_PAGE_SZ) < 0)) {
+		(read(hp->ndx_fd, dp, NDX_PAGE_SZ) != NDX_PAGE_SZ)) {
 		efree(fp); efree(dp);
 		return NULL;
 	}

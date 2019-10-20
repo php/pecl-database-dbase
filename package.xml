@@ -118,6 +118,8 @@ Bug Fixes
     <file name="bug73442.phpt" role="test" />
     <file name="bug73447.phpt" role="test" />
     <file name="bug78070.phpt" role="test" />
+    <file name="bug78668.phpt" role="test" />
+    <file name="bug78668.dbf" role="test" />
     <file name="dbase_add_record_basic.phpt" role="test" />
     <file name="dbase_add_record_error.phpt" role="test" />
     <file name="dbase_add_record_variation1.phpt" role="test" />
