@@ -1,7 +1,7 @@
 // $Id$
 // vim:ft=javascript
 
-ARG_ENABLE("dbase", "Enable the bundled dbase library", "no");
+ARG_ENABLE("dbase", "Enable the dbase extension", "no");
 
 if (PHP_DBASE != "no") {
 	EXTENSION("dbase", "dbase.c dbf_head.c dbf_misc.c dbf_ndx.c dbf_rec.c gregor.c");

@@ -3,7 +3,7 @@ dnl $Id$
 dnl
 
 PHP_ARG_ENABLE(dbase,whether to enable dbase support,
-[  --enable-dbase          Enable the bundled dbase library])
+[  --enable-dbase          Enable the dbase extension])
 
 if test "$PHP_DBASE" = "yes"; then
   AC_DEFINE(DBASE,1,[ ])
