@@ -1,0 +1,80 @@
+/* This is a generated file, edit the .stub.php file instead.
+ * Stub hash: 67f5c6f1e2f3f727f8cb3e7543ee06d426551466 */
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_open, 0, 0, 2)
+	ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, mode, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_close, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_INFO(0, database)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_add_record, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_INFO(0, database)
+	ZEND_ARG_TYPE_INFO(0, data, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_delete_record, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_INFO(0, database)
+	ZEND_ARG_TYPE_INFO(0, number, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_replace_record, 0, 3, _IS_BOOL, 0)
+	ZEND_ARG_INFO(0, database)
+	ZEND_ARG_TYPE_INFO(0, data, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, number, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_numrecords, 0, 1, IS_LONG, 0)
+	ZEND_ARG_INFO(0, database)
+ZEND_END_ARG_INFO()
+
+#define arginfo_dbase_numfields arginfo_dbase_numrecords
+
+#define arginfo_dbase_pack arginfo_dbase_close
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_get_record, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_INFO(0, database)
+ZEND_END_ARG_INFO()
+
+#define arginfo_dbase_get_record_with_names arginfo_dbase_get_record
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_create, 0, 0, 2)
+	ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, fields, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "DBH_TYPE_NORMAL")
+ZEND_END_ARG_INFO()
+
+#define arginfo_dbase_get_header_info arginfo_dbase_get_record
+
+
+ZEND_FUNCTION(dbase_open);
+ZEND_FUNCTION(dbase_close);
+ZEND_FUNCTION(dbase_add_record);
+ZEND_FUNCTION(dbase_delete_record);
+ZEND_FUNCTION(dbase_replace_record);
+ZEND_FUNCTION(dbase_numrecords);
+ZEND_FUNCTION(dbase_numfields);
+ZEND_FUNCTION(dbase_pack);
+ZEND_FUNCTION(dbase_get_record);
+ZEND_FUNCTION(dbase_get_record_with_names);
+ZEND_FUNCTION(dbase_create);
+ZEND_FUNCTION(dbase_get_header_info);
+
+
+static const zend_function_entry ext_functions[] = {
+	ZEND_FE(dbase_open, arginfo_dbase_open)
+	ZEND_FE(dbase_close, arginfo_dbase_close)
+	ZEND_FE(dbase_add_record, arginfo_dbase_add_record)
+	ZEND_FE(dbase_delete_record, arginfo_dbase_delete_record)
+	ZEND_FE(dbase_replace_record, arginfo_dbase_replace_record)
+	ZEND_FE(dbase_numrecords, arginfo_dbase_numrecords)
+	ZEND_FE(dbase_numfields, arginfo_dbase_numfields)
+	ZEND_FE(dbase_pack, arginfo_dbase_pack)
+	ZEND_FE(dbase_get_record, arginfo_dbase_get_record)
+	ZEND_FE(dbase_get_record_with_names, arginfo_dbase_get_record_with_names)
+	ZEND_FE(dbase_create, arginfo_dbase_create)
+	ZEND_FE(dbase_get_header_info, arginfo_dbase_get_header_info)
+	ZEND_FE_END
+};

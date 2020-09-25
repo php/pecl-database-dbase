@@ -46,6 +46,34 @@ static int le_dbhead;
 #include <fcntl.h>
 #include <errno.h>
 
+/* compatitibility with PHP 8 */
+#ifdef RETURN_THROWS
+#define RETURN_THROWS_FALSE() RETURN_THROWS()
+#define RETURN_THROWS_NULL()  RETURN_THROWS()
+#else
+#define RETURN_THROWS_FALSE() RETURN_FALSE
+#define RETURN_THROWS_NULL()  return
+#endif
+
+#if PHP_VERSION_ID < 70200
+#undef  ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX
+#define ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(name, return_reference, required_num_args, type, allow_null) \
+		ZEND_BEGIN_ARG_INFO_EX(name, 0, return_reference, required_num_args)
+#endif
+
+#ifndef ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE
+#define ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(pass_by_ref, name, type_hint, allow_null, default_value) \
+		ZEND_ARG_TYPE_INFO(pass_by_ref, name, type_hint, allow_null)
+#endif
+
+#if PHP_VERSION_ID < 80000
+	#define BAD_REC_NUMBER(i,n) php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is " ZEND_LONG_FMT, n)
+#else
+	#define BAD_REC_NUMBER(i,n) zend_argument_value_error(i, "record number has to be in range 1..2147483647, but is " ZEND_LONG_FMT, n)
+#endif
+
+
+#include "dbase_arginfo.h"
 
 static void _close_dbase(zend_resource *rsrc)
 {
@@ -81,7 +109,7 @@ PHP_FUNCTION(dbase_open)
 	dbhead_t *dbh;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "Pl", &dbf_name, &mode) == FAILURE) {	
-		return;
+		RETURN_THROWS_NULL();
 	}
 
 	if (!ZSTR_LEN(dbf_name)) {
@@ -118,11 +146,11 @@ PHP_FUNCTION(dbase_close)
 	zval *dbh_id;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 
 	if (zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 	
 	zend_list_close(Z_RES_P(dbh_id));
@@ -138,11 +166,11 @@ PHP_FUNCTION(dbase_numrecords)
 	dbhead_t *dbht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 	
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 
 	RETURN_LONG(dbht->db_records);
@@ -158,11 +186,11 @@ PHP_FUNCTION(dbase_numfields)
 	dbhead_t *dbht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 	
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 
 	RETURN_LONG(dbht->db_nfields - (dbht->db_nnullable ? 1 : 0));
@@ -177,11 +205,11 @@ PHP_FUNCTION(dbase_pack)
 	dbhead_t *dbht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 	
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 
 	if (!pack_dbf(dbht)) {
@@ -215,23 +243,20 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 
 	if (replace) {
 		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rhl", &dbh_id, &fields, &recnum) == FAILURE) {
-			return;
+			RETURN_THROWS_NULL();
 		}
 		if (recnum < 1 || recnum > 0x7FFFFFFF) {
-			zend_string *str = zend_long_to_str(recnum);
-
-			php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is %s", ZSTR_VAL(str));
-			zend_string_free(str);
-			RETURN_FALSE;
+			BAD_REC_NUMBER(3, recnum);
+			RETURN_THROWS_FALSE();
 		}
 	} else {
 		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rh", &dbh_id, &fields) == FAILURE) {	
-			return;
+			RETURN_THROWS_NULL();
 		}
 	}
 
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 
 	memset(nullable_flags, 0, sizeof(nullable_flags));
@@ -343,19 +368,16 @@ PHP_FUNCTION(dbase_delete_record)
 	dbhead_t *dbht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 
 	if (record < 1 || record > 0x7FFFFFFF) {
-		zend_string *str = zend_long_to_str(record);
-
-		php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is %s", ZSTR_VAL(str));
-		zend_string_free(str);
-		RETURN_FALSE;
+		BAD_REC_NUMBER(2, record);
+		RETURN_THROWS_FALSE();
 	}
 
 	if (del_dbf_record(dbht, (long) record) < 0) {
@@ -389,19 +411,16 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	char nullable_flags[DBH_MAX_FIELDS / 8];
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 
 	if (record < 1 || record > 0x7FFFFFFF) {
-		zend_string *str = zend_long_to_str(record);
-
-		php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is %s", ZSTR_VAL(str));
-		zend_string_free(str);
-		RETURN_FALSE;
+		BAD_REC_NUMBER(2, record);
+		RETURN_THROWS_FALSE();
 	}
 
 	if ((data = get_dbf_record(dbht, (long) record)) == NULL) {
@@ -762,7 +781,7 @@ PHP_FUNCTION(dbase_create)
 	dbhead_t *dbh;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ph|l", &filename, &fields, &type) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 
 	if (php_check_open_basedir(ZSTR_VAL(filename))) {
@@ -801,84 +820,6 @@ fail:
 }
 /* }}} */
 
-/* {{{ arginfo */
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_open, 0)
-	ZEND_ARG_INFO(0, name)
-	ZEND_ARG_INFO(0, mode)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_close, 0)
-	ZEND_ARG_INFO(0, identifier)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_numrecords, 0)
-	ZEND_ARG_INFO(0, identifier)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_numfields, 0)
-	ZEND_ARG_INFO(0, identifier)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_pack, 0)
-	ZEND_ARG_INFO(0, identifier)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_add_record, 0)
-	ZEND_ARG_INFO(0, identifier)
-	ZEND_ARG_ARRAY_INFO(0, data, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_replace_record, 0)
-	ZEND_ARG_INFO(0, identifier)
-	ZEND_ARG_ARRAY_INFO(0, data, 0)
-	ZEND_ARG_INFO(0, recnum)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_delete_record, 0)
-	ZEND_ARG_INFO(0, identifier)
-	ZEND_ARG_INFO(0, record)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_record, 0)
-	ZEND_ARG_INFO(0, identifier)
-	ZEND_ARG_INFO(0, record)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_record_with_names, 0)
-	ZEND_ARG_INFO(0, identifier)
-	ZEND_ARG_INFO(0, record)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_create, 0, 0, 2)
-	ZEND_ARG_INFO(0, filename)
-	ZEND_ARG_ARRAY_INFO(0, fields, 0)
-	ZEND_ARG_INFO(0, type)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_dbase_get_header_info, 0)
-	ZEND_ARG_INFO(0, database_handle)
-ZEND_END_ARG_INFO()
-
-/* }}} */
-
-/* {{{ dbase_functions[]
- */
-const zend_function_entry dbase_functions[] = {
-	PHP_FE(dbase_open,								arginfo_dbase_open)
-	PHP_FE(dbase_create,							arginfo_dbase_create)
-	PHP_FE(dbase_close,								arginfo_dbase_close)
-	PHP_FE(dbase_numrecords,						arginfo_dbase_numrecords)
-	PHP_FE(dbase_numfields,							arginfo_dbase_numfields)
-	PHP_FE(dbase_add_record,						arginfo_dbase_add_record)
-	PHP_FE(dbase_replace_record,					arginfo_dbase_replace_record)
-	PHP_FE(dbase_get_record,						arginfo_dbase_get_record)
-	PHP_FE(dbase_get_record_with_names,				arginfo_dbase_get_record_with_names)
-	PHP_FE(dbase_delete_record,						arginfo_dbase_delete_record)
-	PHP_FE(dbase_pack,								arginfo_dbase_pack)
-	PHP_FE(dbase_get_header_info,					arginfo_dbase_get_header_info)
-	PHP_FE_END
-};
-/* }}} */
 
 /* Added by Zak Greant <zak@php.net> */
 /* {{{ proto array dbase_get_header_info(resource database_handle)
@@ -891,11 +832,11 @@ PHP_FUNCTION(dbase_get_header_info)
 	dbfield_t	*dbf, *cur_f;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
-		return;
+		RETURN_THROWS_NULL();
 	}
 
 	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_FALSE;
+		RETURN_THROWS_FALSE();
 	}
 
 	array_init(return_value);
@@ -950,7 +891,7 @@ PHP_FUNCTION(dbase_get_header_info)
 zend_module_entry dbase_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"dbase", 
-	dbase_functions, 
+	ext_functions, 
 	PHP_MINIT(dbase), 
 	NULL, 
 	NULL, NULL, NULL, 
