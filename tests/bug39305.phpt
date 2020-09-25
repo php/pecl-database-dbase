@@ -14,17 +14,17 @@ if (array_search(setlocale(LC_NUMERIC, $locales), $locales) === false) {
 $locales = array('de_DE.UTF-8', 'de-DE');
 define('FILENAME', __DIR__ . DIRECTORY_SEPARATOR . 'bug39305.dbf');
 
-$db = dbase_create(FILENAME, array(array('num', 'n', 18, 2)));
+$db = dbase_create(FILENAME, array(array('num', 'n', 24, 2)));
 
 setlocale(LC_NUMERIC, $locales);
-dbase_add_record($db, array(1e14));
+dbase_add_record($db, array(1e20));
 $record = dbase_get_record_with_names($db, 1);
 
 setlocale(LC_NUMERIC, 'C');
 var_dump($record['num']);
 
 setlocale(LC_NUMERIC, $locales);
-dbase_replace_record($db, array(1e14), 1);
+dbase_replace_record($db, array(1e20), 1);
 $record = dbase_get_record_with_names($db, 1);
 
 setlocale(LC_NUMERIC, 'C');
@@ -33,9 +33,9 @@ var_dump($record['num']);
 dbase_close($db);
 ?>
 ===DONE===
---EXPECT--
-float(1.0E+14)
-float(1.0E+14)
+--EXPECTF--
+float(1.0E+20)
+float(1.0E+20)
 ===DONE===
 --CLEAN--
 <?php
