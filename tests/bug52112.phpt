@@ -37,9 +37,9 @@ array(8) {
   [4]=>
   bool(true)
   [5]=>
-  float(123,45)
+  float(123%s45)
   [6]=>
-  float(34,56)
+  float(34%s56)
   ["deleted"]=>
   int(0)
 }
@@ -55,9 +55,9 @@ array(8) {
   ["SUPORTED"]=>
   bool(true)
   ["PRICE"]=>
-  float(123,45)
+  float(123%s45)
   ["MARKETSHAR"]=>
-  float(34,56)
+  float(34%s56)
   ["deleted"]=>
   int(0)
 }
