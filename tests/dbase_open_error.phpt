@@ -3,6 +3,7 @@ dbase_open(): error conditions
 --SKIPIF--
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
+if (version_compare(PHP_VERSION, '8', '>')) die('skip for PHP 7 only');
 ?>
 --FILE--
 <?php

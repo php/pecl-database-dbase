@@ -3,18 +3,26 @@ dbase_create() - error conditions
 --SKIPIF--
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
-if (version_compare(PHP_VERSION, '8', '>')) die('skip for PHP 7 only');
+if (version_compare(PHP_VERSION, '8', '<')) die('skip for PHP 8 only');
 ?>
 --FILE--
 <?php
 define('FILENAME', __DIR__ . DIRECTORY_SEPARATOR . 'dbase_create_error.dbf');
 
 /* too few arguments */
-var_dump(dbase_create(FILENAME));
+try {
+	var_dump(dbase_create(FILENAME));
+} catch (ArgumentCountError $ex) {
+    echo $ex->getMessage(), PHP_EOL;
+}
 if (file_exists(FILENAME)) unlink(FILENAME);
 
 /* too many arguments */
-var_dump(dbase_create(FILENAME, array(), DBASE_TYPE_DBASE, 'additional argument'));
+try {
+	var_dump(dbase_create(FILENAME, array(), DBASE_TYPE_DBASE, 'additional argument'));
+} catch (ArgumentCountError $ex) {
+    echo $ex->getMessage(), PHP_EOL;
+}
 if (file_exists(FILENAME)) unlink(FILENAME);
 
 /* second argument is no array */
@@ -87,12 +95,9 @@ if (file_exists(FILENAME)) unlink(FILENAME);
 ?>
 ===DONE===
 --EXPECTF--
-Warning: dbase_create() expects at least 2 parameters, 1 given in %s on line %d
-NULL
-
-Warning: dbase_create() expects at most 3 parameters, 4 given in %s on line %d
-NULL
-Argument 2 passed to dbase_create() must be of the type array, string given
+dbase_create() expects at least 2 arguments, 1 given
+dbase_create() expects at most 3 arguments, 4 given
+dbase_create(): Argument #2 ($fields) must be of type array, string given
 
 Warning: dbase_create(): Unable to create database without fields in %s on line %d
 bool(false)
