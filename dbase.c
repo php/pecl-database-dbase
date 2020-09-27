@@ -297,6 +297,11 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 		ZVAL_COPY_VALUE(&tmp_field, field);
 		zval_copy_ctor(&tmp_field);
 		convert_to_string(&tmp_field);
+		if (EG(exception)) {
+			zval_dtor(&tmp_field);
+			efree(cp);
+			RETURN_FALSE;
+		}
 
 		switch (cur_f->db_type) {
 			case 'T':
@@ -648,6 +653,10 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 		ZVAL_COPY_VALUE(&tmp_value, value);
 		zval_copy_ctor(&tmp_value);
 		convert_to_string(&tmp_value);
+		if (EG(exception)) {
+			zval_dtor(&tmp_value);
+			goto fail;
+		}
 		if (Z_STRLEN(tmp_value) > 10 || Z_STRLEN(tmp_value) == 0) {
 			php_error_docref(NULL, E_WARNING, "invalid field name '%s' (must be non-empty and less than or equal to 10 characters)", Z_STRVAL(tmp_value));
 			zval_dtor(&tmp_value);
@@ -664,6 +673,10 @@ static dbhead_t *create_head_from_spec(HashTable *fields, int fd, unsigned char 
 		ZVAL_COPY_VALUE(&tmp_value, value);
 		zval_copy_ctor(&tmp_value);
 		convert_to_string(&tmp_value);
+		if (EG(exception)) {
+			zval_dtor(&tmp_value);
+			goto fail;
+		}
 		cur_f->db_type = toupper(*Z_STRVAL(tmp_value));
 		zval_dtor(&tmp_value);
 
