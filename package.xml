@@ -67,6 +67,8 @@ Bug Fixes
    <file name="config.w32" role="src" />
    <file name="CREDITS" role="doc" />
    <file name="dbase.c" role="src" />
+   <file name="dbase.stub.php" role="src" />
+   <file name="dbase_arginfo.h" role="src" />
    <file name="dbf.h" role="src" />
    <file name="dbf_head.c" role="src" />
    <file name="dbf_head.h" role="src" />
@@ -94,54 +96,73 @@ Bug Fixes
     <file name="bug73442.phpt" role="test" />
     <file name="bug73447.phpt" role="test" />
     <file name="bug78070.phpt" role="test" />
-    <file name="bug78668.phpt" role="test" />
     <file name="bug78668.dbf" role="test" />
+    <file name="bug78668.phpt" role="test" />
+    <file name="bug78668_8.phpt" role="test" />
+    <file name="bug80156.phpt" role="test" />
     <file name="dbase_add_record_basic.phpt" role="test" />
     <file name="dbase_add_record_error.phpt" role="test" />
+    <file name="dbase_add_record_error-8.phpt" role="test" />
     <file name="dbase_add_record_variation1.phpt" role="test" />
     <file name="dbase_add_record_variation2.phpt" role="test" />
     <file name="dbase_add_record_variation3.phpt" role="test" />
     <file name="dbase_add_record_variation4.phpt" role="test" />
     <file name="dbase_close_error.phpt" role="test" />
+    <file name="dbase_close_error_8.phpt" role="test" />
     <file name="dbase_create_basic.phpt" role="test" />
     <file name="dbase_create_error.phpt" role="test" />
+    <file name="dbase_create_error_8.phpt" role="test" />
     <file name="dbase_create_error_open_basedir.phpt" role="test" />
     <file name="dbase_create_variation1.phpt" role="test" />
     <file name="dbase_create_variation2.phpt" role="test" />
     <file name="dbase_create_variation3.phpt" role="test" />
     <file name="dbase_delete_record_basic.phpt" role="test" />
     <file name="dbase_delete_record_error_32bit.phpt" role="test" />
+    <file name="dbase_delete_record_error_32bit_8.phpt" role="test" />
     <file name="dbase_delete_record_error_64bit.phpt" role="test" />
+    <file name="dbase_delete_record_error_64bit_8.phpt" role="test" />
     <file name="dbase_delete_record_variation1.phpt" role="test" />
     <file name="dbase_get_header_info_basic.phpt" role="test" />
     <file name="dbase_get_header_info_error.phpt" role="test" />
+    <file name="dbase_get_header_info_error_8.phpt" role="test" />
     <file name="dbase_get_record_basic.phpt" role="test" />
     <file name="dbase_get_record_error_32bit.phpt" role="test" />
+    <file name="dbase_get_record_error_32bit_8.phpt" role="test" />
     <file name="dbase_get_record_error_64bit.phpt" role="test" />
+    <file name="dbase_get_record_error_64bit_8.phpt" role="test" />
     <file name="dbase_get_record_with_names_basic.phpt" role="test" />
     <file name="dbase_get_record_with_names_error_32bit.phpt" role="test" />
+    <file name="dbase_get_record_with_names_error_32bit_8.phpt" role="test" />
     <file name="dbase_get_record_with_names_error_64bit.phpt" role="test" />
+    <file name="dbase_get_record_with_names_error_64bit_8.phpt" role="test" />
     <file name="dbase_get_record_with_names_variation1.phpt" role="test" />
     <file name="dbase_numfields_basic.phpt" role="test" />
     <file name="dbase_numfields_error.phpt" role="test" />
+    <file name="dbase_numfields_error_8.phpt" role="test" />
     <file name="dbase_numrecords_basic.phpt" role="test" />
     <file name="dbase_numrecords_error.phpt" role="test" />
+    <file name="dbase_numrecords_error_8.phpt" role="test" />
     <file name="dbase_open_error.phpt" role="test" />
+    <file name="dbase_open_error_8.phpt" role="test" />
+    <file name="dbase_open_error_open_basedir.phpt" role="test" />
     <file name="dbase_open_error1.dbf" role="test" />
     <file name="dbase_open_error1.phpt" role="test" />
     <file name="dbase_open_error2.dbf" role="test" />
     <file name="dbase_open_error2.phpt" role="test" />
     <file name="dbase_open_error3.dbf" role="test" />
     <file name="dbase_open_error3.phpt" role="test" />
-    <file name="dbase_open_error_open_basedir.phpt" role="test" />
     <file name="dbase_pack_basic.phpt" role="test" />
     <file name="dbase_pack_error.phpt" role="test" />
+    <file name="dbase_pack_error_8.phpt" role="test" />
     <file name="dbase_pack_variation1.phpt" role="test" />
     <file name="dbase_pack_variation2.phpt" role="test" />
     <file name="dbase_replace_record_basic.phpt" role="test" />
     <file name="dbase_replace_record_error.phpt" role="test" />
     <file name="dbase_replace_record_error_1_32bit.phpt" role="test" />
+    <file name="dbase_replace_record_error_1_32bit_8.phpt" role="test" />
     <file name="dbase_replace_record_error_1_64bit.phpt" role="test" />
+    <file name="dbase_replace_record_error_1_64bit_8.phpt" role="test" />
+    <file name="dbase_replace_record_error_8.phpt" role="test" />
     <file name="dbase_replace_record_variation1.phpt" role="test" />
     <file name="dbase_replace_record_variation2.phpt" role="test" />
     <file name="dbase_replace_record_variation3.phpt" role="test" />
