@@ -4,6 +4,7 @@ dbase_get_record_with_names(): error conditions
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 if (PHP_INT_SIZE != 4) die('skip for 32bit platforms only');
+if (version_compare(PHP_VERSION, '8', '>')) die('skip for PHP 7 only');
 ?>
 --INI--
 allow_url_fopen=1

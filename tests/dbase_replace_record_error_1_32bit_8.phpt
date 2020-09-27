@@ -4,7 +4,7 @@ dbase_replace_record(): error conditions
 <?php
 if (!extension_loaded('dbase')) die('skip dbase extension not available');
 if (PHP_INT_SIZE != 4) die('skip for 32bit platforms only');
-if (version_compare(PHP_VERSION, '8', '>')) die('skip for PHP 7 only');
+if (version_compare(PHP_VERSION, '8', '<')) die('skip for PHP 8 only');
 ?>
 --FILE--
 <?php
@@ -19,20 +19,24 @@ try {
     echo $ex->getMessage(), PHP_EOL;
 }
 
-var_dump(dbase_replace_record($db, [], -1));
-var_dump(dbase_replace_record($db, [], 2147483648));
+try {
+    var_dump(dbase_replace_record($db, [], -1));
+} catch (ValueError $ex) {
+    echo $ex->getMessage(), PHP_EOL;
+}
+try {
+    var_dump(dbase_replace_record($db, [], 2147483648));
+} catch (TypeError $ex) {
+    echo $ex->getMessage(), PHP_EOL;
+}
 
 var_dump(dbase_replace_record($db, [], 1));
 ?>
 ===DONE===
 --EXPECTF--
-Argument 2 passed to dbase_replace_record() must be of the type array, string given
-
-Warning: dbase_replace_record(): record number has to be in range 1..2147483647, but is -1 in %s on line %d
-bool(false)
-
-Warning: dbase_replace_record() expects parameter 3 to be in%s, float given in %s on line %d
-NULL
+dbase_replace_record(): Argument #2 ($data) must be of type array, string given
+dbase_replace_record(): Argument #3 ($number) record number has to be in range 1..2147483647, but is -1
+dbase_replace_record(): Argument #3 ($number) must be of type int, float given
 
 Warning: dbase_replace_record(): expected 7 fields, but got 0 in %s on line %d
 bool(false)
