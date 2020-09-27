@@ -16,7 +16,7 @@ try {
     echo $ex->getMessage(), PHP_EOL;
 }
 try {
-	var_dump(dbase_get_record_with_names(fopen('data://text/plain,foo', 'r'), 1));
+	var_dump(dbase_get_record(fopen('data://text/plain,foo', 'r'), 1));
 } catch (TypeError $ex) {
     echo $ex->getMessage(), PHP_EOL;
 }
