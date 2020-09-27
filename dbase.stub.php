@@ -45,12 +45,12 @@ function dbase_pack($database): bool {}
 /**
  * @param resource $database
  */
-function dbase_get_record($database): array {}
+function dbase_get_record($database, int $number): array|false {}
 
 /**
  * @param resource $database
  */
-function dbase_get_record_with_names($database): array {}
+function dbase_get_record_with_names($database, int $number): array|false {}
 
 /**
  * @return resource|false

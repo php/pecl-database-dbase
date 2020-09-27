@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 67f5c6f1e2f3f727f8cb3e7543ee06d426551466 */
+ * Stub hash: 15901c975a57313e9ddb0e61c12a9d6999797a49 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_open, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
@@ -34,8 +34,9 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_dbase_pack arginfo_dbase_close
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_get_record, 0, 1, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_dbase_get_record, 0, 2, MAY_BE_ARRAY|MAY_BE_FALSE)
 	ZEND_ARG_INFO(0, database)
+	ZEND_ARG_TYPE_INFO(0, number, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 #define arginfo_dbase_get_record_with_names arginfo_dbase_get_record
@@ -46,7 +47,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_create, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "DBH_TYPE_NORMAL")
 ZEND_END_ARG_INFO()
 
-#define arginfo_dbase_get_header_info arginfo_dbase_get_record
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_get_header_info, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_INFO(0, database)
+ZEND_END_ARG_INFO()
 
 
 ZEND_FUNCTION(dbase_open);
