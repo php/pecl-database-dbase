@@ -40,7 +40,7 @@ are kept until you call dbase_pack().
 
  <date>2020-10-04</date>
  <version>
-  <release>7.1.0RC1</release>
+  <release>7.1.0RC2</release>
   <api>7.1</api>
  </version>
  <stability>
@@ -70,6 +70,7 @@ Bug Fixes
    <file name="dbase.c" role="src" />
    <file name="dbase.stub.php" role="src" />
    <file name="dbase_arginfo.h" role="src" />
+   <file name="dbase_7_arginfo.h" role="src" />
    <file name="dbf.h" role="src" />
    <file name="dbf_head.c" role="src" />
    <file name="dbf_head.h" role="src" />
@@ -189,6 +190,31 @@ Bug Fixes
  <providesextension>dbase</providesextension>
  <extsrcrelease />
    <changelog>
+    <release>
+     <date>2020-10-04</date>
+     <version>
+      <release>7.1.0RC1</release>
+      <api>7.1</api>
+     </version>
+     <stability>
+      <release>beta</release>
+      <api>beta</api>
+     </stability>
+     <license uri="http://www.php.net/license">PHP</license>
+     <notes>
+<![CDATA[
+New features
+
+  - Full fledged arginfo is available under PHP 8 (Remi Collet)
+  - Calling dbase functions with wrong parameter types/values throws TypeExceptions and
+    ValueExceptions, respectively, instead of raising warnings under PHP 8 (Remi Collet)
+
+Bug Fixes
+
+  - Fixed #80156 (Incomplete records may be written)
+]]>
+     </notes>
+    </release>
     <release>
      <date>2019-10-20</date>
      <version>
