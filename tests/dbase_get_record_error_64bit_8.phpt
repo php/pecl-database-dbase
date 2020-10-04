@@ -38,12 +38,12 @@ try {
 ===DONE===
 --EXPECTF--
 dbase_get_record() expects exactly 2 arguments, 0 given
-dbase_get_record_with_names(): supplied resource is not a valid dbase resource
-dbase_get_record(): Argument #2 record number has to be in range 1..2147483647, but is -1
+dbase_get_record(): supplied resource is not a valid dbase resource
+dbase_get_record(): Argument #2 ($number) record number has to be in range 1..2147483647, but is -1
 
 Warning: dbase_get_record(): Tried to read bad record 1 in %s on line %d
 bool(false)
-dbase_get_record(): Argument #2 record number has to be in range 1..2147483647, but is 2147483648
+dbase_get_record(): Argument #2 ($number) record number has to be in range 1..2147483647, but is 2147483648
 ===DONE===
 --CLEAN--
 <?php
