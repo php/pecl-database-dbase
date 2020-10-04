@@ -55,27 +55,17 @@ static int le_dbhead;
 # define RETURN_THROWS_NULL()  return
 #endif
 
-#if PHP_VERSION_ID < 70200
-# undef  ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX
-# define ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(name, return_reference, required_num_args, type, allow_null) \
-	ZEND_BEGIN_ARG_INFO_EX(name, 0, return_reference, required_num_args)
-#endif
-
-#ifndef ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE
-# define ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(pass_by_ref, name, type_hint, allow_null, default_value) \
-	ZEND_ARG_TYPE_INFO(pass_by_ref, name, type_hint, allow_null)
-#endif
-
-#if PHP_VERSION_ID < 80000
-# define ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(name, return_reference, required_num_args, type) \
-	ZEND_BEGIN_ARG_INFO_EX(name, 0, return_reference, required_num_args)
-# define BAD_REC_NUMBER(i,n) php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is " ZEND_LONG_FMT, n)
-#else
+#if PHP_VERSION_ID >= 80000
 # define BAD_REC_NUMBER(i,n) zend_argument_value_error(i, "record number has to be in range 1..2147483647, but is " ZEND_LONG_FMT, n)
+#else
+# define BAD_REC_NUMBER(i,n) php_error_docref(NULL, E_WARNING, "record number has to be in range 1..2147483647, but is " ZEND_LONG_FMT, n)
 #endif
 
-
-#include "dbase_arginfo.h"
+#if PHP_VERSION_ID >= 80000
+# include "dbase_arginfo.h"
+#else
+# include "dbase_7_arginfo.h"
+#endif
 
 static void _close_dbase(zend_resource *rsrc)
 {
