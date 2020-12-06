@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 15901c975a57313e9ddb0e61c12a9d6999797a49 */
+ * Stub hash: 0982d90efe542f4db48e1b81f3ecd2e3f78f4558 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_open, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
@@ -44,7 +44,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_INFO_EX(arginfo_dbase_create, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, fields, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "DBH_TYPE_NORMAL")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "DBASE_TYPE_DBASE")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_dbase_get_header_info, 0, 1, IS_ARRAY, 0)

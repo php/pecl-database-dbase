@@ -55,7 +55,7 @@ function dbase_get_record_with_names($database, int $number): array|false {}
 /**
  * @return resource|false
  */
-function dbase_create(string $path, array $fields, int $type = DBH_TYPE_NORMAL) {}
+function dbase_create(string $path, array $fields, int $type = DBASE_TYPE_DBASE) {}
 
 /**
  * @param resource $database
