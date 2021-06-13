@@ -38,14 +38,14 @@ are kept until you call dbase_pack().
   <active>yes</active>
  </lead>
 
- <date>2020-10-04</date>
+ <date>2021-06-13</date>
  <version>
-  <release>7.1.0RC2</release>
+  <release>7.1.0</release>
   <api>7.1</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
@@ -59,6 +59,7 @@ New features
 Bug Fixes
 
   - Fixed #80156 (Incomplete records may be written)
+  - Fixed #80488 (ReflectionParameter->getDefaultValue() throws for dbase_create())
 ]]>
  </notes>
 
@@ -190,6 +191,31 @@ Bug Fixes
  <providesextension>dbase</providesextension>
  <extsrcrelease />
    <changelog>
+    <release>
+     <date>2020-10-04</date>
+     <version>
+      <release>7.1.0RC2</release>
+      <api>7.1</api>
+     </version>
+     <stability>
+      <release>beta</release>
+      <api>beta</api>
+     </stability>
+     <license uri="http://www.php.net/license">PHP</license>
+     <notes>
+<![CDATA[
+New features
+
+  - Full fledged arginfo is available under PHP 8 (Remi Collet)
+  - Calling dbase functions with wrong parameter types/values throws TypeExceptions and
+    ValueExceptions, respectively, instead of raising warnings under PHP 8 (Remi Collet)
+
+Bug Fixes
+
+  - Fixed #80156 (Incomplete records may be written)
+]]>
+     </notes>
+    </release>
     <release>
      <date>2020-10-04</date>
      <version>
