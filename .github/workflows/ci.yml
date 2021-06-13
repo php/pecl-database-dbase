@@ -1,0 +1,22 @@
+name: Build and Test
+on: [push]
+jobs:
+  job:
+    strategy:
+      matrix:
+          version: ['7.3', '7.4', '8.0', '8.1']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dbase
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{matrix.version}}
+      - name: Build dbase
+        run: |
+          phpize
+          ./configure --enable-dbase
+          make
+      - name: Test dbase
+        run: make test TESTS=tests
