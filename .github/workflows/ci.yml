@@ -1,7 +1,7 @@
 name: Build and Test
 on: [push]
 jobs:
-  job:
+  ubuntu:
     strategy:
       matrix:
           version: ['7.3', '7.4', '8.0', '8.1']
@@ -20,3 +20,36 @@ jobs:
           make
       - name: Test dbase
         run: make test TESTS=tests
+  windows:
+    defaults:
+      run:
+        shell: cmd
+    strategy:
+      matrix:
+          version: ["7.4", "8.0"]
+          arch: [x64]
+          ts: [ts]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout dbase
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        id: setup-php
+        uses: cmb69/setup-php-sdk@v0.1
+        with:
+          version: ${{matrix.version}}
+          arch: ${{matrix.arch}}
+          ts: ${{matrix.ts}}
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{matrix.arch}}
+          toolset: ${{steps.setup-php.outputs.toolset}}
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: configure --enable-dbase --with-prefix=${{steps.setup-php.outputs.prefix}}
+      - name: make
+        run: nmake
+      - name: test
+        run: nmake test TESTS=tests
