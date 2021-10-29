@@ -265,7 +265,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 
 	dbf = dbht->db_fields;
 	for (i = 0, cur_f = dbf; cur_f < &dbf[num_fields]; i++, cur_f++) {
-		zval tmp_field;
+		zend_string *field_val;
 
 		if ((field = zend_hash_index_find(fields, i)) == NULL) {
 			php_error_docref(NULL, E_WARNING, "expected plain indexed array");
@@ -277,22 +277,16 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 			nullable_flags[cur_f->db_fnullable / 8] |= (1 << (cur_f->db_fnullable % 8));
 		}
 
-		/* force cast to string as if in C locale */
 		if (Z_TYPE_P(field) == IS_DOUBLE && (cur_f->db_type == 'N' || cur_f->db_type == 'F')) {
-			zend_string *formatted;
-
-			formatted = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
-			ZVAL_STRING(field, ZSTR_VAL(formatted));
-			zend_string_free(formatted);
-		}
-
-		ZVAL_COPY_VALUE(&tmp_field, field);
-		zval_copy_ctor(&tmp_field);
-		convert_to_string(&tmp_field);
-		if (EG(exception)) {
-			zval_dtor(&tmp_field);
-			efree(cp);
-			RETURN_FALSE;
+			/* convert to string as if in C locale */
+			field_val = _php_math_number_format_ex(Z_DVAL_P(field), cur_f->db_fdc, ".", 1, "", 0);
+		} else {
+			field_val = zval_get_string(field);
+			if (EG(exception)) {
+				zend_string_release(field_val);
+				efree(cp);
+				RETURN_FALSE;
+			}
 		}
 
 		switch (cur_f->db_type) {
@@ -300,16 +294,16 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 				{
 					int jdn, msecs;
 
-					db_get_timestamp(Z_STRVAL(tmp_field), &jdn, &msecs);
+					db_get_timestamp(ZSTR_VAL(field_val), &jdn, &msecs);
 					put_long(t_cp, jdn);
 					put_long(t_cp + 4, msecs);
 				}
 				break;
 			default:
-				snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, Z_STRVAL(tmp_field));
+				snprintf(t_cp, cur_f->db_flen+1, cur_f->db_format, ZSTR_VAL(field_val));
 		}
 
-		zval_dtor(&tmp_field);
+		zend_string_release(field_val);
 		t_cp += cur_f->db_flen;
 	}
 

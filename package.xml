@@ -38,9 +38,9 @@ are kept until you call dbase_pack().
   <active>yes</active>
  </lead>
 
- <date>2021-06-13</date>
+ <date>2021-10-29</date>
  <version>
-  <release>7.1.0</release>
+  <release>7.1.1-dev</release>
   <api>7.1</api>
  </version>
  <stability>
@@ -50,16 +50,9 @@ are kept until you call dbase_pack().
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
 <![CDATA[
-New features
-
-  - Full fledged arginfo is available under PHP 8 (Remi Collet)
-  - Calling dbase functions with wrong parameter types/values throws TypeExceptions and
-    ValueExceptions, respectively, instead of raising warnings under PHP 8 (Remi Collet)
-
 Bug Fixes
 
-  - Fixed #80156 (Incomplete records may be written)
-  - Fixed #80488 (ReflectionParameter->getDefaultValue() throws for dbase_create())
+  - Fixed GH-1 (dbase_add_record() converts passed floats and leaks memory)
 ]]>
  </notes>
 
@@ -169,6 +162,7 @@ Bug Fixes
     <file name="dbase_replace_record_variation1.phpt" role="test" />
     <file name="dbase_replace_record_variation2.phpt" role="test" />
     <file name="dbase_replace_record_variation3.phpt" role="test" />
+    <file name="gh-1.phpt" role="test" />
     <file name="example.dbf" role="test" />
     <file name="nullable.phpt" role="test" />
     <file name="type_datetime.phpt" role="test" />
@@ -191,6 +185,32 @@ Bug Fixes
  <providesextension>dbase</providesextension>
  <extsrcrelease />
    <changelog>
+    <release>
+     <date>2021-06-13</date>
+     <version>
+      <release>7.1.0</release>
+      <api>7.1</api>
+     </version>
+     <stability>
+      <release>stable</release>
+      <api>stable</api>
+     </stability>
+     <license uri="http://www.php.net/license">PHP</license>
+     <notes>
+<![CDATA[
+New features
+
+  - Full fledged arginfo is available under PHP 8 (Remi Collet)
+  - Calling dbase functions with wrong parameter types/values throws TypeExceptions and
+    ValueExceptions, respectively, instead of raising warnings under PHP 8 (Remi Collet)
+
+Bug Fixes
+
+  - Fixed #80156 (Incomplete records may be written)
+  - Fixed #80488 (ReflectionParameter->getDefaultValue() throws for dbase_create())
+]]>
+     </notes>
+    </release>
     <release>
      <date>2020-10-04</date>
      <version>
