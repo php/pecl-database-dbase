@@ -165,20 +165,25 @@ int put_dbf_head(dbhead_t *dbh)
 
 /*
  * get a field off the disk from the current file offset
+ * returns 0 on success, 2 on field terminator and -1 on failure
  */
 int get_dbf_field(dbhead_t *dbh, dbfield_t *dbf)
 {
 	struct dbf_dfield	dbfield;
 	int ret;
 
-	if ((ret = read(dbh->db_fd, &dbfield, sizeof(dbfield))) != sizeof(dbfield)) {
-		return ret;
+	if ((ret = read(dbh->db_fd, &dbfield, sizeof(dbfield))) <= 0) {
+		return -1;
 	}
 
 	/* Check for the '0Dh' field terminator , if found return '2'
 	   which will tell the loop we are at the end of fields */
 	if (dbfield.dbf_name[0]==0x0d) {
 		return 2;
+	}
+
+	if (ret != sizeof(dbfield)) {
+		return -1;
 	}
 
 	/* build the field name */

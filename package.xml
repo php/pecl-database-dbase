@@ -53,6 +53,7 @@ are kept until you call dbase_pack().
 Bug Fixes
 
   - Fixed GH-1 (dbase_add_record() converts passed floats and leaks memory)
+  - Fixed #81563 (SIGSEGV reading dbase file with few data)
 ]]>
  </notes>
 
@@ -96,6 +97,8 @@ Bug Fixes
     <file name="bug78668.phpt" role="test" />
     <file name="bug78668_8.phpt" role="test" />
     <file name="bug80156.phpt" role="test" />
+    <file name="bug81563.dbf" role="test" />
+    <file name="bug81563.phpt" role="test" />
     <file name="dbase_add_record_basic.phpt" role="test" />
     <file name="dbase_add_record_error.phpt" role="test" />
     <file name="dbase_add_record_error-8.phpt" role="test" />
