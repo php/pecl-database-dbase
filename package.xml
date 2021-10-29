@@ -40,7 +40,7 @@ are kept until you call dbase_pack().
 
  <date>2021-10-29</date>
  <version>
-  <release>7.1.1-dev</release>
+  <release>7.1.1</release>
   <api>7.1</api>
  </version>
  <stability>
