@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup PHP
         id: setup-php
-        uses: cmb69/setup-php-sdk@v0.4
+        uses: cmb69/setup-php-sdk@d41232b10e7d0655b098292df085e9c7cdb0bf3a
         with:
           version: ${{matrix.version}}
           arch: ${{matrix.arch}}
