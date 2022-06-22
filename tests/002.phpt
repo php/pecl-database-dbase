@@ -56,5 +56,5 @@ Done
 <?php
 $file = dirname(__FILE__)."/002.dbf";
 
-unlink($file);
+@unlink($file);
 ?>

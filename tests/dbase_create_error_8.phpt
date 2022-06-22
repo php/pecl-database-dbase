@@ -148,5 +148,5 @@ bool(false)
 <?php
 define('FILENAME', __DIR__ . DIRECTORY_SEPARATOR . 'dbase_create_error.dbf');
 
-unlink(FILENAME);
+@unlink(FILENAME);
 ?>
