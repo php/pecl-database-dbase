@@ -1,11 +1,32 @@
 name: Build and Test
-on: [push]
+on: [push, pull_request]
 jobs:
   ubuntu:
     strategy:
       matrix:
           version: ['7.4', '8.0', '8.1', '8.2', '8.3']
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dbase
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{matrix.version}}
+      - name: Build dbase
+        run: |
+          phpize
+          ./configure --enable-dbase
+          make
+      - name: Test dbase
+        run: make test TESTS=tests
+  ubuntu-32:
+    strategy:
+      matrix:
+        version: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        arch: ['i386']
+    runs-on: ubuntu-latest
+    container: shivammathur/node:latest-${{ matrix.arch }}
     steps:
       - name: Checkout dbase
         uses: actions/checkout@v4
