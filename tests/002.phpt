@@ -49,8 +49,10 @@ bool(false)
 
 Warning: dbase_open(): The filename cannot be empty. in %s on line %d
 bool(false)
-resource(%d) of type (dbase)
-resource(%d) of type (dbase)
+object(Dbase\DbaseHandle)#%d (0) {
+}
+object(Dbase\DbaseHandle)#%d (0) {
+}
 Done
 --CLEAN--
 <?php

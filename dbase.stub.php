@@ -2,63 +2,35 @@
 
 /** @generate-function-entries */
 
-/**
- * @return resource|false
- */
-function dbase_open(string $path, int $mode) {}
+namespace {
+    function dbase_open(string $path, int $mode): Dbase\DbaseHandle|false {}
 
-/**
- * @param resource $database
- */
-function dbase_close($database): bool {}
+    function dbase_close(Dbase\DbaseHandle $database): bool {}
 
-/**
- * @param resource $database
- */
-function dbase_add_record($database, array $data): bool {}
+    function dbase_add_record(Dbase\DbaseHandle $database, array $data): bool {}
 
-/**
- * @param resource $database
- */
-function dbase_delete_record($database, int $number): bool {}
+    function dbase_delete_record(Dbase\DbaseHandle $database, int $number): bool {}
 
-/**
- * @param resource $database
- */
-function dbase_replace_record($database, array $data, int $number): bool {}
+    function dbase_replace_record(Dbase\DbaseHandle $database, array $data, int $number): bool {}
 
-/**
- * @param resource $database
- */
-function dbase_numrecords($database): int {}
+    function dbase_numrecords(Dbase\DbaseHandle $database): int {}
 
-/**
- * @param resource $database
- */
-function dbase_numfields($database): int {}
+    function dbase_numfields(Dbase\DbaseHandle $database): int {}
 
-/**
- * @param resource $database
- */
-function dbase_pack($database): bool {}
+    function dbase_pack(Dbase\DbaseHandle $database): bool {}
 
-/**
- * @param resource $database
- */
-function dbase_get_record($database, int $number): array|false {}
+    function dbase_get_record(Dbase\DbaseHandle $database, int $number): array|false {}
 
-/**
- * @param resource $database
- */
-function dbase_get_record_with_names($database, int $number): array|false {}
+    function dbase_get_record_with_names(Dbase\DbaseHandle $database, int $number): array|false {}
 
-/**
- * @return resource|false
- */
-function dbase_create(string $path, array $fields, int $type = DBASE_TYPE_DBASE) {}
+    function dbase_create(string $path, array $fields, int $type = DBASE_TYPE_DBASE): Dbase\DbaseHandle|false {}
 
-/**
- * @param resource $database
- */
-function dbase_get_header_info($database): array {}
+    function dbase_get_header_info(Dbase\DbaseHandle $database): array {}
+}
 
+namespace Dbase {
+    /** @strict-properties */
+    final class DbaseHandle
+    {
+    }
+}

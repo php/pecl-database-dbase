@@ -38,7 +38,7 @@ try {
 ===DONE===
 --EXPECTF--
 dbase_get_record_with_names() expects exactly 2 arguments, 0 given
-dbase_get_record_with_names(): supplied resource is not a valid dbase resource
+dbase_get_record_with_names(): Argument #1 ($database) must be of type Dbase\DbaseHandle, resource given
 dbase_get_record_with_names(): Argument #2 ($number) record number has to be in range 1..2147483647, but is -1
 
 Warning: dbase_get_record_with_names(): Tried to read bad record 1 in %s on line %d

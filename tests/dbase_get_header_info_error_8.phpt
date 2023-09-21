@@ -22,6 +22,6 @@ try {
 ?>
 ===DONE===
 --EXPECTF--
-dbase_get_header_info(): Argument #1 ($database) must be of type resource, string given
-dbase_get_header_info(): supplied resource is not a valid dbase resource
+dbase_get_header_info(): Argument #1 ($database) must be of type Dbase\DbaseHandle, string given
+dbase_get_header_info(): Argument #1 ($database) must be of type Dbase\DbaseHandle, resource given
 ===DONE===

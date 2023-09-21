@@ -17,6 +17,6 @@ var_dump(dbase_pack(fopen('data://text/plain,foo', 'r')));
 Warning: dbase_pack() expects exactly 1 parameter, 0 given in %s on line %d
 NULL
 
-Warning: dbase_pack(): supplied resource is not a valid dbase resource in %s on line %d
-bool(false)
+Warning: dbase_pack() expects parameter 1 to be Dbase\DbaseHandle, resource given in %s on line %d
+NULL
 ===DONE===

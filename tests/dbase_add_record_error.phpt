@@ -33,8 +33,8 @@ var_dump(dbase_add_record($db, [0, 1, 2, 3, 4, 'foo' => 5, 6]));
 Warning: dbase_add_record() expects exactly 2 parameters, 1 given in %s on line %d
 NULL
 
-Warning: dbase_add_record(): supplied resource is not a valid dbase resource in %s on line %d
-bool(false)
+Warning: dbase_add_record() expects parameter 1 to be Dbase\DbaseHandle, resource given in %s on line %d
+NULL
 Argument 2 passed to dbase_add_record() must be of the type array, string given
 
 Warning: dbase_add_record(): expected 7 fields, but got 0 in %s on line %d

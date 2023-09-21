@@ -15,5 +15,5 @@ $column_info = dbase_get_header_info($dbh);
 --EXPECTF--
 Warning: dbase_open(): unable to open database %s on line %d
 
-Warning: dbase_get_header_info() expects parameter 1 to be resource, bool%S given in %s on line %d
+Warning: dbase_get_header_info() expects parameter 1 to be Dbase\DbaseHandle, bool%S given in %s on line %d
 ===DONE===

@@ -23,5 +23,5 @@ try {
 ===DONE===
 --EXPECTF--
 dbase_pack() expects exactly 1 argument, 0 given
-dbase_pack(): supplied resource is not a valid dbase resource
+dbase_pack(): Argument #1 ($database) must be of type Dbase\DbaseHandle, resource given
 ===DONE===

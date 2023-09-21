@@ -24,8 +24,8 @@ var_dump(dbase_get_record($db, 2147483648));
 Warning: dbase_get_record() expects exactly 2 parameters, 0 given in %s on line %d
 NULL
 
-Warning: dbase_get_record(): supplied resource is not a valid dbase resource in %s on line %d
-bool(false)
+Warning: dbase_get_record() expects parameter 1 to be Dbase\DbaseHandle, resource given in %s on line %d
+NULL
 
 Warning: dbase_get_record(): record number has to be in range 1..2147483647, but is -1 in %s on line %d
 bool(false)

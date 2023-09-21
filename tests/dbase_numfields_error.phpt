@@ -17,6 +17,6 @@ var_dump(dbase_numfields(fopen('data://text/plain,foo', 'r')));
 Warning: dbase_numfields() expects exactly 1 parameter, 0 given in %s on line %d
 NULL
 
-Warning: dbase_numfields(): supplied resource is not a valid dbase resource in %s on line %d
-bool(false)
+Warning: dbase_numfields() expects parameter 1 to be Dbase\DbaseHandle, resource given in %s on line %d
+NULL
 ===DONE===

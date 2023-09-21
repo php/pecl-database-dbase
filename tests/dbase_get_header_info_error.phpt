@@ -14,9 +14,9 @@ var_dump(dbase_get_header_info(fopen('data://text/plain,foo', 'r')));
 ?>
 ===DONE===
 --EXPECTF--
-Warning: dbase_get_header_info() expects parameter 1 to be resource, string given in %s on line %d
+Warning: dbase_get_header_info() expects parameter 1 to be Dbase\DbaseHandle, string given in %s on line %d
 NULL
 
-Warning: dbase_get_header_info(): supplied resource is not a valid dbase resource in %s on line %d
-bool(false)
+Warning: dbase_get_header_info() expects parameter 1 to be Dbase\DbaseHandle, resource given in %s on line %d
+NULL
 ===DONE===
