@@ -39,7 +39,7 @@ var_dump(dbase_replace_record($db, [0, 1, 2, 3, 4, 'foo' => 5, 6], 1));
 ===DONE===
 --EXPECTF--
 dbase_replace_record() expects exactly 3 arguments, 1 given
-dbase_replace_record(): supplied resource is not a valid dbase resource
+dbase_replace_record(): Argument #1 ($database) must be of type Dbase\DbaseHandle, resource given
 dbase_replace_record(): Argument #2 ($data) must be of type array, string given
 
 Warning: dbase_replace_record(): expected 7 fields, but got 0 in %s on line %d

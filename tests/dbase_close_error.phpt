@@ -17,6 +17,6 @@ var_dump(dbase_close(fopen('data://text/plain,foo', 'r')));
 Warning: dbase_close() expects exactly 1 parameter, 0 given in %s on line %d
 NULL
 
-Warning: dbase_close(): supplied resource is not a valid dbase resource in %s on line %d
-bool(false)
+Warning: dbase_close() expects parameter 1 to be Dbase\DbaseHandle, resource given in %s on line %d
+NULL
 ===DONE===

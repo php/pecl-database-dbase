@@ -27,7 +27,8 @@ var_dump(dbase_close($db));
 ?>
 ===DONE===
 --EXPECTF--
-resource(%d) of type (dbase)
+object(Dbase\DbaseHandle)#%d (0) {
+}
 array(8) {
   ["ID"]=>
   int(1)

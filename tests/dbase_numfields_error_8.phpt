@@ -23,5 +23,5 @@ try {
 ===DONE===
 --EXPECTF--
 dbase_numfields() expects exactly 1 argument, 0 given
-dbase_numfields(): supplied resource is not a valid dbase resource
+dbase_numfields(): Argument #1 ($database) must be of type Dbase\DbaseHandle, resource given
 ===DONE===

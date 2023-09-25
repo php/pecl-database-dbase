@@ -30,6 +30,7 @@
 # include <sys/file.h>
 #endif
 #include "ext/standard/flock_compat.h"
+#include "Zend/zend_interfaces.h"
 
 #include <stdlib.h>
 
@@ -40,8 +41,6 @@
 #if DBASE
 #include "php_dbase.h"
 #include "dbf.h"
-
-static int le_dbhead;
 
 #include <fcntl.h>
 #include <errno.h>
@@ -67,19 +66,35 @@ static int le_dbhead;
 # include "dbase_7_arginfo.h"
 #endif
 
-static void _close_dbase(zend_resource *rsrc)
-{
-	dbhead_t *dbhead = (dbhead_t *)rsrc->ptr;
+typedef struct {
+	dbhead_t *dbhead;
+	zend_object std;
+} dbase_dbase_handle;
 
-	php_flock(dbhead->db_fd, LOCK_UN);
-	close(dbhead->db_fd);
-	free_dbf_head(dbhead);
-}
+static zend_class_entry *dbase_dbase_handle_ce;
+static zend_object_handlers dbase_dbase_handle_object_handlers;
 
+static zend_object *dbase_dbase_handle_create_object(zend_class_entry *class_type);
+static void dbase_dbase_handle_free_object(zend_object *object);
+static zend_function *dbase_dbase_handle_get_constructor(zend_object *object);
+
+static const zend_function_entry dbase_dbase_handle_methods[] = {
+	PHP_FE_END
+};
 
 PHP_MINIT_FUNCTION(dbase)
 {
-	le_dbhead = zend_register_list_destructors_ex(_close_dbase, NULL, "dbase", module_number);
+	zend_class_entry ce;
+	INIT_NS_CLASS_ENTRY(ce, "Dbase", "DbaseHandle", dbase_dbase_handle_methods);
+	ce.ce_flags |= ZEND_ACC_FINAL;
+	ce.create_object = dbase_dbase_handle_create_object;
+	dbase_dbase_handle_ce = zend_register_internal_class(&ce);
+
+	memcpy(&dbase_dbase_handle_object_handlers, &std_object_handlers, sizeof(zend_object_handlers));
+	dbase_dbase_handle_object_handlers.clone_obj = NULL;
+	dbase_dbase_handle_object_handlers.free_obj = dbase_dbase_handle_free_object;
+	dbase_dbase_handle_object_handlers.get_constructor = dbase_dbase_handle_get_constructor;
+	dbase_dbase_handle_object_handlers.offset = XtOffsetOf(dbase_dbase_handle, std);
 
 	REGISTER_STRING_CONSTANT("DBASE_VERSION", PHP_DBASE_VERSION, CONST_CS | CONST_PERSISTENT);
 
@@ -92,7 +107,46 @@ PHP_MINIT_FUNCTION(dbase)
 	return SUCCESS;
 }
 
-/* {{{ proto resource dbase_open(string name, int mode)
+static inline dbase_dbase_handle *dbase_dbase_handle_from_object(zend_object* obj)
+{
+	return (dbase_dbase_handle *)((char *)(obj) - XtOffsetOf(dbase_dbase_handle, std));
+}
+
+#define Z_DBASE_DBASEHANDLE_P(zv) dbase_dbase_handle_from_object(Z_OBJ_P(zv))
+
+static zend_object *dbase_dbase_handle_create_object(zend_class_entry *class_type)
+{
+	dbase_dbase_handle *intern = emalloc(sizeof(dbase_dbase_handle) + zend_object_properties_size(class_type));
+	memset(intern, 0, sizeof(dbase_dbase_handle) - sizeof(zend_object));
+
+	zend_object_std_init(&intern->std, class_type);
+	object_properties_init(&intern->std, class_type);
+	intern->std.handlers = &dbase_dbase_handle_object_handlers;
+
+	return &intern->std;
+};
+
+static void dbase_dbase_handle_free_object(zend_object *object)
+{
+	dbase_dbase_handle *dbase_handle = dbase_dbase_handle_from_object(object);
+
+	if (dbase_handle->dbhead) {
+		php_flock(dbase_handle->dbhead->db_fd, LOCK_UN);
+		close(dbase_handle->dbhead->db_fd);
+		free_dbf_head(dbase_handle->dbhead);
+		dbase_handle->dbhead = NULL;
+	}
+
+	zend_object_std_dtor(&dbase_handle->std);
+};
+
+static zend_function *dbase_dbase_handle_get_constructor(zend_object *object)
+{
+	zend_throw_error(NULL, "Cannot directly construct Dbase\\DbaseHandle, use dbase_create() or dbase_open() instead");
+	return NULL;
+}
+
+/* {{{ proto Dbase\DbaseHandle dbase_open(string name, int mode)
    Opens a dBase-format database file */
 PHP_FUNCTION(dbase_open)
 {
@@ -127,82 +181,81 @@ PHP_FUNCTION(dbase_open)
 		RETURN_FALSE;
 	}
 
-	RETURN_RES(zend_register_resource(dbh, le_dbhead));
+	object_init_ex(return_value, dbase_dbase_handle_ce);
+	Z_DBASE_DBASEHANDLE_P(return_value)->dbhead = dbh;
 }
 /* }}} */
 
-/* {{{ proto bool dbase_close(resource identifier)
+/* {{{ proto bool dbase_close(Dbase\DbaseHandle identifier)
    Closes an open dBase-format database file */
 PHP_FUNCTION(dbase_close)
 {
 	zval *dbh_id;
+	dbase_dbase_handle *dbase_handle;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "O", &dbh_id, dbase_dbase_handle_ce) == FAILURE) {
 		RETURN_THROWS_NULL();
 	}
 
-	if (zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead) == NULL) {
-		RETURN_THROWS_FALSE();
+	dbase_handle = Z_DBASE_DBASEHANDLE_P(dbh_id);
+	if (dbase_handle->dbhead) {
+		php_flock(dbase_handle->dbhead->db_fd, LOCK_UN);
+		close(dbase_handle->dbhead->db_fd);
+		free_dbf_head(dbase_handle->dbhead);
+		dbase_handle->dbhead = NULL;
 	}
-	
-	zend_list_close(Z_RES_P(dbh_id));
+
 	RETURN_TRUE;
 }
 /* }}} */
 
-/* {{{ proto int dbase_numrecords(resource identifier)
+/* {{{ proto int dbase_numrecords(Dbase\DbaseHandle identifier)
    Returns the number of records in the database */
 PHP_FUNCTION(dbase_numrecords)
 {
 	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "O", &dbh_id, dbase_dbase_handle_ce) == FAILURE) {
 		RETURN_THROWS_NULL();
 	}
-	
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_THROWS_FALSE();
-	}
+
+	dbht = Z_DBASE_DBASEHANDLE_P(dbh_id)->dbhead;
 
 	RETURN_LONG(dbht->db_records);
 
 }
 /* }}} */
 
-/* {{{ proto int dbase_numfields(resource identifier)
+/* {{{ proto int dbase_numfields(Dbase\DbaseHandle identifier)
    Returns the number of fields (columns) in the database */
 PHP_FUNCTION(dbase_numfields)
 {
 	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "O", &dbh_id, dbase_dbase_handle_ce) == FAILURE) {
 		RETURN_THROWS_NULL();
 	}
-	
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_THROWS_FALSE();
-	}
+
+	dbht = Z_DBASE_DBASEHANDLE_P(dbh_id)->dbhead;
 
 	RETURN_LONG(dbht->db_nfields - (dbht->db_nnullable ? 1 : 0));
 }
 /* }}} */
 
-/* {{{ proto bool dbase_pack(resource identifier)
+/* {{{ proto bool dbase_pack(Dbase\DbaseHandle identifier)
    Packs the database (deletes records marked for deletion) */
 PHP_FUNCTION(dbase_pack)
 {
 	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "O", &dbh_id, dbase_dbase_handle_ce) == FAILURE) {
 		RETURN_THROWS_NULL();
 	}
-	
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_THROWS_FALSE();
-	}
+
+	dbht = Z_DBASE_DBASEHANDLE_P(dbh_id)->dbhead;
 
 	if (!pack_dbf(dbht)) {
         if (put_dbf_info(dbht) != 1) {
@@ -234,7 +287,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 	char nullable_flags[DBH_MAX_FIELDS / 8];
 
 	if (replace) {
-		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rhl", &dbh_id, &fields, &recnum) == FAILURE) {
+		if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ohl", &dbh_id, dbase_dbase_handle_ce, &fields, &recnum) == FAILURE) {
 			RETURN_THROWS_NULL();
 		}
 		if (recnum < 1 || recnum > 0x7FFFFFFF) {
@@ -242,14 +295,12 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 			RETURN_THROWS_FALSE();
 		}
 	} else {
-		if (zend_parse_parameters(ZEND_NUM_ARGS(), "rh", &dbh_id, &fields) == FAILURE) {	
+		if (zend_parse_parameters(ZEND_NUM_ARGS(), "Oh", &dbh_id, dbase_dbase_handle_ce, &fields) == FAILURE) {	
 			RETURN_THROWS_NULL();
 		}
 	}
 
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_THROWS_FALSE();
-	}
+	dbht = Z_DBASE_DBASEHANDLE_P(dbh_id)->dbhead;
 
 	memset(nullable_flags, 0, sizeof(nullable_flags));
 
@@ -334,7 +385,7 @@ static void php_dbase_put_record(INTERNAL_FUNCTION_PARAMETERS, int replace)
 }
 /* }}} */
 
-/* {{{ proto bool dbase_add_record(resource identifier, array data)
+/* {{{ proto bool dbase_add_record(Dbase\DbaseHandle identifier, array data)
    Adds a record to the database */
 PHP_FUNCTION(dbase_add_record)
 {
@@ -342,7 +393,7 @@ PHP_FUNCTION(dbase_add_record)
 }
 /* }}} */
 
-/* {{{ proto bool dbase_replace_record(resource identifier, array data, int recnum)
+/* {{{ proto bool dbase_replace_record(Dbase\DbaseHandle identifier, array data, int recnum)
    Replaces a record to the database */
 PHP_FUNCTION(dbase_replace_record)
 {
@@ -350,7 +401,7 @@ PHP_FUNCTION(dbase_replace_record)
 }
 /* }}} */
 
-/* {{{ proto bool dbase_delete_record(resource identifier, int record)
+/* {{{ proto bool dbase_delete_record(Dbase\DbaseHandle identifier, int record)
    Marks a record to be deleted */
 PHP_FUNCTION(dbase_delete_record)
 {
@@ -358,13 +409,11 @@ PHP_FUNCTION(dbase_delete_record)
 	zval *dbh_id;
 	dbhead_t *dbht;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ol", &dbh_id, dbase_dbase_handle_ce, &record) == FAILURE) {
 		RETURN_THROWS_NULL();
 	}
 
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_THROWS_FALSE();
-	}
+	dbht = Z_DBASE_DBASEHANDLE_P(dbh_id)->dbhead;
 
 	if (record < 1 || record > 0x7FFFFFFF) {
 		BAD_REC_NUMBER(2, record);
@@ -401,13 +450,11 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 	int errno_save;
 	char nullable_flags[DBH_MAX_FIELDS / 8];
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &dbh_id, &record) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Ol", &dbh_id, dbase_dbase_handle_ce, &record) == FAILURE) {
 		RETURN_THROWS_NULL();
 	}
 
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_THROWS_FALSE();
-	}
+	dbht = Z_DBASE_DBASEHANDLE_P(dbh_id)->dbhead;
 
 	if (record < 1 || record > 0x7FFFFFFF) {
 		BAD_REC_NUMBER(2, record);
@@ -556,7 +603,7 @@ static void php_dbase_get_record(INTERNAL_FUNCTION_PARAMETERS, int assoc)
 }
 /* }}} */
  
-/* {{{ proto array dbase_get_record(resource identifier, int record)
+/* {{{ proto array dbase_get_record(Dbase\DbaseHandle identifier, int record)
    Returns an array representing a record from the database */
 PHP_FUNCTION(dbase_get_record)
 {
@@ -565,7 +612,7 @@ PHP_FUNCTION(dbase_get_record)
 /* }}} */
 
 /* From Martin Kuba <makub@aida.inet.cz> */
-/* {{{ proto array dbase_get_record_with_names(resource identifier, int record)
+/* {{{ proto array dbase_get_record_with_names(Dbase\DbaseHandle identifier, int record)
    Returns an associative array representing a record from the database */
 PHP_FUNCTION(dbase_get_record_with_names)
 {
@@ -769,7 +816,7 @@ fail:
 }
 
 
-/* {{{ proto resource dbase_create(string filename, array fields [, int type])
+/* {{{ proto Dbase\DbaseHandle dbase_create(string filename, array fields [, int type])
    Creates a new dBase-format database file */
 PHP_FUNCTION(dbase_create)
 {
@@ -811,7 +858,9 @@ PHP_FUNCTION(dbase_create)
 		goto fail;
 	}
 
-	RETURN_RES(zend_register_resource(dbh, le_dbhead));
+	object_init_ex(return_value, dbase_dbase_handle_ce);
+	Z_DBASE_DBASEHANDLE_P(return_value)->dbhead = dbh;
+	return;
 
 fail:
 	close(fd);
@@ -821,7 +870,7 @@ fail:
 
 
 /* Added by Zak Greant <zak@php.net> */
-/* {{{ proto array dbase_get_header_info(resource database_handle)
+/* {{{ proto array dbase_get_header_info(Dbase\DbaseHandle database_handle)
  */
 PHP_FUNCTION(dbase_get_header_info)
 {
@@ -830,13 +879,11 @@ PHP_FUNCTION(dbase_get_header_info)
 	zval		*dbh_id;
 	dbfield_t	*dbf, *cur_f;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &dbh_id) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "O", &dbh_id, dbase_dbase_handle_ce) == FAILURE) {
 		RETURN_THROWS_NULL();
 	}
 
-	if ((dbht = (dbhead_t *) zend_fetch_resource(Z_RES_P(dbh_id), "dbase", le_dbhead)) == NULL) {
-		RETURN_THROWS_FALSE();
-	}
+	dbht = Z_DBASE_DBASEHANDLE_P(dbh_id)->dbhead;
 
 	array_init(return_value);
 

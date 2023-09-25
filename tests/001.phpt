@@ -44,12 +44,14 @@ foreach ($fields_arr as $fields) {
 echo "Done\n";
 ?>
 --EXPECTF--
-resource(%d) of type (dbase)
+object(Dbase\DbaseHandle)#%d (0) {
+}
 string(38) "dbase_create(): unknown field type 'E'"
 bool(false)
 string(38) "dbase_create(): unknown field type '-'"
 bool(false)
-resource(%d) of type (dbase)
+object(Dbase\DbaseHandle)#%d (0) {
+}
 string(67) "dbase_create(): expected field name as element 0 of list in field 0"
 bool(false)
 string(56) "dbase_create(): Unable to create database without fields"

@@ -37,7 +37,7 @@ try {
 ===DONE===
 --EXPECTF--
 dbase_delete_record() expects exactly 2 arguments, 1 given
-dbase_delete_record(): supplied resource is not a valid dbase resource
+dbase_delete_record(): Argument #1 ($database) must be of type Dbase\DbaseHandle, resource given
 dbase_delete_record(): Argument #2 ($number) record number has to be in range 1..2147483647, but is -1
 
 Warning: dbase_delete_record(): record 1 out of bounds in %s on line %d

@@ -23,5 +23,5 @@ try {
 ===DONE===
 --EXPECTF--
 dbase_close() expects exactly 1 argument, 0 given
-dbase_close(): supplied resource is not a valid dbase resource
+dbase_close(): Argument #1 ($database) must be of type Dbase\DbaseHandle, resource given
 ===DONE===
