@@ -18,5 +18,5 @@ try {
 ===DONE===
 --EXPECTF--
 Warning: dbase_open(): unable to open database %s on line %d
-dbase_get_header_info(): Argument #1 ($database) must be of type resource, bool given
+dbase_get_header_info(): Argument #1 ($database) must be of type resource, %s given
 ===DONE===
