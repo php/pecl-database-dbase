@@ -47,16 +47,25 @@ jobs:
         shell: cmd
     strategy:
       matrix:
-          version: ['7.4', '8.0', '8.1', '8.2', '8.3']
+          version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
           arch: [x64]
           ts: [ts]
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout dbase
         uses: actions/checkout@v4
+      - name: Install VC15 component
+        if: ${{matrix.version == '7.4'}}
+        shell: pwsh
+        run: |
+          Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+          $installPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+          $component = "Microsoft.VisualStudio.Component.VC.v141.x86.x64"
+          $args = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$installPath`"", '--add', $component, '--quiet', '--norestart', '--nocache')
+          $process = Start-Process -FilePath cmd.exe -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
       - name: Setup PHP
         id: setup-php
-        uses: php/setup-php-sdk@v0.8
+        uses: php/setup-php-sdk@v0.9
         with:
           version: ${{matrix.version}}
           arch: ${{matrix.arch}}
