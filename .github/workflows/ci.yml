@@ -75,6 +75,8 @@ jobs:
         with:
           arch: ${{matrix.arch}}
           toolset: ${{steps.setup-php.outputs.toolset}}
+      - name: Patch registry
+        run: reg add HKLM\Software\Policies\Microsoft\Internet Explorer\Main /v JScriptReplacement /d 0 /f
       - name: phpize
         run: phpize
       - name: configure
