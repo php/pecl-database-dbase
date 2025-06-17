@@ -1,0 +1,12 @@
+{
+    "name": "pecl/pecl-database-dbase",
+    "type": "php-ext",
+    "license": "PHP-3.01",
+    "description": "dBase database file access functions",
+    "require": {
+        "php": ">= 7.0"
+    },
+    "php-ext": {
+        "extension-name": "dbase"
+    }
+}
