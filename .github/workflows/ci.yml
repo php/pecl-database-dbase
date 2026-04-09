@@ -1,14 +1,24 @@
 name: Build and Test
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '*'
+  pull_request:
+
+permissions:
+  contents: write
+
 jobs:
   ubuntu:
     strategy:
       matrix:
-          version: ['7.4', '8.0', '8.1', '8.2', '8.3']
+          version: ['7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout dbase
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -20,66 +30,39 @@ jobs:
           make
       - name: Test dbase
         run: make test TESTS=tests
-  ubuntu-32:
-    strategy:
-      matrix:
-        version: ['7.4', '8.0', '8.1', '8.2', '8.3']
-        arch: ['i386']
+  windows-matrix:
     runs-on: ubuntu-latest
-    container: shivammathur/node:latest-${{ matrix.arch }}
+    outputs:
+      matrix: ${{ steps.extension-matrix.outputs.matrix }}
     steps:
       - name: Checkout dbase
-        uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{matrix.version}}
-      - name: Build dbase
-        run: |
-          phpize
-          ./configure --enable-dbase
-          make
-      - name: Test dbase
-        run: make test TESTS=tests
+        uses: actions/checkout@v6
+      - name: Get extension matrix
+        id: extension-matrix
+        uses: php/php-windows-builder/extension-matrix@v1
   windows:
-    defaults:
-      run:
-        shell: cmd
+    needs: windows-matrix
+    runs-on: ${{ matrix.os }}
     strategy:
-      matrix:
-          os: [windows-2019, windows-2022]
-          version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
-          arch: [x64]
-          ts: [ts]
-          exclude:
-            - {os: windows-2019, version: '8.4'}
-            - {os: windows-2019, version: '8.3'}
-            - {os: windows-2019, version: '8.2'}
-            - {os: windows-2019, version: '8.1'}
-            - {os: windows-2019, version: '8.0'}
-            - {os: windows-2022, version: '7.4'}
-    runs-on: ${{matrix.os}}
+      fail-fast: false
+      matrix: ${{ fromJson(needs.windows-matrix.outputs.matrix) }}
     steps:
       - name: Checkout dbase
-        uses: actions/checkout@v4
-      - name: Setup PHP
-        id: setup-php
-        uses: php/setup-php-sdk@v0.10
+        uses: actions/checkout@v6
+      - name: Build dbase
+        uses: php/php-windows-builder/extension@v1
         with:
-          version: ${{matrix.version}}
-          arch: ${{matrix.arch}}
-          ts: ${{matrix.ts}}
-          cache: true
-      - name: Enable Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
+          php-version: ${{ matrix.php-version }}
+          arch: ${{ matrix.arch }}
+          ts: ${{ matrix.ts }}
+          args: --enable-dbase
+  release:
+    runs-on: ubuntu-latest
+    needs: windows
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+    steps:
+      - name: Upload artifact to the release
+        uses: php/php-windows-builder/release@v1
         with:
-          arch: ${{matrix.arch}}
-          toolset: ${{steps.setup-php.outputs.toolset}}
-      - name: phpize
-        run: phpize
-      - name: configure
-        run: configure --enable-dbase --with-prefix=${{steps.setup-php.outputs.prefix}}
-      - name: make
-        run: nmake
-      - name: test
-        run: nmake test TESTS=tests
+          release: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
